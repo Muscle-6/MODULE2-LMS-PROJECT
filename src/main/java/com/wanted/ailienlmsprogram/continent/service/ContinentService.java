@@ -15,5 +15,11 @@ public class ContinentService {
 
     public List<Continent> findAllContinents() {
         return continentRepository.findAll();
+
+    }
+
+    public Continent findById(Long continentId) {
+        return continentRepository.findById(continentId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 대륙입니다."));
     }
 }

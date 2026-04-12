@@ -1,25 +1,43 @@
 package com.wanted.ailienlmsprogram.global.config;
 
-import com.wanted.ailienlmsprogram.global.security.CustomUserDetails;
+import com.wanted.ailienlmsprogram.global.security.CustomUserDetailsService;
+import com.wanted.ailienlmsprogram.global.security.SecurityLoginSuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @RequiredArgsConstructor
 public class SecurityConfig {
 
+    private final CustomUserDetailsService customUserDetailsService;
+    private final PasswordEncoder passwordEncoder;
+    private final SecurityLoginSuccessHandler securityLoginSuccessHandler;
+
+    @Bean
+    public DaoAuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(customUserDetailsService);
+        provider.setPasswordEncoder(passwordEncoder);
+        return provider;
+    }
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable())
+                .authenticationProvider(authenticationProvider())
+                .csrf(csrf -> csrf.disable()) // 지금 단계에서는 우선 로그인 흐름 안정화 우선
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/main", "/login", "/signup", "/css/**", "/js/**", "/images/**").permitAll()
+                        .requestMatchers("/", "/login", "/signup", "/css/**", "/js/**", "/images/**").permitAll()
                         .requestMatchers("/student/**").hasRole("STUDENT")
                         .requestMatchers("/instructor/**").hasRole("INSTRUCTOR")
                         .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/continents/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
@@ -27,23 +45,15 @@ public class SecurityConfig {
                         .loginProcessingUrl("/login")
                         .usernameParameter("loginId")
                         .passwordParameter("password")
-                        .successHandler((request, response, authentication) -> {
-                            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-
-                            if (userDetails.getMember().getRole().name().equals("ADMIN")) {
-                                response.sendRedirect("/admin");
-                            } else if (userDetails.getMember().getRole().name().equals("INSTRUCTOR")) {
-                                response.sendRedirect("/instructor");
-                            } else {
-                                response.sendRedirect("/student");
-                            }
-                        })
+                        .successHandler(securityLoginSuccessHandler)
                         .failureUrl("/login?error")
                         .permitAll()
                 )
                 .logout(logout -> logout
                         .logoutUrl("/logout")
-                        .logoutSuccessUrl("/main")
+                        .logoutSuccessUrl("/")
+                        .invalidateHttpSession(true)
+                        .deleteCookies("JSESSIONID")
                 );
 
         return http.build();

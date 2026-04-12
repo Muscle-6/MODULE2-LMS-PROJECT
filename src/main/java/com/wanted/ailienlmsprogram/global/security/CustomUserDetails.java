@@ -32,6 +32,21 @@ public class CustomUserDetails implements UserDetails {
     }
 
     @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return member.getAccountStatus() != Member.AccountStatus.BANNED;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
     public boolean isEnabled() {
         return member.getAccountStatus() == Member.AccountStatus.ACTIVE;
     }

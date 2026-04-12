@@ -1,8 +1,6 @@
 package com.wanted.ailienlmsprogram.home.controller;
 
 import com.wanted.ailienlmsprogram.continent.service.ContinentService;
-import com.wanted.ailienlmsprogram.member.entity.Member;
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,13 +12,9 @@ public class HomeController {
 
     private final ContinentService continentService;
 
-    @GetMapping({"/", "/main"})
-    public String mainPage(Model model, HttpSession session) {
+    @GetMapping("/")
+    public String home(Model model) {
         model.addAttribute("continents", continentService.findAllContinents());
-
-        Member loginMember = (Member) session.getAttribute("loginMember");
-        model.addAttribute("loginMember", loginMember);
-
         return "home/index";
     }
 }
