@@ -23,23 +23,7 @@ public class MemberController {
         return "member/login";
     }
 
-    @PostMapping("/login")
-    public String login(@ModelAttribute LoginRequest request, HttpSession session, Model model) {
-        try {
-            Member loginMember = memberService.login(request.getLoginId(), request.getPassword());
-            session.setAttribute("loginMember", loginMember);
 
-            if (loginMember.getRole() == Member.MemberRole.ADMIN) {
-                return "redirect:/admin";
-            } else if (loginMember.getRole() == Member.MemberRole.INSTRUCTOR) {
-                return "redirect:/instructor";
-            }
-            return "redirect:/student";
-        } catch (IllegalArgumentException e) {
-            model.addAttribute("errorMessage", e.getMessage());
-            return "member/login";
-        }
-    }
 
     @GetMapping("/signup")
     public String signupPage() {
