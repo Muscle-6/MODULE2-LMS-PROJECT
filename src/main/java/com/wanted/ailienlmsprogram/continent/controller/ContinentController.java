@@ -13,9 +13,15 @@ public class ContinentController {
 
     private final ContinentService continentService;
 
+    @GetMapping
+    public String continentList(Model model) {
+        model.addAttribute("continents", continentService.findAllContinents());
+        return "home/index";
+    }
+
     @GetMapping("/{continentId}")
-    public String detail(@PathVariable Long continentId, Model model) {
-        model.addAttribute("continent", continentService.findById(continentId));
+    public String continentDetail(@PathVariable Long continentId, Model model) {
+        model.addAttribute("detail", continentService.findContinentDetail(continentId));
         return "continent/detail";
     }
 }
