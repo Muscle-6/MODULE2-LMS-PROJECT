@@ -2,7 +2,7 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>강사 홈</title>
+    <title>관리자 홈</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -11,7 +11,7 @@
         }
 
         header {
-            background: #253858;
+            background: #3a1f44;
             color: white;
             padding: 20px 40px;
         }
@@ -43,7 +43,7 @@
             margin-top: 12px;
             text-decoration: none;
             color: white;
-            background: #3559c7;
+            background: #7a2fb2;
             padding: 10px 14px;
             border-radius: 8px;
         }
@@ -57,9 +57,9 @@
 </head>
 <body>
 <header>
-    <h1>강사 홈</h1>
+    <h1>관리자 홈</h1>
     <div class="top-links">
-        <a th:href="@{/}">메인</a>
+        <a th:href="@{/static}">메인</a>
         <a th:href="@{/logout}">로그아웃</a>
     </div>
 </header>
@@ -67,26 +67,26 @@
 <div class="container">
     <div class="menu-grid">
         <div class="menu-card">
-            <h3>내 강좌 관리</h3>
-            <p>등록한 강좌 목록 조회 및 수정</p>
+            <h3>회원 관리</h3>
+            <p>학생/강사/관리자 계정 조회 및 상태 변경</p>
             <a href="#" class="btn">이동</a>
         </div>
 
         <div class="menu-card">
-            <h3>강의 관리</h3>
-            <p>강의 등록, 수정, 순서 관리</p>
+            <h3>신고 관리</h3>
+            <p>게시글, 댓글, Q&A 신고 처리</p>
             <a href="#" class="btn">이동</a>
         </div>
 
         <div class="menu-card">
-            <h3>공지사항 관리</h3>
-            <p>강좌 공지사항 작성 및 수정</p>
+            <h3>환불 관리</h3>
+            <p>환불 승인 및 거절 처리</p>
             <a href="#" class="btn">이동</a>
         </div>
 
         <div class="menu-card">
-            <h3>수강생 학습 현황</h3>
-            <p>수강생 목록과 진도 확인</p>
+            <h3>통계 조회</h3>
+            <p>회원 수, 강좌 수, 인기 강좌, 결제 현황 확인</p>
             <a href="#" class="btn">이동</a>
         </div>
     </div>

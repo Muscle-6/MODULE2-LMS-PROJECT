@@ -8,16 +8,16 @@ public class PageController {
 
     @GetMapping("/student")
     public String studentPage() {
-        return "member/student-home";
+        return "student/student-home";
     }
 
     @GetMapping("/instructor")
     public String instructorPage() {
-        return "member/instructor-home";
+        return "instructor/instructor-home";
     }
 
     @GetMapping("/admin")
     public String adminPage() {
-        return "member/admin-home";
+        return "admin/admin-home";
     }
 }
