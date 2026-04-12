@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Module02 LMS - 학생 베이스캠프</title>
+    <title>Module02 LMS - 학생 홈</title>
 
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
@@ -53,29 +53,36 @@
 
 <body class="min-h-screen">
 
-<header class="fixed top-0 w-full z-50 flex justify-between items-center px-6 h-16 bg-slate-950/40 backdrop-blur-xl shadow-[0_0_20px_rgba(153,247,255,0.1)]">
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-6 h-16 bg-slate-950/40 backdrop-blur-xl shadow-[0_0_20px_rgba(153,247,255,0.1)] border-b border-cyan-400/10">
     <div class="flex items-center gap-8">
-        <span class="text-2xl font-bold tracking-tighter text-cyan-400 drop-shadow-[0_0_8px_rgba(153,247,255,0.6)] font-headline">STUDENT BASECAMP</span>
-        <span class="hidden md:inline text-xs font-label text-slate-400 tracking-widest uppercase">학생 전용 사령부 모듈</span>
+        <span class="text-2xl font-bold tracking-tighter text-cyan-400 drop-shadow-[0_0_8px_rgba(153,247,255,0.6)] font-headline">MODULE02 LMS</span>
+        <span class="hidden md:inline text-xs font-label text-slate-400 tracking-widest uppercase">우주/외계인 세계관 학습 플랫폼 (학생 베이스캠프)</span>
     </div>
 
-    <div class="flex items-center gap-6">
-        <div class="w-px h-4 bg-outline-variant/30"></div>
-        <a th:href="@{/logout}" class="text-slate-400 hover:text-error transition-colors text-xs font-label flex items-center gap-1">
-            <span class="material-symbols-outlined text-sm">power_settings_new</span> 로그아웃
-        </a>
+    <div class="flex items-center gap-4">
+        <div class="flex items-center gap-4" th:if="${loginMember != null}">
+            <div class="text-right hidden sm:block mr-2">
+                <span class="text-xs font-label tracking-widest text-cyan-400" th:text="|${loginMember.name} 님|"></span>
+                <span class="text-[10px] text-slate-500 font-label tracking-tight ml-1" th:text="|(${loginMember.role})|"></span>
+            </div>
+            <div class="w-px h-4 bg-outline-variant/30 hidden sm:block"></div>
+            <a th:href="@{/logout}" class="flex items-center gap-1 text-slate-400 hover:text-error transition-colors text-xs font-label">
+                <span class="material-symbols-outlined text-sm">power_settings_new</span> 로그아웃
+            </a>
+        </div>
     </div>
 </header>
 
-<aside class="fixed left-0 top-16 bottom-0 flex flex-col z-40 bg-slate-950/80 backdrop-blur-lg w-64 shadow-[4px_0_24px_rgba(0,0,0,0.5)] bg-gradient-to-r from-slate-900 to-slate-950 hidden md:flex">
-    <div class="p-6 border-b border-outline-variant/10">
+<aside class="fixed left-0 top-16 bottom-0 flex flex-col z-40 bg-slate-950/80 backdrop-blur-lg w-64 shadow-[4px_0_24px_rgba(0,0,0,0.5)] bg-gradient-to-r from-slate-900 to-slate-950 hidden md:flex border-r border-cyan-400/5">
+
+    <div class="p-6 border-b border-outline-variant/10" th:if="${loginMember != null}">
         <div class="flex items-center gap-3">
             <div class="h-10 w-10 rounded-lg bg-cyan-400/10 flex items-center justify-center border border-cyan-400/20">
                 <span class="material-symbols-outlined text-cyan-400" data-weight="fill" style="font-variation-settings: 'FILL' 1;">person</span>
             </div>
             <div>
-                <p class="text-xs font-label tracking-widest text-cyan-400">STUDENT</p>
-                <p class="text-[10px] text-slate-500 font-label tracking-tight">STATUS: ACTIVE</p>
+                <p class="text-xs font-label tracking-widest text-cyan-400" th:text="${loginMember.name}">OPERATIVE</p>
+                <p class="text-[10px] text-slate-500 font-label tracking-tight" th:text="|RANK: ${loginMember.role}|">RANK</p>
             </div>
         </div>
     </div>
@@ -83,7 +90,7 @@
     <nav class="flex-1 py-4">
         <a th:href="@{/}" class="flex items-center gap-4 text-slate-500 py-3 px-6 hover:bg-slate-800/40 hover:text-cyan-300 transition-all duration-200 font-label group">
             <span class="material-symbols-outlined">public</span>
-            <span class="text-sm tracking-wide">대륙 탐색 (메인)</span>
+            <span class="text-sm tracking-wide">대륙 탐색</span>
         </a>
 
         <a href="#" class="flex items-center gap-4 text-cyan-400 bg-cyan-400/10 border-r-4 border-cyan-400 py-3 px-6 shadow-[inset_0_0_15px_rgba(0,241,254,0.2)] font-label">

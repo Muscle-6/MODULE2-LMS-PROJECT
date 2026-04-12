@@ -131,7 +131,7 @@
         <th:block th:if="${loginMember != null}">
             <a th:if="${loginMember.role.name() == 'STUDENT'}" th:href="@{/student}" class="flex items-center gap-4 text-slate-500 py-3 px-6 hover:bg-slate-800/40 hover:text-cyan-300 transition-all duration-200 font-label group">
                 <span class="material-symbols-outlined">rocket_launch</span>
-                <span class="text-sm tracking-wide">학생 베이스캠프</span>
+                <span class="text-sm tracking-wide">학생 홈</span>
             </a>
 
             <a th:if="${loginMember.role.name() == 'INSTRUCTOR'}" th:href="@{/instructor}" class="flex items-center gap-4 text-slate-500 py-3 px-6 hover:bg-slate-800/40 hover:text-cyan-300 transition-all duration-200 font-label group">
