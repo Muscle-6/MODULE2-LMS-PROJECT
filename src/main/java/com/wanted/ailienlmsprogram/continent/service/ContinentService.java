@@ -20,6 +20,19 @@ public class ContinentService {
         return continentRepository.findAll();
     }
 
+    public List<Continent> searchContinents(String query) {
+        if (query == null || query.trim().isEmpty()) {
+            return continentRepository.findAll();
+        }
+
+        String keyword = query.trim();
+
+        return continentRepository
+                .findByContinentNameContainingIgnoreCaseOrDescriptionContainingIgnoreCaseOrderByContinentNameAsc(
+                        keyword, keyword
+                );
+    }
+
     public Continent findById(Long continentId) {
         return continentRepository.findById(continentId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 대륙입니다."));

@@ -1,7 +1,7 @@
 package com.wanted.ailienlmsprogram.global.security;
 
 import com.wanted.ailienlmsprogram.member.entity.Member;
-import com.wanted.ailienlmsprogram.member.repository.MemberRepository;
+import com.wanted.ailienlmsprogram.member.service.MemberService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -11,13 +11,12 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 
 @Component
 @RequiredArgsConstructor
 public class SecurityLoginSuccessHandler implements AuthenticationSuccessHandler {
 
-    private final MemberRepository memberRepository;
+    private final MemberService memberService;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request,
@@ -27,8 +26,7 @@ public class SecurityLoginSuccessHandler implements AuthenticationSuccessHandler
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         Member member = userDetails.getMember();
 
-        member.setLastLoginAt(LocalDateTime.now());
-        memberRepository.save(member);
+        memberService.handleLoginSuccess(member.getMemberId());
 
         if (member.getRole() == Member.MemberRole.ADMIN) {
             response.sendRedirect("/admin");

@@ -11,6 +11,11 @@ import java.util.List;
 
 public interface ContinentRepository extends JpaRepository<Continent, Long> {
 
+    List<Continent> findByContinentNameContainingIgnoreCaseOrDescriptionContainingIgnoreCaseOrderByContinentNameAsc(
+            String continentNameKeyword,
+            String descriptionKeyword
+    );
+
     @Query(value = """
         SELECT
             c.강좌번호 AS courseId,

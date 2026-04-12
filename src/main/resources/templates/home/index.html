@@ -9,6 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 
+
     <script id="tailwind-config">
         tailwind.config = {
             darkMode: "class",
@@ -122,6 +123,7 @@
         </div>
     </div>
 
+
     <nav class="flex-1 py-4">
         <a href="/" class="flex items-center gap-4 text-cyan-400 bg-cyan-400/10 border-r-4 border-cyan-400 py-3 px-6 shadow-[inset_0_0_15px_rgba(0,241,254,0.2)] font-label">
             <span class="material-symbols-outlined">public</span>
@@ -157,9 +159,29 @@
 
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
         <div>
-            <h1 class="text-4xl font-headline font-bold text-on-surface tracking-tight mb-2">TARGET DESTINATIONS</h1>
-            <p class="text-on-surface-variant max-w-xl font-body">탐색할 수 있는 대륙(행성)들을 확인하고 입장을 준비하십시오.</p>
+            <h1 class="text-4xl font-headline font-bold text-on-surface tracking-tight mb-2">
+                TARGET DESTINATIONS
+            </h1>
+            <p class="text-on-surface-variant max-w-xl font-body">
+                탐색할 수 있는 대륙(행성)들을 확인하고 입장을 준비하십시오.
+            </p>
         </div>
+
+        <form th:action="@{/}" method="get" class="w-full md:w-auto flex gap-3">
+            <input
+                    type="text"
+                    name="query"
+                    th:value="${query}"
+                    placeholder="대륙명 또는 설명 검색"
+                    class="w-full md:w-80 px-4 py-3 rounded-lg bg-surface-container border border-outline-variant/20 text-on-surface placeholder:text-on-surface-variant focus:outline-none focus:ring-2 focus:ring-primary/40"
+            />
+            <button
+                    type="submit"
+                    class="px-5 py-3 rounded-lg bg-primary text-on-primary-container font-label text-xs tracking-[0.2em] font-bold hover:scale-[1.02] active:scale-95 transition-all shadow-[0_0_20px_rgba(153,247,255,0.15)]"
+            >
+                SEARCH
+            </button>
+        </form>
     </div>
 
     <div th:if="${#lists.isEmpty(continents)}" class="group relative flex flex-col items-center justify-center border-2 border-dashed border-outline-variant/20 rounded-2xl min-h-[400px] bg-surface-container-lowest/20">
@@ -168,7 +190,12 @@
                 <span class="material-symbols-outlined text-4xl text-outline-variant">public_off</span>
             </div>
             <h3 class="text-xl font-headline font-bold text-on-surface-variant">UNKNOWN SECTOR</h3>
-            <p class="text-xs font-label tracking-widest text-slate-500">현재 발견된 대륙이 존재하지 않습니다.</p>
+            <p class="text-xs font-label tracking-widest text-slate-500"
+               th:text="${query != null and !#strings.isEmpty(query)}
+            ? '검색 결과에 해당하는 대륙이 없습니다.'
+            : '현재 발견된 대륙이 존재하지 않습니다.'">
+                현재 발견된 대륙이 존재하지 않습니다.
+            </p>
         </div>
     </div>
 
