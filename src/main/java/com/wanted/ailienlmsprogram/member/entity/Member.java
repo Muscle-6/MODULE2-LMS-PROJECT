@@ -28,51 +28,51 @@ public class Member {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "회원번호")
+    @Column(name = "member_id")
     private Long memberId;
 
-    @Column(name = "아이디", nullable = false, unique = true)
+    @Column(name = "login_id", nullable = false, unique = true, length = 50)
     private String loginId;
 
-    @Column(name = "이메일", nullable = false, unique = true)
+    @Column(name = "email", nullable = false, unique = true, length = 100)
     private String email;
 
-    @Column(name = "비밀번호", nullable = false)
+    @Column(name = "password", nullable = false, length = 255)
     private String password;
 
-    @Column(name = "이름", nullable = false)
+    @Column(name = "name", nullable = false, length = 50)
     private String name;
 
-    @Column(name = "전화번호")
+    @Column(name = "phone", length = 20)
     private String phone;
 
-    @Column(name = "프로필이미지URL")
+    @Column(name = "profile_image_url", length = 500)
     private String profileImageUrl;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "역할", nullable = false)
+    @Column(name = "role", nullable = false)
     private MemberRole role;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "계정상태", nullable = false)
+    @Column(name = "status", nullable = false)
     private AccountStatus accountStatus;
 
-    @Column(name = "자기소개")
+    @Column(name = "introduction", columnDefinition = "TEXT")
     private String introduction;
 
-    @Column(name = "가입일시")
+    @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
-    @Column(name = "수정일시")
+    @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
-    @Column(name = "탈퇴일시")
+    @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "등급")
+    @Column(name = "rank")
     private MemberRank rank;
 
-    @Column(name = "마지막로그인일시")
+    @Column(name = "last_login_at")
     private LocalDateTime lastLoginAt;
 }

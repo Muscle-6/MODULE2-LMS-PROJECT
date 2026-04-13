@@ -3,8 +3,6 @@ package com.wanted.ailienlmsprogram.global.security;
 import com.wanted.ailienlmsprogram.member.entity.Member;
 import com.wanted.ailienlmsprogram.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.DisabledException;
-import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.userdetails.*;
 import org.springframework.stereotype.Service;
 
@@ -18,14 +16,6 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String loginId) throws UsernameNotFoundException {
         Member member = memberRepository.findByLoginId(loginId)
                 .orElseThrow(() -> new UsernameNotFoundException("존재하지 않는 아이디입니다."));
-
-        if (member.getAccountStatus() == Member.AccountStatus.INACTIVE) {
-            throw new DisabledException("비활성화된 계정입니다.");
-        }
-
-        if (member.getAccountStatus() == Member.AccountStatus.BANNED) {
-            throw new LockedException("제재된 계정입니다.");
-        }
 
         return new CustomUserDetails(member);
     }
