@@ -34,7 +34,6 @@ public class Member {
     @Column(name = "아이디", nullable = false, unique = true)
     private String loginId;
 
-
     @Column(name = "이메일", nullable = false, unique = true)
     private String email;
 

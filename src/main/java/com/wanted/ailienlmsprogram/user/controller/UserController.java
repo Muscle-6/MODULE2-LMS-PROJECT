@@ -1,4 +1,43 @@
 package com.wanted.ailienlmsprogram.user.controller;
 
+import com.wanted.ailienlmsprogram.global.security.CustomUserDetails;
+import com.wanted.ailienlmsprogram.user.dto.UserDTO;
+import com.wanted.ailienlmsprogram.user.service.UserService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.servlet.ModelAndView;
+
+@Controller
+@RequiredArgsConstructor
 public class UserController {
+
+    private final UserService userService;
+
+    @GetMapping("/student/profile")
+    public ModelAndView studentProfile(ModelAndView mv,
+                                       @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        // loginId 꺼냄 -> 추후 CustomUserDetails 에 getMemberId() 추가되면 변경 예정
+        String loginId = userDetails.getUsername();
+        UserDTO user = userService.findUserByLoginId(loginId);
+
+        mv.addObject("user", user);
+        mv.setViewName("student/profile");
+        return mv;
+    }
+
+    @GetMapping("/instructor/profile")
+    public ModelAndView instructorProfile(ModelAndView mv,
+                                          @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        // loginId 꺼냄 -> 추후 CustomUserDetails 에 getMemberId() 추가되면 변경 예정
+        String loginId = userDetails.getUsername();
+        UserDTO user = userService.findUserByLoginId(loginId);
+
+        mv.addObject("user", user);
+        mv.setViewName("instructor/instructor-home");
+        return mv;
+    }
 }
