@@ -14,3 +14,12 @@ spring:
 
   thymeleaf:
     cache: false
+
+server:
+  servlet:
+    session:
+      timeout: 24h
+      cookie:
+        http-only: true
+        secure: false
+        same-site: lax

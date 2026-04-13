@@ -6,6 +6,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class PageController {
 
+    @GetMapping("/access-denied")
+    public String accessDeniedPage() {
+        return "common/access-denied";
+    }
+
     @GetMapping("/student")
     public String studentPage() {
         return "student/student-home";
