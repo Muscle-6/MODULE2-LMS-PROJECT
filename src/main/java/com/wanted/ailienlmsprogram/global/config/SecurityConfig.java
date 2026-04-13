@@ -12,6 +12,9 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
+
 
 @Configuration
 @RequiredArgsConstructor
@@ -41,7 +44,8 @@ public class SecurityConfig {
         http
                 .authenticationProvider(authenticationProvider())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/login", "/signup", "/access-denied").permitAll()
+                        .requestMatchers("/", "/login", "/signup", "/access-denied", "/continents", "/continents/*").permitAll()
+                        .requestMatchers("/continents/*/posts", "/courses/*").authenticated()
                         .requestMatchers("/student/**").hasRole("STUDENT")
                         .requestMatchers("/instructor/**").hasRole("INSTRUCTOR")
                         .requestMatchers("/admin/**").hasRole("ADMIN")
@@ -61,10 +65,13 @@ public class SecurityConfig {
                         .permitAll()
                 )
                 .logout(logout -> logout
-                        .logoutUrl("/logout")
+                        .logoutRequestMatcher(
+                                PathPatternRequestMatcher.withDefaults().matcher(HttpMethod.GET, "/logout")
+                        )
                         .logoutSuccessUrl("/")
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID")
+                        .permitAll()
                 )
                 .sessionManagement(session -> session
                         .invalidSessionUrl("/login?expired=true")

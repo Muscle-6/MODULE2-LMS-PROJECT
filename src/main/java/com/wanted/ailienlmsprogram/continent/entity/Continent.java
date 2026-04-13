@@ -5,8 +5,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
-
 @Entity
 @Table(name = "CONTINENT")
 @Getter
@@ -16,15 +14,15 @@ public class Continent {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "대륙번호")
+    @Column(name = "continent_id")
     private Long continentId;
 
-    @Column(name = "대륙명", nullable = false)
+    @Column(name = "name", nullable = false, unique = true, length = 100)
     private String continentName;
 
-    @Column(name = "설명")
+    @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
-    @Column(name = "썸네일URL")
+    @Column(name = "thumbnail_url", length = 500)
     private String thumbnailUrl;
 }

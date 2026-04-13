@@ -17,34 +17,32 @@ public interface ContinentRepository extends JpaRepository<Continent, Long> {
     );
 
     @Query(value = """
-        SELECT
-            c.강좌번호 AS courseId,
-            c.강좌제목 AS courseTitle,
-            c.가격 AS price,
-            m.이름 AS instructorName
-        FROM COURSE c
-        JOIN MEMBER m
-          ON c.강사번호 = m.회원번호
-        WHERE c.대륙번호 = :continentId
-          AND c.공개상태 = 'PUBLISHED'
-        ORDER BY c.등록일시 DESC, c.강좌번호 DESC
-        """, nativeQuery = true)
+            SELECT
+                c.course_id AS courseId,
+                c.title AS courseTitle,
+                c.price AS price,
+                m.name AS instructorName
+            FROM COURSE c
+            JOIN MEMBER m ON c.instructor_id = m.member_id
+            WHERE c.continent_id = :continentId
+              AND c.status = 'PUBLISHED'
+            ORDER BY c.created_at DESC, c.course_id DESC
+            """, nativeQuery = true)
     List<ContinentCourseSummary> findPublishedCoursesByContinentId(@Param("continentId") Long continentId);
 
     @Query(value = """
-        SELECT
-            p.게시글번호 AS postId,
-            p.제목 AS title,
-            m.이름 AS writerName,
-            p.공지여부 AS notice,
-            p.작성일시 AS createdAt
-        FROM CONTINENT_POST p
-        JOIN MEMBER m
-          ON p.작성자번호 = m.회원번호
-        WHERE p.대륙번호 = :continentId
-          AND p.삭제여부 = false
-        ORDER BY p.공지여부 DESC, p.작성일시 DESC, p.게시글번호 DESC
-        LIMIT 10
-        """, nativeQuery = true)
+            SELECT
+                p.post_id AS postId,
+                p.title AS title,
+                m.name AS writerName,
+                p.is_notice AS notice,
+                p.created_at AS createdAt
+            FROM CONTINENT_POST p
+            JOIN MEMBER m ON p.author_id = m.member_id
+            WHERE p.continent_id = :continentId
+              AND p.is_deleted = false
+            ORDER BY p.is_notice DESC, p.created_at DESC, p.post_id DESC
+            LIMIT 10
+            """, nativeQuery = true)
     List<ContinentPostSummary> findTop10PostsByContinentId(@Param("continentId") Long continentId);
 }
