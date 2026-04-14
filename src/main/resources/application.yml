@@ -1,8 +1,8 @@
 spring:
   datasource:
     url: jdbc:mysql://localhost:3306/module02_lms
-    username: Alien
-    password: Alien
+    username: module02
+    password: module02
 
   jpa:
     hibernate:
