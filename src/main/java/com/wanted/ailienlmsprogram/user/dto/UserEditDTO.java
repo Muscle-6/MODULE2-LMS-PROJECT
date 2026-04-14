@@ -2,19 +2,18 @@ package com.wanted.ailienlmsprogram.user.dto;
 
 import lombok.*;
 
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
 @ToString
-public class UserDTO {
-    private String loginId;
-    private String password;
-    private String email;
+public class UserEditDTO {
+
     private String name;
     private String phone;
+    private String email;
     private String profileImageUrl;
-    private MemberRole role;
-    private MemberRank rank;
     private String introduction;
+
+
 }

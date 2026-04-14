@@ -2,9 +2,9 @@ package com.wanted.ailienlmsprogram.user.dto;
 
 public enum MemberRank {
 
-    REPTILIAN("파충류"),
+    REPTILIAN("랩틸리언"),
     MINERVAL("미네르발"),
-    NOVICE("초보자");
+    NOVICE("노비스");
 
     private final String displayName;
 
