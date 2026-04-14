@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html class="dark" lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module02 LMS - 수강 바구니</title>
+
+    <!-- CSRF (Ajax 요청용) -->
+    <meta name="_csrf"        th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <!-- 토스페이먼츠 JS SDK v2 -->
+    <script src="https://js.tosspayments.com/v2/standard"></script>
+
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "ow-orange": "#FF9C00",
+                        "ow-orange-hover": "#FFB84D",
+                        "ow-blue": "#00B4FF",
+                        "ow-dark": "#1D2127",
+                        "ow-panel": "rgba(29, 33, 39, 0.85)",
+                    },
+                    fontFamily: {
+                        "ow": ["Oswald", "sans-serif"],
+                        "body": ["Noto Sans KR", "sans-serif"],
+                    }
+                },
+            },
+        }
+    </script>
+
+    <style>
+        body { font-family: 'Noto Sans KR', sans-serif; background-color: #0b0e14; color: #F0F0F0; }
+        .bg-sci-fi {
+            position: fixed; inset: 0; z-index: -3;
+            background-image: radial-gradient(circle at 30% 50%, rgba(0,0,0,.2) 0%, rgba(0,0,0,.9) 100%),
+                              url("https://images.unsplash.com/photo-1541701494587-cb58502866ab?q=80&w=2070&auto=format&fit=crop");
+            background-size: cover; background-position: center;
+        }
+        .bg-overlay {
+            position: fixed; inset: 0; z-index: -2;
+            background: linear-gradient(90deg, rgba(11,14,20,1) 0%, rgba(11,14,20,.8) 30%, transparent 100%);
+        }
+        .ow-font-italic { font-family: 'Oswald', sans-serif; font-style: italic; text-transform: uppercase; }
+        .ow-card {
+            background: rgba(29,33,39,.6); backdrop-filter: blur(15px);
+            border: 1px solid rgba(255,255,255,.1); border-left: 6px solid rgba(255,255,255,.2);
+            clip-path: polygon(0 0,100% 0,100% calc(100% - 16px),calc(100% - 16px) 100%,0 100%);
+            transition: all .2s ease;
+        }
+        .ow-card.selected { border-left-color: #FF9C00; background: rgba(40,45,55,.9); }
+        .ow-card:hover { background: rgba(40,45,55,.95); }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24; vertical-align: middle; }
+
+        /* 체크박스 커스텀 스타일 */
+        .cart-checkbox {
+            appearance: none; -webkit-appearance: none;
+            width: 20px; height: 20px; flex-shrink: 0;
+            border: 2px solid rgba(255,255,255,.3); border-radius: 3px;
+            cursor: pointer; transition: all .15s ease;
+            position: relative;
+        }
+        .cart-checkbox:checked {
+            background-color: #FF9C00; border-color: #FF9C00;
+        }
+        .cart-checkbox:checked::after {
+            content: ''; position: absolute;
+            left: 5px; top: 2px; width: 6px; height: 10px;
+            border: 2px solid #000; border-top: none; border-left: none;
+            transform: rotate(45deg);
+        }
+        .cart-checkbox:hover { border-color: #FF9C00; }
+    </style>
+</head>
+
+<body class="min-h-screen relative">
+
+<div class="bg-sci-fi"></div>
+<div class="bg-overlay"></div>
+
+<header class="fixed top-0 left-0 right-0 z-50 flex justify-between items-start p-6 pointer-events-none">
+    <div class="pointer-events-auto">
+        <h1 class="ow-font-italic text-5xl font-bold text-white tracking-wider drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">
+            <span class="text-ow-orange">MODULE02</span> LMS
+        </h1>
+        <p class="font-body text-xs text-gray-400 tracking-widest mt-1">ALIEN UNIVERSE LEARNING PLATFORM</p>
+    </div>
+
+    <div class="pointer-events-auto flex items-stretch bg-white text-black rounded-sm shadow-[0_5px_20px_rgba(0,0,0,0.6)] overflow-hidden" th:if="${loginMember != null}">
+        <div class="bg-gray-200 px-4 py-2 flex items-center justify-center border-r border-gray-300">
+            <span class="material-symbols-outlined text-gray-700 text-4xl">account_circle</span>
+        </div>
+        <div class="px-5 py-1 flex flex-col justify-center min-w-[140px]">
+            <span class="ow-font-italic font-bold text-xl leading-tight uppercase" th:text="${loginMember.name}">PLAYER</span>
+            <span class="font-body text-[11px] text-gray-600 font-bold tracking-wider" th:text="|RANK: ${loginMember.role}|">RANK</span>
+        </div>
+        <a th:href="@{/logout}" class="bg-ow-orange hover:bg-ow-orange-hover px-5 flex items-center justify-center transition-colors group cursor-pointer border-l border-orange-400">
+            <span class="material-symbols-outlined text-white group-hover:scale-110 transition-transform text-2xl">logout</span>
+        </a>
+    </div>
+</header>
+
+<main class="min-h-screen max-w-5xl mx-auto px-6 pt-36 pb-40">
+
+    <div class="mb-8 flex items-center justify-between">
+        <h2 class="ow-font-italic text-4xl font-bold text-white tracking-wide flex items-center gap-3">
+            <span class="text-ow-orange">></span>
+            CART <span class="text-gray-600 text-xl font-normal">// 수강 바구니</span>
+        </h2>
+        <a th:href="@{/student}" class="font-body text-sm text-gray-400 hover:text-ow-orange transition-colors">
+            &larr; 학생 홈
+        </a>
+    </div>
+
+    <!-- 알림 메시지 -->
+    <div th:if="${successMsg}" class="mb-6 p-4 bg-green-900/40 border border-green-500/40 text-green-300 font-body text-sm rounded"
+         th:text="${successMsg}"></div>
+    <div th:if="${errorMsg}" class="mb-6 p-4 bg-red-900/40 border border-red-500/40 text-red-300 font-body text-sm rounded"
+         th:text="${errorMsg}"></div>
+
+    <!-- 빈 바구니 -->
+    <div th:if="${#lists.isEmpty(cartItems)}" class="ow-card p-16 text-center">
+        <span class="material-symbols-outlined text-6xl text-gray-600 mb-4 block">shopping_cart</span>
+        <p class="ow-font-italic text-2xl text-gray-500">CART IS EMPTY</p>
+        <p class="font-body text-sm text-gray-600 mt-2">대륙 탐색에서 강좌를 담아보십시오.</p>
+    </div>
+
+    <!-- 강좌 목록 -->
+    <div th:if="${!#lists.isEmpty(cartItems)}">
+
+        <!-- 전체 선택 헤더 -->
+        <div class="flex items-center gap-4 px-2 mb-3">
+            <input type="checkbox" id="select-all" class="cart-checkbox"/>
+            <label for="select-all" class="font-body text-sm text-gray-400 cursor-pointer select-none">
+                전체 선택
+            </label>
+        </div>
+
+        <!-- 강좌 카드 목록 -->
+        <div class="flex flex-col gap-3 mb-6" id="cart-list">
+            <div th:each="item : ${cartItems}"
+                 class="ow-card p-5 flex items-center gap-5 cart-item-row"
+                 th:data-cart-id="${item.cartId}"
+                 th:data-price="${item.price}">
+
+                <!-- 체크박스 -->
+                <input type="checkbox"
+                       class="cart-checkbox item-checkbox"
+                       th:data-cart-id="${item.cartId}"
+                       th:data-price="${item.price}"/>
+
+                <!-- 강좌 정보 -->
+                <div class="flex-1 min-w-0">
+                    <p class="ow-font-italic text-xl text-white truncate" th:text="${item.courseTitle}">강좌명</p>
+                    <p class="font-body text-sm text-gray-400 mt-1">
+                        <span class="material-symbols-outlined text-xs mr-1">person</span>
+                        <span th:text="${item.instructorName}">강사명</span>
+                    </p>
+                </div>
+
+                <!-- 가격 -->
+                <div class="text-right flex-shrink-0 w-28">
+                    <p class="ow-font-italic text-2xl text-ow-blue font-bold"
+                       th:text="${#numbers.formatInteger(item.price, 3, 'COMMA')} + '원'">0원</p>
+                </div>
+
+                <!-- 삭제 버튼 -->
+                <form th:action="@{/student/cart/{id}/delete(id=${item.cartId})}" method="post" class="flex-shrink-0">
+                    <button type="submit"
+                            class="ow-font-italic text-xs px-4 py-2 border border-gray-600 hover:border-red-500 hover:text-red-400 text-gray-500 transition-colors cursor-pointer whitespace-nowrap">
+                        삭제
+                    </button>
+                </form>
+
+            </div>
+        </div>
+
+        <!-- 하단 고정 결제 패널 -->
+        <div class="fixed bottom-0 left-0 right-0 z-40 pointer-events-none">
+            <div class="max-w-5xl mx-auto px-6 pb-6 pointer-events-auto">
+                <div class="ow-card p-6 flex items-center justify-between gap-6" style="border-left-color: #FF9C00;">
+
+                    <div class="flex-1">
+                        <p class="font-body text-xs text-gray-500 mb-1">선택된 강좌</p>
+                        <p class="ow-font-italic text-sm text-gray-300">
+                            <span id="selected-count">0개</span>
+                        </p>
+                    </div>
+
+                    <div class="text-center">
+                        <p class="font-body text-xs text-gray-500 mb-1">결제 금액</p>
+                        <p class="ow-font-italic text-3xl font-bold text-ow-orange" id="selected-total">0원</p>
+                    </div>
+
+                    <div class="flex items-center gap-3">
+                        <button id="toss-checkout-btn"
+                                disabled
+                                class="ow-font-italic text-base px-10 py-4 bg-ow-orange text-white font-bold tracking-widest transition-all cursor-not-allowed opacity-40"
+                                style="clip-path: polygon(0 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%);">
+                            선택 결제 &gt;
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</main>
+
+<!-- Thymeleaf → JavaScript 변수 주입 -->
+<script th:inline="javascript">
+    const TOSS_CLIENT_KEY  = /*[[${tossClientKey}]]*/ '';
+    const CUSTOMER_KEY     = /*[[|member_${loginMember.memberId}|]]*/ '';
+    const CUSTOMER_NAME    = /*[[${loginMember.name}]]*/ '';
+    const CUSTOMER_EMAIL   = /*[[${loginMember.email}]]*/ '';
+    const CSRF_TOKEN       = document.querySelector('meta[name="_csrf"]')?.content ?? '';
+    const CSRF_HEADER      = document.querySelector('meta[name="_csrf_header"]')?.content ?? 'X-CSRF-TOKEN';
+</script>
+
+<script>
+    // ── 선택 상태 관리 ────────────────────────────────────────────────────────
+
+    function getSelectedItems() {
+        return Array.from(document.querySelectorAll('.item-checkbox:checked'));
+    }
+
+    function updateSummary() {
+        const checked = getSelectedItems();
+        const total   = checked.reduce((sum, cb) => sum + parseInt(cb.dataset.price, 10), 0);
+        const count   = checked.length;
+
+        document.getElementById('selected-count').textContent = count + '개 강좌';
+        document.getElementById('selected-total').textContent = total.toLocaleString('ko-KR') + '원';
+
+        const btn = document.getElementById('toss-checkout-btn');
+        if (count > 0) {
+            btn.disabled = false;
+            btn.classList.remove('opacity-40', 'cursor-not-allowed');
+            btn.classList.add('hover:bg-ow-orange-hover', 'cursor-pointer');
+        } else {
+            btn.disabled = true;
+            btn.classList.add('opacity-40', 'cursor-not-allowed');
+            btn.classList.remove('hover:bg-ow-orange-hover', 'cursor-pointer');
+        }
+
+        // 카드 테두리 강조
+        document.querySelectorAll('.cart-item-row').forEach(row => {
+            const cb = row.querySelector('.item-checkbox');
+            row.classList.toggle('selected', cb.checked);
+        });
+
+        // 전체 선택 체크박스 상태 동기화
+        const all  = document.querySelectorAll('.item-checkbox');
+        const allChecked = count === all.length && all.length > 0;
+        document.getElementById('select-all').checked = allChecked;
+    }
+
+    // 전체 선택/해제
+    document.getElementById('select-all').addEventListener('change', function() {
+        document.querySelectorAll('.item-checkbox').forEach(cb => {
+            cb.checked = this.checked;
+        });
+        updateSummary();
+    });
+
+    // 개별 체크박스 변경
+    document.querySelectorAll('.item-checkbox').forEach(cb => {
+        cb.addEventListener('change', updateSummary);
+    });
+
+    // ── 토스페이먼츠 결제 ─────────────────────────────────────────────────────
+
+    document.getElementById('toss-checkout-btn').addEventListener('click', async function() {
+        const cartIds = getSelectedItems().map(cb => parseInt(cb.dataset.cartId, 10));
+
+        if (cartIds.length === 0) return;
+
+        // 버튼 로딩 상태
+        this.textContent = '결제 준비 중...';
+        this.disabled = true;
+
+        try {
+            // STEP 1: 주문 정보 생성 (orderId, amount, orderName)
+            const prepRes = await fetch('/student/cart/toss/prepare', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    [CSRF_HEADER]: CSRF_TOKEN
+                },
+                body: JSON.stringify({ cartIds })
+            });
+
+            if (!prepRes.ok) {
+                const err = await prepRes.json().catch(() => ({}));
+                alert(err.error ?? '결제 준비 중 오류가 발생했습니다.');
+                this.textContent = '선택 결제 >';
+                this.disabled = false;
+                return;
+            }
+
+            const { orderId, amount, orderName } = await prepRes.json();
+
+            // STEP 2: 토스페이먼츠 결제창 열기
+            const tossPayments = TossPayments(TOSS_CLIENT_KEY);
+            const payment = tossPayments.payment({ customerKey: CUSTOMER_KEY });
+
+            await payment.requestPayment({
+                method: 'CARD',
+                amount: { currency: 'KRW', value: amount },
+                orderId: orderId,
+                orderName: orderName,
+                successUrl: window.location.origin + '/student/cart/payment/success',
+                failUrl:    window.location.origin + '/student/cart/payment/fail',
+                customerEmail: CUSTOMER_EMAIL,
+                customerName:  CUSTOMER_NAME,
+            });
+
+        } catch (e) {
+            // SDK 에러 (사용자 취소 포함)
+            if (e.code !== 'USER_CANCEL') {
+                alert('결제 중 오류가 발생했습니다: ' + (e.message ?? e));
+            }
+            this.textContent = '선택 결제 >';
+            this.disabled = getSelectedItems().length === 0;
+        }
+    });
+</script>
+
+</body>
+</html>
