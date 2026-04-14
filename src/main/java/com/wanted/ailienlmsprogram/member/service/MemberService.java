@@ -37,11 +37,12 @@ public class MemberService {
         member.setRole(Member.MemberRole.STUDENT);
         member.setAccountStatus(Member.AccountStatus.ACTIVE);
 
-        // 정책 반영
+        // 첫 회원가입 등급
         member.setRank(Member.MemberRank.REPTILIAN);
 
-        member.setCreatedAt(LocalDateTime.now());
-        member.setUpdatedAt(LocalDateTime.now());
+        LocalDateTime now = LocalDateTime.now();
+        member.setCreatedAt(now);
+        member.setUpdatedAt(now);
 
         memberRepository.save(member);
     }
@@ -52,8 +53,11 @@ public class MemberService {
                 .orElseThrow(() -> new IllegalArgumentException("회원이 존재하지 않습니다."));
 
         LocalDateTime now = LocalDateTime.now();
+
+        // 로그인 시점에는 승급 없음, 강등만 판단
         applyRankPolicy(member, now);
 
+        // 관리자 조회 및 다음 로그인 기준 시점 갱신
         member.setLastLoginAt(now);
         member.setUpdatedAt(now);
     }
@@ -61,19 +65,21 @@ public class MemberService {
     private void applyRankPolicy(Member member, LocalDateTime now) {
         LocalDateTime lastLoginAt = member.getLastLoginAt();
 
-        // 첫 로그인 또는 이전 로그인 기록이 없으면 기본 등급 유지
+        // 첫 로그인이라면 강등 없이 현재 등급 유지
         if (lastLoginAt == null) {
             return;
         }
 
         long inactiveDays = Duration.between(lastLoginAt, now).toDays();
 
+        // 7일 이상 미로그인 -> NOVICE
         if (inactiveDays >= 7) {
             member.setRank(Member.MemberRank.NOVICE);
             return;
         }
 
-        if (inactiveDays >= 3 && member.getRank() == Member.MemberRank.REPTILIAN) {
+        // 3일 이상 7일 미만 미로그인 -> MINERVAL
+        if (inactiveDays >= 3) {
             member.setRank(Member.MemberRank.MINERVAL);
         }
     }
