@@ -19,9 +19,8 @@ public class UserController {
     public ModelAndView studentProfile(ModelAndView mv,
                                        @AuthenticationPrincipal CustomUserDetails userDetails) {
 
-        // loginId 꺼냄 -> 추후 CustomUserDetails 에 getMemberId() 추가되면 변경 예정
-        String loginId = userDetails.getUsername();
-        UserDTO user = userService.findUserByLoginId(loginId);
+        Long memberId = userDetails.getMember().getMemberId();
+        UserDTO user = userService.findUserById(memberId);  // memberId 로 조회
 
         mv.addObject("user", user);
         mv.setViewName("student/profile");
@@ -32,12 +31,11 @@ public class UserController {
     public ModelAndView instructorProfile(ModelAndView mv,
                                           @AuthenticationPrincipal CustomUserDetails userDetails) {
 
-        // loginId 꺼냄 -> 추후 CustomUserDetails 에 getMemberId() 추가되면 변경 예정
-        String loginId = userDetails.getUsername();
-        UserDTO user = userService.findUserByLoginId(loginId);
+        Long memberId = userDetails.getMember().getMemberId();
+        UserDTO user = userService.findUserById(memberId);  // memberId 로 조회
 
         mv.addObject("user", user);
-        mv.setViewName("instructor/instructor-home");
+        mv.setViewName("instructor/profile");
         return mv;
     }
 }

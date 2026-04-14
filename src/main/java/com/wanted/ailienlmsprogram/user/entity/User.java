@@ -29,7 +29,7 @@ public class User {
     @Column(name = "password", nullable = false, length = 255)
     private String password;
 
-    @Column(name = "name", nullable = false, length = 50)
+    @Column(name = "member_name", nullable = false, length = 50)
     private String name;
 
     @Column(name = "phone", length = 20)
@@ -39,11 +39,11 @@ public class User {
     private String profileImageUrl;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "role", nullable = false)
+    @Column(name = "member_role", nullable = false)
     private MemberRole role;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
+    @Column(name = "member_status", nullable = false)
     private AccountStatus status;
 
     @Column(name = "introduction", columnDefinition = "TEXT")
@@ -59,7 +59,7 @@ public class User {
     private LocalDateTime deletedAt;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "rank")
+    @Column(name = "member_rank")
     private MemberRank rank;
 
     @Column(name = "last_login_at")

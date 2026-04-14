@@ -147,8 +147,8 @@
         <div class="flex items-center gap-4 pb-4 border-b border-white/10">
             <span class="material-symbols-outlined text-4xl text-ow-orange">badge</span>
             <div>
-                <h2 class="ow-font-italic text-4xl font-bold text-white">OPERATIVE PROFILE</h2>
-                <p class="font-body text-xs text-gray-500 tracking-widest mt-1">// 요원 신상 정보 조회</p>
+                <h2 class="ow-font-italic text-4xl font-bold text-white">내 정보</h2>
+                <p class="font-body text-xs text-gray-500 tracking-widest mt-1">// 내 프로필 정보</p>
             </div>
         </div>
 
@@ -178,35 +178,35 @@
 
                 <!-- 아이디 -->
                 <div class="flex flex-col gap-1">
-                    <label class="ow-font-italic text-[10px] text-ow-orange tracking-widest">OPERATIVE ID</label>
+                    <label class="ow-font-italic text-[10px] text-ow-orange tracking-widest">아이디</label>
                     <p class="font-body text-base text-white border-b border-white/10 pb-2"
                        th:text="${user.loginId}">-</p>
                 </div>
 
                 <!-- 이름 -->
                 <div class="flex flex-col gap-1">
-                    <label class="ow-font-italic text-[10px] text-ow-orange tracking-widest">CODENAME</label>
+                    <label class="ow-font-italic text-[10px] text-ow-orange tracking-widest">이름</label>
                     <p class="font-body text-base text-white border-b border-white/10 pb-2"
                        th:text="${user.name}">-</p>
                 </div>
 
                 <!-- 이메일 -->
                 <div class="flex flex-col gap-1">
-                    <label class="ow-font-italic text-[10px] text-ow-orange tracking-widest">COMM CHANNEL</label>
+                    <label class="ow-font-italic text-[10px] text-ow-orange tracking-widest">이메일</label>
                     <p class="font-body text-base text-white border-b border-white/10 pb-2"
                        th:text="${user.email}">-</p>
                 </div>
 
                 <!-- 전화번호 -->
                 <div class="flex flex-col gap-1">
-                    <label class="ow-font-italic text-[10px] text-ow-orange tracking-widest">SIGNAL FREQUENCY</label>
+                    <label class="ow-font-italic text-[10px] text-ow-orange tracking-widest">전화번호</label>
                     <p class="font-body text-base text-white border-b border-white/10 pb-2"
                        th:text="${user.phone != null ? user.phone : '-'}">-</p>
                 </div>
 
                 <!-- 자기소개 (2칸 차지) -->
                 <div class="flex flex-col gap-1 md:col-span-2">
-                    <label class="ow-font-italic text-[10px] text-ow-orange tracking-widest">OPERATIVE BIO</label>
+                    <label class="ow-font-italic text-[10px] text-ow-orange tracking-widest">자기소개</label>
                     <p class="font-body text-sm text-gray-300 border-b border-white/10 pb-2 leading-relaxed"
                        th:text="${user.introduction != null ? user.introduction : '자기소개가 없습니다.'}">-</p>
                 </div>
@@ -219,7 +219,7 @@
                class="ow-font-italic bg-ow-orange hover:bg-ow-orange-hover text-black font-bold px-8 py-3 text-sm tracking-widest flex items-center gap-2 transition-colors"
                style="clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);">
                 <span class="material-symbols-outlined text-base">edit</span>
-                EDIT PROFILE
+                수정
             </a>
         </div>
 

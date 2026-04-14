@@ -12,10 +12,8 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-    public UserDTO findUserByLoginId(String loginId) {
-        // 추후 CustomUserDetails 에 getMemberId() 추가되면
-        // findByLoginId(loginId) → findById(memberId) 로 변경 예정
-        User user = userRepository.findByLoginId(loginId)
+    public UserDTO findUserById(Long memberId) {
+        User user = userRepository.findById(memberId)
                 .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다"));
 
         UserDTO dto = new UserDTO();
