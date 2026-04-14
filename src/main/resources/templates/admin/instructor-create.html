@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>강사 계정 생성</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #0b1020;
+            color: #f5f7ff;
+            margin: 0;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 720px;
+            margin: 0 auto;
+            background: #151c33;
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.35);
+        }
+
+        h1 {
+            margin-top: 0;
+        }
+
+        .desc {
+            color: #b8c2e0;
+            margin-bottom: 24px;
+        }
+
+        .alert {
+            padding: 12px 16px;
+            border-radius: 10px;
+            margin-bottom: 16px;
+        }
+
+        .alert-error {
+            background: #3a1620;
+            color: #ffb3c1;
+        }
+
+        .field {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid #39456f;
+            background: #0f1529;
+            color: white;
+            box-sizing: border-box;
+        }
+
+        .error {
+            margin-top: 6px;
+            font-size: 14px;
+            color: #ff9cae;
+        }
+
+        .actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 18px;
+            border-radius: 10px;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn-primary {
+            background: #ff8f3d;
+            color: #111;
+        }
+
+        .btn-secondary {
+            background: #2d375b;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>강사 계정 생성</h1>
+    <p class="desc">
+        관리자가 강사 기본 계정을 먼저 생성합니다.
+        전화번호, 소개, 프로필 이미지는 이후 강사 개인 정보 수정에서 입력합니다.
+    </p>
+
+    <div th:if="${errorMessage}" class="alert alert-error" th:text="${errorMessage}"></div>
+
+    <form th:action="@{/admin/instructors/new}" th:object="${request}" method="post">
+        <div class="field">
+            <label for="loginId">아이디</label>
+            <input id="loginId" type="text" th:field="*{loginId}">
+            <div class="error" th:if="${#fields.hasErrors('loginId')}" th:errors="*{loginId}"></div>
+        </div>
+
+        <div class="field">
+            <label for="email">이메일</label>
+            <input id="email" type="email" th:field="*{email}">
+            <div class="error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+        </div>
+
+        <div class="field">
+            <label for="password">비밀번호</label>
+            <input id="password" type="password" th:field="*{password}">
+            <div class="error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+        </div>
+
+        <div class="field">
+            <label for="name">이름</label>
+            <input id="name" type="text" th:field="*{name}">
+            <div class="error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+        </div>
+
+        <div class="actions">
+            <button type="submit" class="btn btn-primary">강사 계정 생성</button>
+            <a th:href="@{/admin}" class="btn btn-secondary">관리자 홈으로</a>
+        </div>
+    </form>
+</div>
+</body>
+</html>
