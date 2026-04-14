@@ -4,6 +4,7 @@ import com.wanted.ailienlmsprogram.user.dto.AccountStatus;
 import com.wanted.ailienlmsprogram.user.dto.MemberRank;
 import com.wanted.ailienlmsprogram.user.dto.MemberRole;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -13,6 +14,7 @@ import java.time.LocalDateTime;
 @Table(name = "MEMBER")
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
 public class User {
 
     @Id
@@ -64,4 +66,21 @@ public class User {
 
     @Column(name = "last_login_at")
     private LocalDateTime lastLoginAt;
+
+    public User editUserInfo(String name, String phone, String email, String profileImageUrl, String introduction) {
+        this.name = name;
+        this.phone = phone;
+        this.email = email;
+        this.profileImageUrl = profileImageUrl;
+        this.introduction = introduction;
+
+        return this;
+    }
+
+    public User builder(){
+        return new User(memberId, loginId, email, password,
+                name, phone, profileImageUrl, role, status,
+                introduction, createdAt, updatedAt, deletedAt,
+                rank, lastLoginAt);
+    }
 }

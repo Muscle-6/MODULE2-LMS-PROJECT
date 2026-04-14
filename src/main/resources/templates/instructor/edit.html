@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html class="dark" lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module02 LMS - 내 정보 수정</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#99f7ff",
+                        "on-primary-container": "#00555a",
+                        "secondary": "#c97cff",
+                        "on-secondary-container": "#fff5ff",
+                        "error": "#ff716c",
+                        "on-surface": "#ecedf6",
+                        "surface-container": "#161a21",
+                        "surface-container-highest": "#22262f",
+                        "outline-variant": "#45484f",
+                    },
+                    fontFamily: {
+                        "headline": ["Space Grotesk"],
+                        "body": ["Inter"],
+                        "label": ["Space Grotesk"]
+                    }
+                },
+            },
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0b0e14;
+            color: #ecedf6;
+            background-image:
+                radial-gradient(circle at 50% 50%, rgba(153, 247, 255, 0.05) 0%, transparent 50%),
+                url("data:image/svg+xml,%3Csvg width='400' height='400' viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M10 10L50 50M350 350L390 390' stroke='rgba(153, 247, 255, 0.1)' stroke-width='0.5'/%3E%3Ccircle cx='100' cy='100' r='1' fill='rgba(255,255,255,0.2)'/%3E%3Ccircle cx='300' cy='200' r='1' fill='rgba(255,255,255,0.3)'/%3E%3C/svg%3E");
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        /* 수정 가능 input */
+        .cy-input {
+            background: #0d1117 !important;
+            border: 1px solid rgba(153, 247, 255, 0.2) !important;
+            border-radius: 8px !important;
+            color: #ecedf6 !important;
+            transition: all 0.2s;
+            width: 100%;
+            padding: 8px 12px;
+            font-size: 0.95rem;
+            font-family: 'Inter', sans-serif;
+        }
+        .cy-input:focus {
+            outline: none !important;
+            border-color: #99f7ff !important;
+            box-shadow: 0 0 0 2px rgba(153, 247, 255, 0.15) !important;
+            background: #0d1117 !important;
+        }
+        .cy-input::placeholder {
+            color: rgba(236, 237, 246, 0.3) !important;
+        }
+        /* 수정 불가 input */
+        .cy-input-disabled {
+            background: #080b10 !important;
+            border: 1px dashed rgba(153, 247, 255, 0.1) !important;
+            border-radius: 8px !important;
+            color: #4a5568 !important;
+            width: 100%;
+            padding: 8px 12px;
+            font-size: 0.95rem;
+            cursor: not-allowed;
+            font-family: 'Inter', sans-serif;
+        }
+        /* 프로필 이미지 업로드 */
+        .profile-upload-wrap {
+            position: relative;
+            cursor: pointer;
+        }
+        .profile-upload-wrap:hover .profile-overlay {
+            opacity: 1;
+        }
+        .profile-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.65);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.2s;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen">
+
+<!-- 헤더 -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-6 h-16 bg-slate-950/40 backdrop-blur-xl shadow-[0_0_20px_rgba(153,247,255,0.1)] border-b border-cyan-400/10">
+    <div class="flex items-center gap-8">
+        <span class="text-2xl font-bold tracking-tighter text-cyan-400 drop-shadow-[0_0_8px_rgba(153,247,255,0.6)] font-headline">
+            MODULE02 LMS
+        </span>
+        <span class="hidden md:inline text-xs font-label text-slate-400 tracking-widest uppercase">
+            우주/외계인 세계관 학습 플랫폼 (강사 사령부)
+        </span>
+    </div>
+    <div class="flex items-center gap-4">
+        <div class="flex items-center gap-4" th:if="${loginMember != null}">
+            <div class="text-right hidden sm:block mr-2">
+                <span class="text-xs font-label tracking-widest text-cyan-400"
+                      th:text="|${loginMember.name} 님|"></span>
+                <span class="text-[10px] text-slate-500 font-label tracking-tight ml-1"
+                      th:text="|(${loginMember.role})|"></span>
+            </div>
+            <div class="w-px h-4 bg-outline-variant/30 hidden sm:block"></div>
+            <a th:href="@{/logout}"
+               class="flex items-center gap-1 text-slate-400 hover:text-error transition-colors text-xs font-label">
+                <span class="material-symbols-outlined text-sm">power_settings_new</span>
+                로그아웃
+            </a>
+        </div>
+    </div>
+</header>
+
+<!-- 사이드바 -->
+<aside class="fixed left-0 top-16 bottom-0 flex flex-col z-40 bg-slate-950/80 backdrop-blur-lg w-64 shadow-[4px_0_24px_rgba(0,0,0,0.5)] bg-gradient-to-r from-slate-900 to-slate-950 hidden md:flex border-r border-cyan-400/5">
+
+    <div class="p-6 border-b border-outline-variant/10" th:if="${loginMember != null}">
+        <div class="flex items-center gap-3">
+            <div class="h-10 w-10 rounded-lg bg-cyan-400/10 flex items-center justify-center border border-cyan-400/20">
+                <span class="material-symbols-outlined text-cyan-400"
+                      style="font-variation-settings: 'FILL' 1;">satellite_alt</span>
+            </div>
+            <div>
+                <p class="text-xs font-label tracking-widest text-cyan-400"
+                   th:text="${loginMember.name}">OPERATIVE</p>
+                <p class="text-[10px] text-slate-500 font-label tracking-tight"
+                   th:text="|ROLE: ${loginMember.role}|">ROLE</p>
+            </div>
+        </div>
+    </div>
+
+    <nav class="flex-1 py-4">
+        <a th:href="@{/instructor/profile}"
+           class="flex items-center gap-4 text-slate-400 hover:text-cyan-400 hover:bg-cyan-400/5 py-3 px-6 transition-colors font-label">
+            <span class="material-symbols-outlined text-sm">arrow_back</span>
+            <span class="text-sm tracking-wide">내 정보로 돌아가기</span>
+        </a>
+        <a th:href="@{/instructor/profile}"
+           class="flex items-center gap-4 text-cyan-400 bg-cyan-400/10 border-r-4 border-cyan-400 py-3 px-6 shadow-[inset_0_0_15px_rgba(0,241,254,0.2)] font-label">
+            <span class="material-symbols-outlined">edit</span>
+            <span class="text-sm tracking-wide">내 정보 수정</span>
+        </a>
+        <a th:href="@{/instructor/lectures}"
+           class="flex items-center gap-4 text-slate-400 hover:text-cyan-400 hover:bg-cyan-400/5 py-3 px-6 transition-colors font-label">
+            <span class="material-symbols-outlined">library_books</span>
+            <span class="text-sm tracking-wide">강의 관리</span>
+        </a>
+    </nav>
+
+    <div class="p-6 border-t border-outline-variant/10 hidden md:block">
+        <div class="w-full bg-primary/5 border border-primary/20 text-primary/50 py-3 rounded-lg font-label text-xs tracking-widest text-center flex items-center justify-center gap-2">
+            <span class="material-symbols-outlined text-sm animate-pulse">radar</span>
+            COMMAND ONLINE
+        </div>
+    </div>
+</aside>
+
+<!-- 메인 -->
+<main class="md:ml-64 pt-24 px-6 md:px-12 pb-12">
+    <div class="max-w-4xl">
+
+        <!-- 페이지 타이틀 -->
+        <div class="mb-8">
+            <h1 class="text-3xl md:text-4xl font-headline font-bold text-on-surface tracking-tight mb-2">
+                내 정보 수정
+            </h1>
+            <p class="text-slate-400 text-sm font-body">
+                수정 가능한 항목만 변경할 수 있습니다.
+            </p>
+        </div>
+
+        <!-- 수정 폼 -->
+        <form th:action="@{/instructor/profile/edit}" method="post" enctype="multipart/form-data">
+            <div class="bg-surface-container/60 backdrop-blur-xl rounded-2xl border border-outline-variant/20 p-6 md:p-8 shadow-lg shadow-cyan-500/5 overflow-hidden relative">
+                <div class="absolute -top-10 -right-10 w-40 h-40 bg-primary/10 rounded-full blur-3xl"></div>
+                <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-secondary/10 rounded-full blur-3xl"></div>
+
+                <div class="relative z-10 flex flex-col md:flex-row gap-8 items-start">
+
+                    <!-- 프로필 이미지 업로드 -->
+                    <div class="flex flex-col items-center gap-3 flex-shrink-0">
+                        <div class="profile-upload-wrap w-28 h-28 rounded-xl bg-cyan-400/10 border-2 border-cyan-400/30 overflow-hidden shadow-[0_0_20px_rgba(153,247,255,0.15)]"
+                             onclick="document.getElementById('profileImageFile').click()">
+
+                            <img id="profilePreview"
+                                 th:if="${user.profileImageUrl != null}"
+                                 th:src="${user.profileImageUrl}"
+                                 alt="프로필 이미지"
+                                 class="w-full h-full object-cover"/>
+                            <span id="profileDefault"
+                                  th:classappend="${user.profileImageUrl != null} ? 'hidden' : ''"
+                                  class="material-symbols-outlined text-6xl text-cyan-400/50 flex items-center justify-center w-full h-full"
+                                  style="font-variation-settings: 'FILL' 1;">account_circle</span>
+
+                            <div class="profile-overlay">
+                                <span class="material-symbols-outlined text-cyan-400 text-2xl">photo_camera</span>
+                                <span class="text-cyan-400 text-[10px] mt-1 font-label">클릭하여 변경</span>
+                            </div>
+                        </div>
+
+                        <input type="file"
+                               id="profileImageFile"
+                               name="profileImageFile"
+                               accept="image/*"
+                               class="hidden"
+                               onchange="previewImage(event)"/>
+
+                        <div class="text-center">
+                            <p class="text-xs font-label tracking-widest text-cyan-400"
+                               th:text="${user.role != null ? user.role.displayName : 'UNKNOWN'}">ROLE</p>
+                        </div>
+                        <p class="font-body text-[10px] text-slate-500 text-center">이미지를 클릭하여<br/>프로필 사진 변경</p>
+                    </div>
+
+                    <!-- 입력 폼 -->
+                    <div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-6 w-full">
+
+                        <!-- 아이디 (수정 불가) -->
+                        <div class="flex flex-col gap-1">
+                            <label class="text-[10px] font-label tracking-widest text-slate-500 flex items-center gap-2">
+                                아이디
+                                <span class="normal-case font-body text-[9px] bg-cyan-400/5 text-slate-500 border border-cyan-400/10 px-2 py-0.5 rounded-full">수정 불가</span>
+                            </label>
+                            <input type="text"
+                                   class="cy-input-disabled"
+                                   th:value="${user.loginId}"
+                                   disabled/>
+                        </div>
+
+                        <!-- 이름 (수정 가능) -->
+                        <div class="flex flex-col gap-1">
+                            <label class="text-[10px] font-label tracking-widest text-cyan-400">이름</label>
+                            <input type="text"
+                                   name="name"
+                                   class="cy-input"
+                                   th:value="${user.name}"
+                                   placeholder="이름을 입력하세요"/>
+                        </div>
+
+                        <!-- 이메일 (수정 가능) -->
+                        <div class="flex flex-col gap-1">
+                            <label class="text-[10px] font-label tracking-widest text-slate-500 ">이메일</label>
+                            <input type="text"
+                                   name="email"
+                                   class="cy-input"
+                                   th:value="${user.email}"
+                                   placeholder="이메일을 입력하세요"/>
+                        </div>
+
+                        <!-- 전화번호 (수정 가능) -->
+                        <div class="flex flex-col gap-1">
+                            <label class="text-[10px] font-label tracking-widest text-cyan-400">전화번호</label>
+                            <input type="text"
+                                   name="phone"
+                                   class="cy-input"
+                                   th:value="${user.phone != null ? user.phone : ''}"
+                                   placeholder="전화번호를 입력하세요"/>
+                        </div>
+
+                        <!-- 자기소개 (수정 가능) -->
+                        <div class="flex flex-col gap-1 md:col-span-2">
+                            <label class="text-[10px] font-label tracking-widest text-cyan-400">자기소개</label>
+                            <textarea name="introduction"
+                                      rows="4"
+                                      class="cy-input"
+                                      placeholder="자기소개를 입력하세요"
+                                      th:text="${user.introduction != null ? user.introduction : ''}"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 버튼 -->
+                <div class="relative z-10 flex justify-end gap-3 mt-8">
+                    <a th:href="@{/instructor/profile}"
+                       class="flex items-center gap-2 px-6 py-3 rounded-xl bg-slate-800/50 border border-outline-variant/30 text-slate-400 hover:text-white hover:border-outline-variant/60 transition-all text-sm font-label tracking-wide">
+                        <span class="material-symbols-outlined text-base">close</span>
+                        취소
+                    </a>
+                    <button type="submit"
+                            class="flex items-center gap-2 px-6 py-3 rounded-xl bg-cyan-400/10 border border-cyan-400/30 text-cyan-400 hover:bg-cyan-400/20 hover:border-cyan-400/50 transition-all text-sm font-label tracking-wide shadow-[0_0_15px_rgba(153,247,255,0.1)]">
+                        <span class="material-symbols-outlined text-base">save</span>
+                        저장
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</main>
+
+<!-- 배경 효과 -->
+<div class="fixed inset-0 pointer-events-none -z-10">
+    <div class="absolute top-1/4 left-1/4 w-[400px] h-[400px] bg-primary/5 rounded-full blur-[120px]"></div>
+    <div class="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-secondary/5 rounded-full blur-[150px]"></div>
+</div>
+
+<script>
+    function previewImage(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            const defaultIcon = document.getElementById('profileDefault');
+            if (defaultIcon) defaultIcon.style.display = 'none';
+
+            let preview = document.getElementById('profilePreview');
+            if (preview) {
+                preview.src = e.target.result;
+            } else {
+                const img = document.createElement('img');
+                img.id = 'profilePreview';
+                img.src = e.target.result;
+                img.alt = '프로필 이미지';
+                img.className = 'w-full h-full object-cover';
+                document.querySelector('.profile-upload-wrap').prepend(img);
+            }
+        };
+        reader.readAsDataURL(file);
+    }
+</script>
+
+</body>
+</html>

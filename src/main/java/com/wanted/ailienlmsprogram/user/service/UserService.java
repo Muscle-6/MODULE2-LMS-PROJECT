@@ -1,22 +1,32 @@
 package com.wanted.ailienlmsprogram.user.service;
 
-import com.wanted.ailienlmsprogram.user.dto.UserDTO;
+import com.wanted.ailienlmsprogram.user.dto.UserFindDTO;
+import com.wanted.ailienlmsprogram.user.dto.UserEditDTO;
 import com.wanted.ailienlmsprogram.user.entity.User;
 import com.wanted.ailienlmsprogram.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
+    private final ResourceLoader resourceLoader;
 
-    public UserDTO findUserById(Long memberId) {
+    public UserFindDTO findUserById(Long memberId) {
         User user = userRepository.findById(memberId)
-                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다"));
+                .orElseThrow(RuntimeException::new);
 
-        UserDTO dto = new UserDTO();
+        UserFindDTO dto = new UserFindDTO();
         dto.setLoginId(user.getLoginId());
         dto.setEmail(user.getEmail());
         dto.setName(user.getName());
@@ -26,5 +36,60 @@ public class UserService {
         dto.setRank(user.getRank());
         dto.setIntroduction(user.getIntroduction());
         return dto;
+    }
+
+    @Transactional
+    public void editUserProfile(Long memberId, UserEditDTO request, MultipartFile profileImageFile) throws IOException {
+
+        User user = userRepository.findById(memberId)
+                                  .orElseThrow(RuntimeException::new);
+
+        // 이미지 처리
+        String profileImageUrl;
+        if (profileImageFile != null && !profileImageFile.isEmpty()) {
+            profileImageUrl = saveProfileImage(profileImageFile); // 새 이미지 저장
+        } else {
+            profileImageUrl = user.getProfileImageUrl(); // 기존 URL 유지
+        }
+
+        user.editUserInfo(
+                request.getName(),
+                request.getPhone(),
+                request.getEmail(),
+                profileImageUrl,
+                request.getIntroduction()
+        );
+
+        userRepository.save(user);
+    }
+
+    private String saveProfileImage(MultipartFile file) throws IOException {
+
+        // 1. 저장 경로 설정
+        Resource resource = resourceLoader.getResource("classpath:static/images/profile");
+        String filePath;
+
+        // 2. 폴더 없으면 생성
+        if (!resource.exists()) {
+            String root = "src/main/resources/static/images/profile";
+            File dir = new File(root);
+            dir.mkdirs();
+            filePath = dir.getAbsolutePath();
+        } else {
+            filePath = resource.getFile().getAbsolutePath();
+        }
+
+        // 3. 원본 파일명에서 확장자 추출
+        String originFileName = file.getOriginalFilename();
+        String ext = originFileName.substring(originFileName.lastIndexOf("."));
+
+        // 4. UUID 로 중복되지 않는 파일명 생성
+        String savedName = UUID.randomUUID().toString().replace("-", "") + ext;
+
+        // 5. 파일 저장
+        file.transferTo(new File(filePath + "/" + savedName));
+
+        // 6. DB 에 저장할 경로 반환
+        return "/images/profile/" + savedName;
     }
 }
