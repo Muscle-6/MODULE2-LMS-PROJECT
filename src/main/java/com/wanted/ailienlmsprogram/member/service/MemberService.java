@@ -57,7 +57,7 @@ public class MemberService {
         // 로그인 시점에는 승급 없음, 강등만 판단
         applyRankPolicy(member, now);
 
-        // 관리자 조회 및 다음 로그인 기준 시점 갱신
+        // 다음 로그인 기준 시점 갱신
         member.setLastLoginAt(now);
         member.setUpdatedAt(now);
     }
@@ -78,8 +78,8 @@ public class MemberService {
             return;
         }
 
-        // 3일 이상 7일 미만 미로그인 -> MINERVAL
-        if (inactiveDays >= 3) {
+        // 3일 이상 7일 미만 미로그인 -> MINERVAL (REPTILIAN 등급에만 적용)
+        if (inactiveDays >= 3 && member.getRank() == Member.MemberRank.REPTILIAN) {
             member.setRank(Member.MemberRank.MINERVAL);
         }
     }

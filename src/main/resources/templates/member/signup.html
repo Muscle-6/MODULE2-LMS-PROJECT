@@ -2,187 +2,118 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>학생 회원가입</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>회원가입</title>
     <style>
-        * {
-            box-sizing: border-box;
-        }
-
         body {
-            margin: 0;
             font-family: Arial, sans-serif;
-            background: linear-gradient(135deg, #0b1020, #131a33);
-            color: #f5f7ff;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 24px;
+            background: #f4f7fb;
+            margin: 0;
+            padding: 0;
         }
 
-        .signup-container {
-            width: 100%;
-            max-width: 520px;
-            background: rgba(18, 26, 51, 0.95);
-            border-radius: 18px;
-            padding: 36px 32px;
-            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+        .wrap {
+            width: 520px;
+            margin: 50px auto;
+            background: white;
+            padding: 32px;
+            border-radius: 16px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.08);
         }
 
-        .title {
-            margin: 0 0 8px;
-            font-size: 30px;
-            font-weight: 700;
+        h1 {
+            margin-top: 0;
+            margin-bottom: 24px;
             text-align: center;
-        }
-
-        .subtitle {
-            margin: 0 0 28px;
-            text-align: center;
-            color: #b8c2e0;
-            font-size: 14px;
-            line-height: 1.5;
-        }
-
-        .alert {
-            margin-bottom: 18px;
-            padding: 12px 14px;
-            border-radius: 10px;
-            font-size: 14px;
-            line-height: 1.5;
-        }
-
-        .alert-error {
-            background: #3a1620;
-            color: #ffb3c1;
-            border: 1px solid #6c2535;
         }
 
         .field {
-            margin-bottom: 18px;
+            margin-bottom: 16px;
         }
 
         .field label {
             display: block;
             margin-bottom: 8px;
-            font-size: 14px;
-            font-weight: 700;
+            font-weight: bold;
         }
 
-        .field input {
+        .field input,
+        .field select,
+        .field textarea {
             width: 100%;
-            padding: 12px 14px;
-            border-radius: 10px;
-            border: 1px solid #39456f;
-            background: #0f1529;
-            color: #ffffff;
-            font-size: 14px;
-            outline: none;
+            padding: 12px;
+            box-sizing: border-box;
+            border: 1px solid #d0d7e2;
+            border-radius: 8px;
         }
 
-        .field input:focus {
-            border-color: #ff8f3d;
-            box-shadow: 0 0 0 3px rgba(255, 143, 61, 0.18);
-        }
-
-        .hint {
-            margin-top: 8px;
-            font-size: 12px;
-            color: #9fb0da;
-            line-height: 1.5;
-        }
-
-        .error-text {
-            margin-top: 8px;
-            font-size: 13px;
-            color: #ff9cae;
-            line-height: 1.4;
-        }
-
-        .submit-btn {
+        .btn {
             width: 100%;
-            margin-top: 8px;
-            padding: 14px;
+            padding: 12px;
             border: none;
-            border-radius: 12px;
-            background: #ff8f3d;
-            color: #111827;
-            font-size: 15px;
-            font-weight: 700;
+            border-radius: 8px;
+            background: #2d4aa7;
+            color: white;
+            font-size: 16px;
             cursor: pointer;
         }
 
-        .submit-btn:hover {
-            filter: brightness(1.05);
-        }
-
-        .bottom-links {
+        .sub-links {
             margin-top: 18px;
-            display: flex;
-            justify-content: center;
-            gap: 14px;
-            flex-wrap: wrap;
-            font-size: 14px;
+            text-align: center;
         }
 
-        .bottom-links a {
-            color: #c8d4ff;
+        .sub-links a {
             text-decoration: none;
+            color: #2d4aa7;
+            margin: 0 8px;
         }
 
-        .bottom-links a:hover {
-            text-decoration: underline;
+        .error {
+            background: #ffe5e5;
+            color: #c62828;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 14px;
         }
     </style>
 </head>
 <body>
-<div class="signup-container">
-    <h1 class="title">학생 회원가입</h1>
-    <p class="subtitle">
-        Student Alien 계정을 생성합니다.<br>
-        아이디와 이메일은 중복될 수 없고, 비밀번호는 8자 이상 + 특수문자 1개 이상이어야 합니다.
-    </p>
+<div class="wrap">
+    <h1>회원가입</h1>
 
-    <!-- 서비스에서 던진 중복 오류 등 -->
-    <div th:if="${errorMessage}" class="alert alert-error" th:text="${errorMessage}"></div>
+    <div class="error" th:if="${errorMessage}" th:text="${errorMessage}"></div>
 
-    <form th:action="@{/signup}" th:object="${request}" method="post">
+    <form th:action="@{/signup}" method="post">
         <div class="field">
             <label for="loginId">아이디</label>
-            <input id="loginId" type="text" th:field="*{loginId}" placeholder="아이디를 입력하세요">
-            <div class="error-text" th:if="${#fields.hasErrors('loginId')}" th:errors="*{loginId}"></div>
+            <input type="text" id="loginId" name="loginId" required>
         </div>
+
 
         <div class="field">
             <label for="email">이메일</label>
-            <input id="email" type="email" th:field="*{email}" placeholder="example@email.com">
-            <div class="error-text" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+            <input type="email" id="email" name="email" required>
         </div>
 
         <div class="field">
             <label for="password">비밀번호</label>
-            <input id="password" type="password" th:field="*{password}" placeholder="비밀번호를 입력하세요">
-            <div class="hint">8자 이상, 특수문자 1개 이상 포함</div>
-            <div class="error-text" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+            <input type="password" id="password" name="password" required>
         </div>
 
         <div class="field">
             <label for="name">이름</label>
-            <input id="name" type="text" th:field="*{name}" placeholder="이름을 입력하세요">
-            <div class="error-text" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+            <input type="text" id="name" name="name" required>
         </div>
 
         <div class="field">
             <label for="phone">전화번호</label>
-            <input id="phone" type="text" th:field="*{phone}" placeholder="선택 입력">
-            <div class="error-text" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></div>
+            <input type="text" id="phone" name="phone">
         </div>
 
-        <button type="submit" class="submit-btn">회원가입</button>
+        <button type="submit" class="btn">회원가입</button>
     </form>
 
-    <div class="bottom-links">
+    <div class="sub-links">
         <a th:href="@{/login}">로그인으로</a>
         <a th:href="@{/}">메인으로</a>
     </div>
