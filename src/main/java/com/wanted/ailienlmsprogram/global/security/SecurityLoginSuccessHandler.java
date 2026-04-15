@@ -40,6 +40,6 @@ public class SecurityLoginSuccessHandler implements AuthenticationSuccessHandler
             return;
         }
 
-        response.sendRedirect("/student");
+        response.sendRedirect("/main");
     }
 }

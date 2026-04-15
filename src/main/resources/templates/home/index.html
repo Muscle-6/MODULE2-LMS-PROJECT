@@ -191,9 +191,7 @@
             </div>
             <h3 class="text-xl font-headline font-bold text-on-surface-variant">UNKNOWN SECTOR</h3>
             <p class="text-xs font-label tracking-widest text-slate-500"
-               th:text="${query != null and !#strings.isEmpty(query)}
-            ? '검색 결과에 해당하는 대륙이 없습니다.'
-            : '현재 발견된 대륙이 존재하지 않습니다.'">
+               th:text="${query != null and !#strings.isEmpty(query)} ? '검색 결과에 해당하는 대륙이 없습니다.' : '현재 발견된 대륙이 존재하지 않습니다.'">
                 현재 발견된 대륙이 존재하지 않습니다.
             </p>
         </div>
@@ -234,7 +232,7 @@
                     th:text="${continent.continentName}">대륙명</h3>
 
                 <p class="text-on-surface-variant text-sm mb-6 font-body flex-grow"
-                   th:text="${continent.description}">대륙 설명</p>
+                   th:text="${continent.continentDescription}">대륙 설명</p>
 
                 <a th:href="@{/continents/{continentId}(continentId=${continent.continentId})}"
                    class="block text-center w-full py-3 font-label text-xs tracking-[0.2em] font-bold rounded-lg hover:scale-[1.02] active:scale-95 transition-all"
