@@ -2,13 +2,18 @@ package com.wanted.ailienlmsprogram.community.entity;
 
 import com.wanted.ailienlmsprogram.member.entity.Member;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "continent_post") // 테이블은 DB에 있는 거 그대로 쓰되, 자바 이름만 바꾸는 거예요!
+@Table(name = "continent_post")
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
+
 public class CommunityPost {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

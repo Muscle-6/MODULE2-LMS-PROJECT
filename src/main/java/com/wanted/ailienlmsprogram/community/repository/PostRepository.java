@@ -7,6 +7,6 @@ import java.util.List;
 
 @Repository
 public interface PostRepository extends JpaRepository<CommunityPost, Long> {
-    // 쿼리 메서드: 대륙 ID로 찾고, 삭제 안 된 것만!
+    //쿼리 메서드 .... 대륙 ID로 찾고, 삭제안된것만
     List<CommunityPost> findByContinentIdAndPostIsDeletedFalse(Long continentId);
 }

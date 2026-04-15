@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>새 글 쓰기 - Alien LMS</title>
+</head>
+<body style="background-color: #0b0e14; color: white; padding: 50px;">
+
+<div class="container">
+    <h1 style="color: #ff9d00;">> NEW POST // 새 글 작성</h1>
+    <p style="color: #888;">대륙 침공 작전을 기록하십시오.</p>
+    <hr style="border: 0.5px solid #333;">
+
+    <form th:action="@{/continents/{id}/posts/new(id=${continentId})}"
+          th:object="${postCreateRequest}" method="post">
+
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; margin-bottom: 10px;">작전 제목</label>
+            <input type="text" th:field="*{postTitle}" placeholder="제목을 입력하세요"
+                   style="width: 100%; padding: 15px; background: #1a1d23; border: 1px solid #444; color: white; border-radius: 5px;" required>
+        </div>
+
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; margin-bottom: 10px;">세부 작전 내용</label>
+            <textarea th:field="*{postContent}" rows="10" placeholder="내용을 입력하세요"
+                      style="width: 100%; padding: 15px; background: #1a1d23; border: 1px solid #444; color: white; border-radius: 5px; resize: none;" required></textarea>
+        </div>
+
+        <div class="btn-group">
+            <button type="submit"
+                    style="padding: 12px 30px; background: #ff9d00; border: none; color: black; font-weight: bold; cursor: pointer; border-radius: 5px;">기록 완료</button>
+
+            <a th:href="@{/continents/{id}/posts(id=${continentId})}"
+               style="margin-left: 20px; color: #888; text-decoration: none;">후퇴(취소)</a>
+        </div>
+    </form>
+</div>
+
+</body>
+</html>

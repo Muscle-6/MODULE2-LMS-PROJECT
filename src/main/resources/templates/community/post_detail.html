@@ -35,7 +35,7 @@
   <div class="btn-area">
     <a th:href="@{/continents/{id}/posts(id=${post.continentId})}" class="btn btn-list">목록으로</a>
 
-    <a th:if="${session.loginMember != null && post.memberId == session.loginMember.memberId}"
+    <a th:if="${currentUserId != null and currentUserId == post.memberId}"
        th:href="@{/continents/posts/edit/{id}(id=${post.postId})}"
        class="btn">수정하기</a>
   </div>

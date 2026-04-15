@@ -50,8 +50,7 @@
   </div>
 
   <div style="margin-top: 20px; text-align: right;">
-    <a href="#" class="btn btn-write">새 글 쓰기</a>
-  </div>
+    <a th:href="@{/continents/{id}/posts/new(id=${continentId})}" class="btn btn-write">새 글 쓰기</a>  </div>
 </div>
 </body>
 </html>
