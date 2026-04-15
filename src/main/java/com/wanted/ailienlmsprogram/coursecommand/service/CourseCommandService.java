@@ -3,8 +3,9 @@ package com.wanted.ailienlmsprogram.coursecommand.service;
 import com.wanted.ailienlmsprogram.continent.entity.Continent;
 import com.wanted.ailienlmsprogram.continent.repository.ContinentRepository;
 import com.wanted.ailienlmsprogram.coursecommand.dao.CourseRepository;
-import com.wanted.ailienlmsprogram.coursecommand.dto.CourseCommandDTO;
 import com.wanted.ailienlmsprogram.coursecommand.dto.CourseDetailResponseDTO;
+import com.wanted.ailienlmsprogram.coursecommand.dto.CourseApplyDTO;
+import com.wanted.ailienlmsprogram.coursecommand.dto.CourseFindDTO;
 import com.wanted.ailienlmsprogram.coursecommand.entity.Course;
 import com.wanted.ailienlmsprogram.coursecommand.entity.CourseStatus;
 import com.wanted.ailienlmsprogram.user.entity.User;
@@ -21,6 +22,8 @@ import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -36,7 +39,7 @@ public class CourseCommandService {
 
 
     @Transactional
-    public void applyCourse(CourseCommandDTO request, Long memberId, MultipartFile thumbnailFile) throws IOException {
+    public void applyCourse(CourseApplyDTO request, Long memberId, MultipartFile thumbnailFile) throws IOException {
 
         Continent continent = continentRepository.getReferenceById(request.getContinentId());
         User instructor = userRepository.getReferenceById(memberId);
@@ -118,4 +121,69 @@ public class CourseCommandService {
                 .collect(Collectors.toList());
 
     }
+
+    public List<CourseFindDTO> findMyCourses(Long memberId, CourseStatus courseStatus) {
+
+        List<Course> courses = courseRepository.findByInstructor_MemberIdAndCourseStatus(memberId,courseStatus);
+        List<CourseFindDTO> result = new ArrayList<>();
+
+        for (Course course : courses) {
+            CourseFindDTO courseDTO = new CourseFindDTO();
+            courseDTO.setCourseId(course.getCourseId());
+            courseDTO.setCourseTitle(course.getCourseTitle());
+            courseDTO.setCourseDescription(course.getCourseDescription());
+            courseDTO.setContinent(course.getContinent().getContinentId());
+            courseDTO.setCoursePrice(course.getCoursePrice());
+            courseDTO.setCourseThumbnailUrl(course.getCourseThumbnailUrl());
+            courseDTO.setCourseStatus(course.getCourseStatus());
+            courseDTO.setCreatedAt(course.getCreatedAt());
+            result.add(courseDTO);
+        }
+
+        return result;
+    }
+
+    @Transactional
+    public void editMyCourse(MultipartFile thumbnailFile, Long courseId, CourseApplyDTO request) throws IOException {
+
+        Course course = courseRepository.findById(courseId)
+                                        .orElseThrow(RuntimeException::new);
+
+        Continent continent = continentRepository.getReferenceById(request.getContinentId());
+
+        String editThumbnailUrl;
+        if (thumbnailFile != null && !thumbnailFile.isEmpty()) {
+            editThumbnailUrl = saveThumbnail(thumbnailFile); // 새 이미지 저장
+        } else {
+            editThumbnailUrl = course.getCourseThumbnailUrl(); // 기존 URL 유지
+        }
+
+        course.editCourseInfo(
+                request.getCourseTitle(),
+                request.getCourseDescription(),
+                editThumbnailUrl,
+                request.getCoursePrice(),
+                continent
+
+        );
+    }
+
+    public CourseFindDTO findCourseById(Long courseId) {
+
+        Course course = courseRepository.findById(courseId)
+                .orElseThrow(RuntimeException::new);
+
+        CourseFindDTO courseDTO = new CourseFindDTO();
+        courseDTO.setCourseId(course.getCourseId());
+        courseDTO.setCourseTitle(course.getCourseTitle());
+        courseDTO.setCourseDescription(course.getCourseDescription());
+        courseDTO.setContinent(course.getContinent().getContinentId());
+        courseDTO.setCoursePrice(course.getCoursePrice());
+        courseDTO.setCourseThumbnailUrl(course.getCourseThumbnailUrl());
+        courseDTO.setCourseStatus(course.getCourseStatus());
+        courseDTO.setCreatedAt(course.getCreatedAt());
+
+        return courseDTO;
+    }
+
 }
