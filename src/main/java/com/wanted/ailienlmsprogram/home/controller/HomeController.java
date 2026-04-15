@@ -15,7 +15,7 @@ public class HomeController {
 
     @GetMapping("/")
     public String home(@RequestParam(required = false) String query, Model model) {
-        model.addAttribute("continents", continentService.searchContinents(query));
+        model.addAttribute("continents", continentService.findAllContinents(query));
         model.addAttribute("query", query);
         return "home/index";
     }
