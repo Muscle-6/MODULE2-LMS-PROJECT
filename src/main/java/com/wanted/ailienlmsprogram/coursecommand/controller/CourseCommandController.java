@@ -1,7 +1,10 @@
 package com.wanted.ailienlmsprogram.coursecommand.controller;
 
+import com.wanted.ailienlmsprogram.continent.dto.ContinentAllResponseDTO;
 import com.wanted.ailienlmsprogram.continent.entity.Continent;
 import com.wanted.ailienlmsprogram.continent.service.ContinentService;
+import com.wanted.ailienlmsprogram.coursecommand.dto.CourseCommandDTO;
+import com.wanted.ailienlmsprogram.coursecommand.dto.CourseDetailResponseDTO;
 import com.wanted.ailienlmsprogram.coursecommand.dto.CourseApplyDTO;
 import com.wanted.ailienlmsprogram.coursecommand.dto.CourseEditDTO;
 import com.wanted.ailienlmsprogram.coursecommand.dto.CourseFindDTO;
@@ -12,6 +15,8 @@ import com.wanted.ailienlmsprogram.global.security.CustomUserDetails;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,9 +37,9 @@ public class CourseCommandController {
 
     // 강좌 등록 페이지로 이동
     @GetMapping("/instructor/courses/apply")
-    public ModelAndView courseApplyPage(ModelAndView mv) {
+    public ModelAndView courseApplyPage(@RequestParam(value = "query", defaultValue = "") String query, ModelAndView mv) {
 
-        List<Continent> continents = continentService.findAllContinents();
+        List<ContinentAllResponseDTO> continents = continentService.findAllContinents(query);
         mv.addObject("continents", continents);
         mv.setViewName("course/apply");
 
@@ -52,6 +57,17 @@ public class CourseCommandController {
         courseCommandService.applyCourse(request,memberId,thumbnailFile);
 
         return "redirect:/instructor";
+    }
+
+    // 강좌 세부 조회
+    @GetMapping("/courses/{courseId}")
+    public String courseDetail(@PathVariable("courseId") Long courseId, Model model) {
+
+        CourseDetailResponseDTO course = courseCommandService.courseDetail(courseId);
+
+        model.addAttribute("course" ,course);
+
+        return "course/detail";
     }
 
     // 내 강좌 조회 기능

@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
-    <title th:text="${detail.continent.continentName} + ' 상세'">대륙 상세</title>
+    <title th:text="${continent.continentName} + ' 상세'">대륙 상세</title>
     <style>
         body {
             margin: 0;
@@ -133,71 +133,58 @@
 
     <div class="top-bar">
         <a th:href="@{/}">← 메인으로</a>
-        <a th:href="@{/login}">로그인</a>
+
+        <div class="auth-buttons">
+            <a sec:authorize="isAnonymous()" th:href="@{/login}">로그인</a>
+
+            <a sec:authorize="isAuthenticated()"
+               th:href="@{/logout}"
+               style="color: #ff5f5f; border: 1px solid #ff5f5f; padding: 10px 16px; border-radius: 8px; text-decoration: none;">
+                로그아웃
+            </a>
+        </div>
     </div>
 
     <section class="hero">
-        <h1 th:text="${detail.continent.continentName}">대륙명</h1>
-        <p th:text="${detail.continent.description}">대륙 설명</p>
+        <h1 th:text="${continent.continentName}">대륙명</h1>
+        <p th:text="${continent.continentDescription}">설명</p>
     </section>
 
     <section class="section">
         <h2>강좌 목록</h2>
 
-        <div class="course-list" th:if="${!#lists.isEmpty(detail.courses)}">
-            <div class="card" th:each="course : ${detail.courses}">
+        <div class="course-list" th:if="${!#lists.isEmpty(courses)}">
+            <div class="card" th:each="course : ${courses}">
                 <div class="card-left">
                     <h3 th:text="${course.courseTitle}">강좌명</h3>
-                    <p>
-                        강사 :
-                        <span th:text="${course.instructorName}">강사명</span>
-                    </p>
-                    <p class="price" th:text="${#numbers.formatInteger(course.price, 3, 'COMMA')} + '원'">가격</p>
+                    <p>강사 : <span th:text="${course.instructorName}">강사명</span></p>
+                    <p class="price" th:text="${#numbers.formatInteger(course.coursePrice, 1, 'COMMA')} + '원'">가격</p>
                 </div>
                 <div>
-                    <a class="btn"
-                       th:href="@{/courses/{courseId}(courseId=${course.courseId})}">
-                        강좌 세부
-                    </a>
+                    <a class="btn" th:href="@{/courses/{courseId}(courseId=${course.courseId})}">강좌 세부</a>
+
                 </div>
             </div>
         </div>
-
-        <p class="empty" th:if="${#lists.isEmpty(detail.courses)}">
-            현재 공개된 강좌가 없습니다.
-        </p>
-
-        <p class="login-guide">강좌 상세 및 수강 기능은 로그인 후 이용할 수 있습니다.</p>
+        <p class="empty" th:if="${#lists.isEmpty(courses)}">현재 공개된 강좌가 없습니다.</p>
     </section>
 
     <section class="section">
         <h2>대륙 게시판 TOP 10</h2>
 
-        <div class="post-list" th:if="${!#lists.isEmpty(detail.posts)}">
-            <div class="card" th:each="post : ${detail.posts}">
+        <div class="post-list" th:if="${!#lists.isEmpty(posts)}">
+            <div class="card" th:each="post : ${posts}">
                 <div class="card-left">
                     <h3>
                         <span class="notice-badge" th:if="${post.notice}">공지</span>
                         <span th:text="${post.title}">게시글 제목</span>
                     </h3>
-                    <p>
-                        작성자 :
-                        <span th:text="${post.writerName}">작성자명</span>
-                    </p>
+                    <p>작성자 : <span th:text="${post.writerName}">작성자명</span></p>
                     <p th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd HH:mm')}">작성일시</p>
                 </div>
             </div>
         </div>
-
-        <p class="empty" th:if="${#lists.isEmpty(detail.posts)}">
-            아직 게시글이 없습니다.
-        </p>
-
-        <a class="btn secondary"
-           th:href="@{/continents/{continentId}/posts(continentId=${detail.continent.continentId})}">
-            게시판 전체 보기
-        </a>
-        <p class="login-guide">게시글 전체 조회 및 작성 기능은 로그인 후 이용할 수 있습니다.</p>
+        <p class="empty" th:if="${#lists.isEmpty(posts)}">아직 게시글이 없습니다.</p>
     </section>
 
 </div>
