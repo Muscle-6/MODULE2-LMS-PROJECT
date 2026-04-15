@@ -2,7 +2,9 @@ package com.wanted.ailienlmsprogram.coursecommand.controller;
 
 import com.wanted.ailienlmsprogram.continent.entity.Continent;
 import com.wanted.ailienlmsprogram.continent.service.ContinentService;
-import com.wanted.ailienlmsprogram.coursecommand.dto.CourseCommandDTO;
+import com.wanted.ailienlmsprogram.coursecommand.dto.CourseApplyDTO;
+import com.wanted.ailienlmsprogram.coursecommand.dto.CourseFindDTO;
+import com.wanted.ailienlmsprogram.coursecommand.entity.CourseStatus;
 import com.wanted.ailienlmsprogram.coursecommand.service.CourseCommandService;
 import com.wanted.ailienlmsprogram.global.security.CustomUserDetails;
 import lombok.AllArgsConstructor;
@@ -25,6 +27,7 @@ public class CourseCommandController {
     private final ContinentService continentService;
     private final CourseCommandService courseCommandService;
 
+    // 강좌 등록 페이지로 이동
     @GetMapping("/instructor/courses/apply")
     public ModelAndView courseApplyPage(ModelAndView mv) {
 
@@ -35,8 +38,9 @@ public class CourseCommandController {
         return mv;
     }
 
+    // 강좌 등록 폼에 작성된 내용을 DB에 INSERT
     @PostMapping("instructor/courses/apply")
-    public String courseApply(@ModelAttribute CourseCommandDTO request,
+    public String courseApply(@ModelAttribute CourseApplyDTO request,
                               @RequestParam(value = "thumbnailFile", required = false) MultipartFile thumbnailFile,
                               @AuthenticationPrincipal
                               CustomUserDetails userDetails) throws IOException {
@@ -45,6 +49,21 @@ public class CourseCommandController {
         courseCommandService.applyCourse(request,memberId,thumbnailFile);
 
         return "redirect:/instructor";
+    }
+
+    // 내 강좌 조회 기능
+    @GetMapping("/instructor/courses")
+    public ModelAndView findMyCourses(ModelAndView mv,
+                                      @RequestParam CourseStatus courseStatus,
+                                      @AuthenticationPrincipal CustomUserDetails userDetails){
+        Long memberId = userDetails.getMember().getMemberId();
+        List<CourseFindDTO> courses = courseCommandService.findMyCourses(memberId,courseStatus);
+
+        mv.addObject("courses", courses);
+        mv.addObject("currentStatus", courseStatus);
+        mv.setViewName("course/find");
+
+        return mv;
     }
 
 }

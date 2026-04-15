@@ -3,7 +3,8 @@ package com.wanted.ailienlmsprogram.coursecommand.service;
 import com.wanted.ailienlmsprogram.continent.entity.Continent;
 import com.wanted.ailienlmsprogram.continent.repository.ContinentRepository;
 import com.wanted.ailienlmsprogram.coursecommand.dao.CourseRepository;
-import com.wanted.ailienlmsprogram.coursecommand.dto.CourseCommandDTO;
+import com.wanted.ailienlmsprogram.coursecommand.dto.CourseApplyDTO;
+import com.wanted.ailienlmsprogram.coursecommand.dto.CourseFindDTO;
 import com.wanted.ailienlmsprogram.coursecommand.entity.Course;
 import com.wanted.ailienlmsprogram.coursecommand.entity.CourseStatus;
 import com.wanted.ailienlmsprogram.user.entity.User;
@@ -18,6 +19,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -30,7 +33,7 @@ public class CourseCommandService {
     private final ResourceLoader resourceLoader;
 
     @Transactional
-    public void applyCourse(CourseCommandDTO request, Long memberId, MultipartFile thumbnailFile) throws IOException {
+    public void applyCourse(CourseApplyDTO request, Long memberId, MultipartFile thumbnailFile) throws IOException {
 
         Continent continent = continentRepository.getReferenceById(request.getContinentId());
         User instructor = userRepository.getReferenceById(memberId);
@@ -79,5 +82,24 @@ public class CourseCommandService {
         // 6. DB 에 저장할 경로 반환
         return "/images/profile/" + savedName;
 
+    }
+
+    public List<CourseFindDTO> findMyCourses(Long memberId, CourseStatus courseStatus) {
+
+        List<Course> courses = courseRepository.findByInstructor_MemberIdAndCourseStatus(memberId,courseStatus);
+        List<CourseFindDTO> result = new ArrayList<>();
+
+        for (Course course : courses) {
+            CourseFindDTO courseDTO = new CourseFindDTO();
+            courseDTO.setCourseTitle(course.getCourseTitle());
+            courseDTO.setCourseDescription(course.getCourseDescription());
+            courseDTO.setContinent(course.getContinent().getContinentId());
+            courseDTO.setCoursePrice(course.getCoursePrice());
+            courseDTO.setCourseStatus(course.getCourseStatus());
+            courseDTO.setCreatedAt(course.getCreatedAt());
+            result.add(courseDTO);
+        }
+
+        return result;
     }
 }
