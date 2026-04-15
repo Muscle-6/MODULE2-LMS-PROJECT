@@ -26,12 +26,11 @@ public class CourseCommandController {
     private final CourseCommandService courseCommandService;
 
     @GetMapping("/instructor/courses/apply")
-    public ModelAndView courseApplyPage(ModelAndView mv) {
-
-        List<Continent> continents = continentService.findAllContinents();
+    public ModelAndView courseApplyPage(@RequestParam(value = "query", defaultValue = "") String query, ModelAndView mv) {
+        List<ContinentAllResponseDTO> continents = continentService.findAllContinents(query);
         mv.addObject("continents", continents);
         mv.setViewName("course/apply");
-
+    
         return mv;
     }
 
