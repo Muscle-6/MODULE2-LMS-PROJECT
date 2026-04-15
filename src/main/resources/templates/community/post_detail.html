@@ -116,7 +116,8 @@
 
     <div class="comment-write" style="margin-bottom: 40px;">
         <form th:action="@{/posts/{postId}/comments(postId=${post.postId})}" method="post">
-            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+            <input type="hidden" th:name="_csrf" th:value="${_csrf?.token}" />
 
             <textarea name="content" required placeholder="따뜻한 댓글을 남겨주세요." ...
                       style="width: 100%; height: 100px; background: #121a35; color: white; border: 1px solid #3d4450; border-radius: 10px; padding: 15px; resize: none;"></textarea>
