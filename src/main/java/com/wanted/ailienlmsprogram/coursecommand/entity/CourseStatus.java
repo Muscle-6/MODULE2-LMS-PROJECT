@@ -1,4 +1,4 @@
-package com.wanted.ailienlmsprogram.course.entity;
+package com.wanted.ailienlmsprogram.coursecommand.entity;
 
 public enum CourseStatus {
 

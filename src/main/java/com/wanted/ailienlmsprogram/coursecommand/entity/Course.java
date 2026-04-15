@@ -1,4 +1,4 @@
-package com.wanted.ailienlmsprogram.course.entity;
+package com.wanted.ailienlmsprogram.coursecommand.entity;
 
 import com.wanted.ailienlmsprogram.continent.entity.Continent;
 import com.wanted.ailienlmsprogram.user.entity.User;
