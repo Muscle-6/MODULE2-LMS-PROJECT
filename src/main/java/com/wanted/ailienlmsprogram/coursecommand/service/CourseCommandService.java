@@ -4,6 +4,7 @@ import com.wanted.ailienlmsprogram.continent.entity.Continent;
 import com.wanted.ailienlmsprogram.continent.repository.ContinentRepository;
 import com.wanted.ailienlmsprogram.coursecommand.dao.CourseRepository;
 import com.wanted.ailienlmsprogram.coursecommand.dto.CourseApplyDTO;
+import com.wanted.ailienlmsprogram.coursecommand.dto.CourseEditDTO;
 import com.wanted.ailienlmsprogram.coursecommand.dto.CourseFindDTO;
 import com.wanted.ailienlmsprogram.coursecommand.entity.Course;
 import com.wanted.ailienlmsprogram.coursecommand.entity.CourseStatus;
@@ -91,15 +92,42 @@ public class CourseCommandService {
 
         for (Course course : courses) {
             CourseFindDTO courseDTO = new CourseFindDTO();
+            courseDTO.setCourseId(course.getCourseId());
             courseDTO.setCourseTitle(course.getCourseTitle());
             courseDTO.setCourseDescription(course.getCourseDescription());
             courseDTO.setContinent(course.getContinent().getContinentId());
             courseDTO.setCoursePrice(course.getCoursePrice());
+            courseDTO.setCourseThumbnailUrl(course.getCourseThumbnailUrl());
             courseDTO.setCourseStatus(course.getCourseStatus());
             courseDTO.setCreatedAt(course.getCreatedAt());
             result.add(courseDTO);
         }
 
         return result;
+    }
+
+    @Transactional
+    public CourseEditDTO editMyCourse(MultipartFile thumbnailFile, Long courseId, CourseApplyDTO request) throws IOException {
+
+        Course course = courseRepository.findById(courseId)
+                                        .orElseThrow(RuntimeException::new);
+
+        String editThumbnailUrl;
+        if (thumbnailFile != null && !thumbnailFile.isEmpty()) {
+            editThumbnailUrl = saveThumbnail(thumbnailFile); // 새 이미지 저장
+        } else {
+            editThumbnailUrl = course.getCourseThumbnailUrl(); // 기존 URL 유지
+        }
+
+        course.editCourseInfo(
+                request.getCourseTitle(),
+                request.getCourseDescription(),
+                editThumbnailUrl,
+                request.getCoursePrice(),
+                request.getContinentId()
+
+        );
+
+        return null;
     }
 }

@@ -23,11 +23,11 @@ public class Course {
 
     @ManyToOne
     @JoinColumn(name = "continent_id", nullable = false)
-    private Continent continent;
+    private Continent continentId;
 
     @ManyToOne
     @JoinColumn(name = "instructor_id", nullable = false)
-    private User instructor;
+    private User instructorId;
 
     @Column(name = "course_title", nullable = false, length = 200)
     private String courseTitle;
@@ -51,19 +51,14 @@ public class Course {
     // 수정 메서드
     public Course editCourseInfo(String courseTitle, String courseDescription,
                                   String courseThumbnailUrl, Integer coursePrice,
-                                  CourseStatus courseStatus) {
+                                  Continent continentId) {
         this.courseTitle = courseTitle;
         this.courseDescription = courseDescription;
         this.courseThumbnailUrl = courseThumbnailUrl;
         this.coursePrice = coursePrice;
-        this.courseStatus = courseStatus;
+        this.continentId = continentId;
         return this;
     }
 
-    // 빌더 메서드
-    public Course builder() {
-        return new Course(courseId, continent, instructor, courseTitle,
-                courseDescription, courseThumbnailUrl, coursePrice,
-                createdAt, courseStatus);
-    }
+
 }

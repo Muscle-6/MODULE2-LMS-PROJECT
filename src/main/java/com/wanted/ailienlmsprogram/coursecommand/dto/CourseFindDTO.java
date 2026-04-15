@@ -12,10 +12,12 @@ import java.time.LocalDateTime;
 @ToString
 public class CourseFindDTO {
 
+    private Long courseId;
     private String courseTitle;
     private Long continent;
     private String courseDescription;
     private Integer coursePrice;
+    private String courseThumbnailUrl;
     private CourseStatus courseStatus;
     private LocalDateTime createdAt;
 
