@@ -13,12 +13,14 @@ public interface PaymentItemRepository extends JpaRepository<PaymentItem, Long> 
     @Query("""
             SELECT new com.wanted.ailienlmsprogram.payment.dto.PaymentItemDetailResponse(
                 pi.paymentItemId,
-                pi.course.courseId,
-                pi.course.title,
+                c.courseId,
+                c.title,
                 pi.itemPriceAtPurchase,
-                pi.course.instructor.name
+                instr.name
             )
             FROM PaymentItem pi
+            JOIN pi.course c
+            LEFT JOIN c.instructor instr
             WHERE pi.payment.paymentId = :paymentId
             """)
     List<PaymentItemDetailResponse> findDetailsByPaymentId(@Param("paymentId") Long paymentId);

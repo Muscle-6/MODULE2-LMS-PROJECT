@@ -17,12 +17,14 @@ public interface CartRepository extends JpaRepository<Cart, Long> {
     @Query("""
             SELECT new com.wanted.ailienlmsprogram.payment.dto.CartItemResponse(
                 ca.cartId,
-                ca.course.courseId,
-                ca.course.title,
-                ca.course.price,
-                ca.course.instructor.name
+                c.courseId,
+                c.title,
+                c.price,
+                instr.name
             )
             FROM Cart ca
+            JOIN ca.course c
+            LEFT JOIN c.instructor instr
             WHERE ca.member.memberId = :memberId
             ORDER BY ca.createdAt DESC
             """)
@@ -31,8 +33,9 @@ public interface CartRepository extends JpaRepository<Cart, Long> {
     @Query(value = """
             SELECT COUNT(*)
             FROM ENROLLMENT
-            WHERE member_id = :memberId
-              AND course_id  = :courseId
+            WHERE member_id        = :memberId
+              AND course_id        = :courseId
+              AND enrollment_status = 'ACTIVE'
             """, nativeQuery = true)
     long countEnrollmentByMemberAndCourse(@Param("memberId") Long memberId,
                                           @Param("courseId") Long courseId);

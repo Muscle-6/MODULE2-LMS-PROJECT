@@ -5,10 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Module02 LMS - 수강 바구니</title>
 
-    <!-- CSRF (Ajax 요청용) -->
-    <meta name="_csrf"        th:content="${_csrf.token}"/>
-    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
-
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
@@ -222,8 +218,11 @@
     const CUSTOMER_KEY     = /*[[|member_${loginMember.memberId}|]]*/ '';
     const CUSTOMER_NAME    = /*[[${loginMember.name}]]*/ '';
     const CUSTOMER_EMAIL   = /*[[${loginMember.email}]]*/ '';
-    const CSRF_TOKEN       = document.querySelector('meta[name="_csrf"]')?.content ?? '';
-    const CSRF_HEADER      = document.querySelector('meta[name="_csrf_header"]')?.content ?? 'X-CSRF-TOKEN';
+
+    function getCsrfToken() {
+        const match = document.cookie.match(/(?:^|;\s*)XSRF-TOKEN=([^;]+)/);
+        return match ? decodeURIComponent(match[1]) : '';
+    }
 </script>
 
 <script>
@@ -294,7 +293,7 @@
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    [CSRF_HEADER]: CSRF_TOKEN
+                    'X-XSRF-TOKEN': getCsrfToken()
                 },
                 body: JSON.stringify({ cartIds })
             });
@@ -311,7 +310,7 @@
 
             // STEP 2: 토스페이먼츠 결제창 열기
             const tossPayments = TossPayments(TOSS_CLIENT_KEY);
-            const payment = tossPayments.payment({ customerKey: CUSTOMER_KEY });
+            const payment = tossPayments.payment({ customerKey: TossPayments.ANONYMOUS });
 
             await payment.requestPayment({
                 method: 'CARD',
@@ -326,8 +325,9 @@
 
         } catch (e) {
             // SDK 에러 (사용자 취소 포함)
+            console.error('[Toss Error]', JSON.stringify(e), e);
             if (e.code !== 'USER_CANCEL') {
-                alert('결제 중 오류가 발생했습니다: ' + (e.message ?? e));
+                alert('결제 중 오류가 발생했습니다: ' + (e.code ?? '') + ' ' + (e.message ?? e));
             }
             this.textContent = '선택 결제 >';
             this.disabled = getSelectedItems().length === 0;

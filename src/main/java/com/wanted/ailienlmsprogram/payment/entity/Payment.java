@@ -34,6 +34,10 @@ public class Payment {
     @Column(name = "payment_completed_at")
     private LocalDateTime paymentCompletedAt;
 
+    /** 토스페이먼츠 paymentKey — 환불(cancel) 호출 시 사용. 서버사이드 결제는 null. */
+    @Column(name = "toss_payment_key", length = 200)
+    private String tossPaymentKey;
+
     @OneToMany(mappedBy = "payment", fetch = FetchType.LAZY)
     private List<PaymentItem> items;
 }

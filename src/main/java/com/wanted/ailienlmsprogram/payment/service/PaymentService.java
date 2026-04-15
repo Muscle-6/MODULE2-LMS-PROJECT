@@ -1,5 +1,6 @@
 package com.wanted.ailienlmsprogram.payment.service;
 
+import com.wanted.ailienlmsprogram.course.entity.Course;
 import com.wanted.ailienlmsprogram.enrollment.service.EnrollmentService;
 import com.wanted.ailienlmsprogram.member.entity.Member;
 import com.wanted.ailienlmsprogram.payment.client.TossPaymentClient;
@@ -95,7 +96,6 @@ public class PaymentService {
             item.setItemPriceAtPurchase(cart.getCourse().getPrice());
             paymentItemRepository.save(item);
 
-            // TODO: EnrollmentService 구현 완료 후 실제 수강 등록 처리
             enrollmentService.enroll(member, cart.getCourse());
         }
 
@@ -104,16 +104,15 @@ public class PaymentService {
     }
 
     /**
-     * 토스페이먼츠 결제 확인 후 Payment/PaymentItem 레코드를 생성한다.
-     * orderId는 토스에서 검증된 값이므로 paymentOrderNo로 직접 사용한다.
+     * 토스페이먼츠 결제 확인.
+     * 1. 금액 위변조 검증 (DB 가격 합산 vs 클라이언트 전달 금액)
+     * 2. 토스 서버 confirm API 호출
+     * 3. Payment / PaymentItem 생성 + 수강 등록
      */
     @Transactional
     public Payment confirmTossPayment(String paymentKey, String orderId, long amount,
                                       List<Long> cartIds, Member member) {
-        // 1. 토스페이먼츠 서버 측 결제 확인
-        tossPaymentClient.confirm(paymentKey, orderId, amount);
-
-        // 2. 장바구니 항목 로드 및 소유권 검증
+        // 1. 장바구니 항목 로드 및 소유권 검증
         List<Cart> cartItems = cartRepository.findAllById(cartIds);
         if (cartItems.isEmpty()) {
             throw new IllegalArgumentException("결제할 강좌를 찾을 수 없습니다.");
@@ -125,17 +124,26 @@ public class PaymentService {
             throw new IllegalArgumentException("접근 권한이 없는 항목이 포함되어 있습니다.");
         }
 
-        // 3. Payment 생성 (orderId를 paymentOrderNo로 사용)
-        int totalPrice = cartItems.stream().mapToInt(c -> c.getCourse().getPrice()).sum();
+        // 2. 금액 위변조 검증 — DB 기준 가격 합산과 클라이언트 전달 금액 비교
+        int expectedAmount = cartItems.stream().mapToInt(c -> c.getCourse().getPrice()).sum();
+        if (expectedAmount != (int) amount) {
+            throw new IllegalArgumentException(
+                    "결제 금액이 일치하지 않습니다. (예상: " + expectedAmount + "원, 수신: " + amount + "원)");
+        }
 
+        // 3. 토스페이먼츠 서버 측 결제 확인 (금액 검증 통과 후 호출)
+        tossPaymentClient.confirm(paymentKey, orderId, amount);
+
+        // 4. Payment 생성
         Payment payment = new Payment();
         payment.setMember(member);
         payment.setPaymentOrderNo(orderId);
-        payment.setPaymentTotalPrice(totalPrice);
+        payment.setTossPaymentKey(paymentKey);
+        payment.setPaymentTotalPrice(expectedAmount);
         payment.setPaymentCompletedAt(LocalDateTime.now());
         paymentRepository.save(payment);
 
-        // 4. PaymentItem 생성 + 수강 등록
+        // 5. PaymentItem 생성 + 수강 등록
         for (Cart cart : cartItems) {
             PaymentItem item = new PaymentItem();
             item.setPayment(payment);
@@ -143,30 +151,52 @@ public class PaymentService {
             item.setItemPriceAtPurchase(cart.getCourse().getPrice());
             paymentItemRepository.save(item);
 
-            // TODO: EnrollmentService 구현 완료 후 실제 수강 등록 처리
             enrollmentService.enroll(member, cart.getCourse());
         }
 
-        // 5. 장바구니 비우기
+        // 6. 장바구니 비우기
         cartRepository.deleteAll(cartItems);
         return payment;
     }
 
+    /**
+     * 환불 요청.
+     * - Toss 결제: cancel API 호출 → APPROVED 저장 + 수강 취소
+     * - 서버사이드 결제: REQUESTED 저장 → 관리자 수동 승인 대기
+     */
     @Transactional
     public void requestRefund(Long paymentId, String refundReason, Member member) {
         Payment payment = paymentRepository.findByPaymentIdAndMemberMemberId(paymentId, member.getMemberId())
                 .orElseThrow(() -> new IllegalArgumentException("결제 내역이 존재하지 않거나 접근 권한이 없습니다."));
 
-        if (refundRepository.existsByPaymentPaymentIdAndRefundStatus(paymentId, Refund.RefundStatus.REQUESTED)) {
-            throw new IllegalArgumentException("이미 환불 요청이 진행 중입니다.");
+        if (refundRepository.findByPaymentPaymentId(paymentId).isPresent()) {
+            throw new IllegalArgumentException("이미 환불이 요청되었거나 처리된 결제입니다.");
         }
 
         Refund refund = new Refund();
         refund.setPayment(payment);
         refund.setMember(member);
         refund.setRefundReason(refundReason);
-        refund.setRefundStatus(Refund.RefundStatus.REQUESTED);
         refund.setRefundRequestedAt(LocalDateTime.now());
+
+        String tossPaymentKey = payment.getTossPaymentKey();
+
+        if (tossPaymentKey != null && !tossPaymentKey.isBlank()) {
+            // Toss cancel API 호출 (실패 시 예외 → 트랜잭션 롤백)
+            tossPaymentClient.cancel(tossPaymentKey, refundReason);
+            refund.setRefundStatus(Refund.RefundStatus.APPROVED);
+            refund.setRefundProcessedAt(LocalDateTime.now());
+
+            // 수강 취소
+            List<Course> courses = payment.getItems().stream()
+                    .map(PaymentItem::getCourse)
+                    .toList();
+            enrollmentService.unenroll(member, courses);
+        } else {
+            // 서버사이드 결제 → 관리자 수동 승인 대기
+            refund.setRefundStatus(Refund.RefundStatus.REQUESTED);
+        }
+
         refundRepository.save(refund);
     }
 }

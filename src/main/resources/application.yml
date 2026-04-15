@@ -16,8 +16,8 @@ spring:
     cache: false
 
 toss:
-  client-key: test_ck_placeholder_여기에_클라이언트키_입력
-  secret-key: test_sk_placeholder_여기에_시크릿키_입력
+  client-key: test_ck_AQ92ymxN34NMmQE699GyrajRKXvd
+  secret-key: test_sk_vZnjEJeQVxnX4wEzW1Nb8PmOoBN0
 
 server:
   servlet:
