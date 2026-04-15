@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html class="dark" lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module02 LMS - 결제 내역</title>
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "ow-orange": "#FF9C00",
+                        "ow-orange-hover": "#FFB84D",
+                        "ow-blue": "#00B4FF",
+                        "ow-dark": "#1D2127",
+                    },
+                    fontFamily: {
+                        "ow": ["Oswald", "sans-serif"],
+                        "body": ["Noto Sans KR", "sans-serif"],
+                    }
+                },
+            },
+        }
+    </script>
+
+    <style>
+        body { font-family: 'Noto Sans KR', sans-serif; background-color: #0b0e14; color: #F0F0F0; }
+        .bg-sci-fi {
+            position: fixed; inset: 0; z-index: -3;
+            background-image: radial-gradient(circle at 30% 50%, rgba(0,0,0,.2) 0%, rgba(0,0,0,.9) 100%),
+                              url("https://images.unsplash.com/photo-1541701494587-cb58502866ab?q=80&w=2070&auto=format&fit=crop");
+            background-size: cover; background-position: center;
+        }
+        .bg-overlay {
+            position: fixed; inset: 0; z-index: -2;
+            background: linear-gradient(90deg, rgba(11,14,20,1) 0%, rgba(11,14,20,.8) 30%, transparent 100%);
+        }
+        .ow-font-italic { font-family: 'Oswald', sans-serif; font-style: italic; text-transform: uppercase; }
+        .ow-card {
+            background: rgba(29,33,39,.6); backdrop-filter: blur(15px);
+            border: 1px solid rgba(255,255,255,.1); border-left: 6px solid rgba(255,255,255,.2);
+            clip-path: polygon(0 0,100% 0,100% calc(100% - 16px),calc(100% - 16px) 100%,0 100%);
+            transition: border-left-color .25s ease, background .25s ease;
+        }
+        .ow-card:hover { background: rgba(40,45,55,.95); border-left-color: #FF9C00; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24; vertical-align: middle; }
+    </style>
+</head>
+
+<body class="min-h-screen relative">
+
+<div class="bg-sci-fi"></div>
+<div class="bg-overlay"></div>
+
+<header class="fixed top-0 left-0 right-0 z-50 flex justify-between items-start p-6 pointer-events-none">
+    <div class="pointer-events-auto">
+        <h1 class="ow-font-italic text-5xl font-bold text-white tracking-wider drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">
+            <span class="text-ow-orange">MODULE02</span> LMS
+        </h1>
+        <p class="font-body text-xs text-gray-400 tracking-widest mt-1">ALIEN UNIVERSE LEARNING PLATFORM</p>
+    </div>
+
+    <div class="pointer-events-auto flex items-stretch bg-white text-black rounded-sm shadow-[0_5px_20px_rgba(0,0,0,0.6)] overflow-hidden" th:if="${loginMember != null}">
+        <div class="bg-gray-200 px-4 py-2 flex items-center justify-center border-r border-gray-300">
+            <span class="material-symbols-outlined text-gray-700 text-4xl">account_circle</span>
+        </div>
+        <div class="px-5 py-1 flex flex-col justify-center min-w-[140px]">
+            <span class="ow-font-italic font-bold text-xl leading-tight uppercase" th:text="${loginMember.name}">PLAYER</span>
+            <span class="font-body text-[11px] text-gray-600 font-bold tracking-wider" th:text="|RANK: ${loginMember.role}|">RANK</span>
+        </div>
+        <a th:href="@{/logout}" class="bg-ow-orange hover:bg-ow-orange-hover px-5 flex items-center justify-center transition-colors group cursor-pointer border-l border-orange-400">
+            <span class="material-symbols-outlined text-white group-hover:scale-110 transition-transform text-2xl">logout</span>
+        </a>
+    </div>
+</header>
+
+<main class="min-h-screen max-w-5xl mx-auto px-6 pt-36 pb-16">
+
+    <div class="mb-8 flex items-center justify-between">
+        <h2 class="ow-font-italic text-4xl font-bold text-white tracking-wide flex items-center gap-3">
+            <span class="text-ow-orange">></span>
+            PAYMENT LOG <span class="text-gray-600 text-xl font-normal">// 자원 소모 기록</span>
+        </h2>
+        <a th:href="@{/student}" class="font-body text-sm text-gray-400 hover:text-ow-orange transition-colors">
+            &larr; 학생 홈
+        </a>
+    </div>
+
+    <!-- 알림 -->
+    <div th:if="${successMsg}" class="mb-6 p-4 bg-green-900/40 border border-green-500/40 text-green-300 font-body text-sm rounded"
+         th:text="${successMsg}"></div>
+    <div th:if="${errorMsg}" class="mb-6 p-4 bg-red-900/40 border border-red-500/40 text-red-300 font-body text-sm rounded"
+         th:text="${errorMsg}"></div>
+
+    <!-- 결제 내역 없음 -->
+    <div th:if="${#lists.isEmpty(payments)}" class="ow-card p-16 text-center">
+        <span class="material-symbols-outlined text-6xl text-gray-600 mb-4 block">receipt_long</span>
+        <p class="ow-font-italic text-2xl text-gray-500">NO TRANSACTIONS</p>
+        <p class="font-body text-sm text-gray-600 mt-2">아직 결제 내역이 없습니다.</p>
+    </div>
+
+    <!-- 결제 목록 -->
+    <div th:if="${!#lists.isEmpty(payments)}" class="flex flex-col gap-4">
+        <div th:each="payment : ${payments}" class="ow-card p-6 flex items-center gap-5">
+
+            <!-- 아이콘 -->
+            <div class="flex-shrink-0">
+                <span class="material-symbols-outlined text-4xl text-gray-500">receipt_long</span>
+            </div>
+
+            <!-- 주문 정보 (클릭 시 상세 이동) -->
+            <a th:href="@{/student/payments/{id}(id=${payment.paymentId})}"
+               class="flex-1 min-w-0 hover:text-ow-orange transition-colors group">
+                <p class="ow-font-italic text-lg text-white group-hover:text-ow-orange transition-colors truncate"
+                   th:text="${payment.paymentOrderNo}">ORD-20260414-XXXXXXXX</p>
+                <p class="font-body text-sm text-gray-400 mt-1">
+                    <span th:text="${payment.itemCount} + '개 강좌'">0개 강좌</span>
+                    <span class="mx-2 text-gray-600">|</span>
+                    <span th:text="${#temporals.format(payment.paymentCompletedAt, 'yyyy-MM-dd HH:mm')}">날짜</span>
+                </p>
+            </a>
+
+            <!-- 결제 금액 -->
+            <div class="flex-shrink-0 text-right mr-2">
+                <p class="ow-font-italic text-2xl font-bold text-ow-blue"
+                   th:text="${#numbers.formatInteger(payment.paymentTotalPrice, 3, 'COMMA')} + '원'">0원</p>
+            </div>
+
+            <!-- 환불 영역 -->
+            <div class="flex-shrink-0 w-28 flex justify-end">
+
+                <!-- 환불 내역 없음 → 환불 요청 버튼 -->
+                <form th:if="${payment.refundStatus == null}"
+                      th:action="@{/student/payments/{id}/refund(id=${payment.paymentId})}"
+                      method="post"
+                      class="refund-form">
+                    <input type="hidden" name="refundReason" value=""/>
+                    <button type="submit"
+                            class="refund-btn ow-font-italic text-xs px-4 py-2 border border-red-500/60 hover:border-red-400 hover:bg-red-500/10 text-red-400 transition-colors cursor-pointer whitespace-nowrap">
+                        환불 신청
+                    </button>
+                </form>
+
+                <!-- 환불 요청됨 → 상태 배지 (버튼 없음) -->
+                <div th:if="${payment.refundStatus != null}" class="text-right">
+                    <span th:switch="${payment.refundStatus.name()}">
+                        <span th:case="'REQUESTED'"
+                              class="ow-font-italic text-xs px-3 py-1.5 bg-yellow-500/10 border border-yellow-500/40 text-yellow-400 whitespace-nowrap">
+                            검토 중
+                        </span>
+                        <span th:case="'APPROVED'"
+                              class="ow-font-italic text-xs px-3 py-1.5 bg-green-500/10 border border-green-500/40 text-green-400 whitespace-nowrap">
+                            승인됨
+                        </span>
+                        <span th:case="'REJECTED'"
+                              class="ow-font-italic text-xs px-3 py-1.5 bg-gray-500/10 border border-gray-500/40 text-gray-400 whitespace-nowrap">
+                            거절됨
+                        </span>
+                    </span>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+</main>
+
+<script>
+    // 환불 신청 버튼: 클릭 즉시 "검토 중" 비활성화 상태로 전환한 뒤 폼 제출
+    document.querySelectorAll('.refund-form').forEach(function(form) {
+        form.addEventListener('submit', function() {
+            var btn = form.querySelector('.refund-btn');
+            btn.textContent = '검토 중';
+            btn.disabled = true;
+            btn.classList.remove('border-red-500/60', 'hover:border-red-400', 'hover:bg-red-500/10', 'text-red-400', 'cursor-pointer');
+            btn.classList.add('border-yellow-500/40', 'text-yellow-400', 'cursor-not-allowed', 'opacity-70');
+        });
+    });
+</script>
+</body>
+</html>

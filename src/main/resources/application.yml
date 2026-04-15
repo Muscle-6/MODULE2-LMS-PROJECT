@@ -15,6 +15,10 @@ spring:
   thymeleaf:
     cache: false
 
+toss:
+  client-key: test_ck_AQ92ymxN34NMmQE699GyrajRKXvd
+  secret-key: test_sk_vZnjEJeQVxnX4wEzW1Nb8PmOoBN0
+
 server:
   servlet:
     session:

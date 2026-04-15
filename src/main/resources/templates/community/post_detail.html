@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>게시글 상세보기</title>
+  <style>
+    body { margin: 0; font-family: Arial, sans-serif; background: #0b1020; color: #f5f7ff; }
+    .container { width: 800px; margin: 0 auto; padding: 60px 20px; }
+    .post-card { background: #121a35; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+    .post-header { border-bottom: 1px solid #1a2447; margin-bottom: 20px; padding-bottom: 20px; }
+    .post-title { font-size: 28px; color: #7ee0ff; margin: 0 0 10px 0; }
+    .post-info { color: #b8c1e7; font-size: 14px; }
+    .post-content { line-height: 1.8; font-size: 16px; min-height: 300px; white-space: pre-wrap; }
+    .btn-area { margin-top: 30px; text-align: center; }
+    .btn { display: inline-block; padding: 12px 25px; border-radius: 8px; background: #5f7cff; color: white; text-decoration: none; font-weight: bold; margin: 0 5px; }
+    .btn-list { background: #1d295f; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="post-card">
+    <div class="post-header">
+      <h1 class="post-title" th:text="${post.title}">제목이 들어가는 자리</h1>
+      <div class="post-info">
+        작성자: <span th:text="${post.memberId}">아이디가 나올 자리</span> |
+        대륙 번호: <span th:text="${post.continentId}">1</span>
+      </div>
+    </div>
+
+    <div class="post-content" th:text="${post.content}">
+      내용이 들어가는 자리입니다.
+    </div>
+  </div>
+
+  <div class="btn-area">
+    <a th:href="@{/continents/{id}/posts(id=${post.continentId})}" class="btn btn-list">목록으로</a>
+
+    <a th:if="${currentUserId != null and currentUserId == post.memberId}"
+       th:href="@{/continents/posts/edit/{id}(id=${post.postId})}"
+       class="btn">수정하기</a>
+  </div>
+</div>
+</body>
+</html>

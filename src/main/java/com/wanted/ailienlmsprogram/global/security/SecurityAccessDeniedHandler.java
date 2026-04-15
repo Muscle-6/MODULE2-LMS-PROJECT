@@ -17,6 +17,25 @@ public class SecurityAccessDeniedHandler implements AccessDeniedHandler {
                        HttpServletResponse response,
                        AccessDeniedException accessDeniedException) throws IOException, ServletException {
 
+        if (isAjaxRequest(request)) {
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            response.setContentType("application/json;charset=UTF-8");
+            response.getWriter().write("{\"error\":\"FORBIDDEN\",\"message\":\"접근 권한이 없습니다.\"}");
+            return;
+        }
+
         response.sendRedirect("/access-denied");
+    }
+
+    private boolean isAjaxRequest(HttpServletRequest request) {
+        if ("XMLHttpRequest".equalsIgnoreCase(request.getHeader("X-Requested-With"))) {
+            return true;
+        }
+        String contentType = request.getContentType();
+        if (contentType != null && contentType.contains("application/json")) {
+            return true;
+        }
+        String accept = request.getHeader("Accept");
+        return accept != null && accept.contains("application/json");
     }
 }
