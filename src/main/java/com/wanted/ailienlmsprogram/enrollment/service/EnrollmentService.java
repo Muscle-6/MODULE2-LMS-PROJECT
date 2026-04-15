@@ -1,6 +1,6 @@
 package com.wanted.ailienlmsprogram.enrollment.service;
 
-import com.wanted.ailienlmsprogram.course.entity.Course;
+import com.wanted.ailienlmsprogram.coursecommand.entity.Course;
 import com.wanted.ailienlmsprogram.enrollment.entity.Enrollment;
 import com.wanted.ailienlmsprogram.enrollment.repository.EnrollmentRepository;
 import com.wanted.ailienlmsprogram.member.entity.Member;

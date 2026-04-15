@@ -1,7 +1,8 @@
 package com.wanted.ailienlmsprogram.payment.service;
 
-import com.wanted.ailienlmsprogram.course.entity.Course;
-import com.wanted.ailienlmsprogram.course.repository.CourseRepository;
+
+import com.wanted.ailienlmsprogram.coursecommand.dao.CourseRepository;
+import com.wanted.ailienlmsprogram.coursecommand.entity.Course;
 import com.wanted.ailienlmsprogram.member.entity.Member;
 import com.wanted.ailienlmsprogram.payment.dto.CartItemResponse;
 import com.wanted.ailienlmsprogram.payment.entity.Cart;
@@ -82,7 +83,7 @@ public class CartService {
             throw new IllegalArgumentException("접근 권한이 없는 항목이 포함되어 있습니다.");
         }
 
-        int totalAmount = carts.stream().mapToInt(c -> c.getCourse().getPrice()).sum();
+        int totalAmount = carts.stream().mapToInt(c -> c.getCourse().getCoursePrice()).sum();
 
         String orderId = "ORD-"
                 + LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"))
@@ -90,8 +91,8 @@ public class CartService {
                 + UUID.randomUUID().toString().replace("-", "").substring(0, 8).toUpperCase();
 
         String orderName = carts.size() == 1
-                ? carts.get(0).getCourse().getTitle()
-                : carts.get(0).getCourse().getTitle() + " 외 " + (carts.size() - 1) + "개";
+                ? carts.get(0).getCourse().getCourseTitle()
+                : carts.get(0).getCourse().getCourseTitle() + " 외 " + (carts.size() - 1) + "개";
 
         return Map.of(
                 "orderId", orderId,

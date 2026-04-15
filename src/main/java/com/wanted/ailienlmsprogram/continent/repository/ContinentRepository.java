@@ -19,13 +19,13 @@ public interface ContinentRepository extends JpaRepository<Continent, Long> {
     @Query(value = """
             SELECT
                 c.course_id AS courseId,
-                c.title AS courseTitle,
-                c.price AS price,
-                m.name AS instructorName
+                c.course_title AS courseTitle,
+                c.course_price AS price,
+                m.member_name AS instructorName
             FROM COURSE c
             JOIN MEMBER m ON c.instructor_id = m.member_id
             WHERE c.continent_id = :continentId
-              AND c.status = 'PUBLISHED'
+              AND c.course_status = 'PUBLISHED'
             ORDER BY c.created_at DESC, c.course_id DESC
             """, nativeQuery = true)
     List<ContinentCourseSummary> findPublishedCoursesByContinentId(@Param("continentId") Long continentId);
@@ -33,15 +33,15 @@ public interface ContinentRepository extends JpaRepository<Continent, Long> {
     @Query(value = """
             SELECT
                 p.post_id AS postId,
-                p.title AS title,
-                m.name AS writerName,
-                p.is_notice AS notice,
+                p.post_title AS title,
+                m.member_name AS writerName,
+                p.post_is_notice AS notice,
                 p.created_at AS createdAt
             FROM CONTINENT_POST p
             JOIN MEMBER m ON p.author_id = m.member_id
             WHERE p.continent_id = :continentId
-              AND p.is_deleted = false
-            ORDER BY p.is_notice DESC, p.created_at DESC, p.post_id DESC
+              AND p.post_is_deleted = false
+            ORDER BY p.post_is_notice DESC, p.created_at DESC, p.post_id DESC
             LIMIT 10
             """, nativeQuery = true)
     List<ContinentPostSummary> findTop10PostsByContinentId(@Param("continentId") Long continentId);

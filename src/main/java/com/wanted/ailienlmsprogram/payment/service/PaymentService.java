@@ -1,6 +1,6 @@
 package com.wanted.ailienlmsprogram.payment.service;
 
-import com.wanted.ailienlmsprogram.course.entity.Course;
+import com.wanted.ailienlmsprogram.coursecommand.entity.Course;
 import com.wanted.ailienlmsprogram.enrollment.service.EnrollmentService;
 import com.wanted.ailienlmsprogram.member.entity.Member;
 import com.wanted.ailienlmsprogram.payment.client.TossPaymentClient;
@@ -74,7 +74,7 @@ public class PaymentService {
 
     private Payment processCheckout(List<Cart> cartItems, Member member) {
         int totalPrice = cartItems.stream()
-                .mapToInt(c -> c.getCourse().getPrice())
+                .mapToInt(c -> c.getCourse().getCoursePrice())
                 .sum();
 
         String orderNo = "ORD-"
@@ -93,7 +93,7 @@ public class PaymentService {
             PaymentItem item = new PaymentItem();
             item.setPayment(payment);
             item.setCourse(cart.getCourse());
-            item.setItemPriceAtPurchase(cart.getCourse().getPrice());
+            item.setItemPriceAtPurchase(cart.getCourse().getCoursePrice());
             paymentItemRepository.save(item);
 
             enrollmentService.enroll(member, cart.getCourse());
@@ -125,7 +125,7 @@ public class PaymentService {
         }
 
         // 2. 금액 위변조 검증 — DB 기준 가격 합산과 클라이언트 전달 금액 비교
-        int expectedAmount = cartItems.stream().mapToInt(c -> c.getCourse().getPrice()).sum();
+        int expectedAmount = cartItems.stream().mapToInt(c -> c.getCourse().getCoursePrice()).sum();
         if (expectedAmount != (int) amount) {
             throw new IllegalArgumentException(
                     "결제 금액이 일치하지 않습니다. (예상: " + expectedAmount + "원, 수신: " + amount + "원)");
@@ -148,7 +148,7 @@ public class PaymentService {
             PaymentItem item = new PaymentItem();
             item.setPayment(payment);
             item.setCourse(cart.getCourse());
-            item.setItemPriceAtPurchase(cart.getCourse().getPrice());
+            item.setItemPriceAtPurchase(cart.getCourse().getCoursePrice());
             paymentItemRepository.save(item);
 
             enrollmentService.enroll(member, cart.getCourse());

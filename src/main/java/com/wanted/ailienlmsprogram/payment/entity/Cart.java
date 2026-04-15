@@ -1,6 +1,6 @@
 package com.wanted.ailienlmsprogram.payment.entity;
 
-import com.wanted.ailienlmsprogram.course.entity.Course;
+import com.wanted.ailienlmsprogram.coursecommand.entity.Course;
 import com.wanted.ailienlmsprogram.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.Getter;

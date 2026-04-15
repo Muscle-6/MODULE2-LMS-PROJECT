@@ -1,6 +1,6 @@
 package com.wanted.ailienlmsprogram.admin.service;
 
-import com.wanted.ailienlmsprogram.course.entity.Course;
+import com.wanted.ailienlmsprogram.coursecommand.entity.Course;
 import com.wanted.ailienlmsprogram.enrollment.service.EnrollmentService;
 import com.wanted.ailienlmsprogram.payment.entity.Payment;
 import com.wanted.ailienlmsprogram.payment.entity.PaymentItem;

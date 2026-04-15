@@ -14,7 +14,7 @@ public interface PaymentItemRepository extends JpaRepository<PaymentItem, Long> 
             SELECT new com.wanted.ailienlmsprogram.payment.dto.PaymentItemDetailResponse(
                 pi.paymentItemId,
                 c.courseId,
-                c.title,
+                c.courseTitle,
                 pi.itemPriceAtPurchase,
                 instr.name
             )

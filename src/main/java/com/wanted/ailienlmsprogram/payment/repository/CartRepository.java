@@ -18,8 +18,8 @@ public interface CartRepository extends JpaRepository<Cart, Long> {
             SELECT new com.wanted.ailienlmsprogram.payment.dto.CartItemResponse(
                 ca.cartId,
                 c.courseId,
-                c.title,
-                c.price,
+                c.courseTitle,
+                c.coursePrice,
                 instr.name
             )
             FROM Cart ca
