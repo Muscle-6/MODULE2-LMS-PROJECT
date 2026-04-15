@@ -11,9 +11,10 @@
     .post-title { font-size: 28px; color: #7ee0ff; margin: 0 0 10px 0; }
     .post-info { color: #b8c1e7; font-size: 14px; }
     .post-content { line-height: 1.8; font-size: 16px; min-height: 300px; white-space: pre-wrap; }
-    .btn-area { margin-top: 30px; text-align: center; }
-    .btn { display: inline-block; padding: 12px 25px; border-radius: 8px; background: #5f7cff; color: white; text-decoration: none; font-weight: bold; margin: 0 5px; }
+    .btn-area { margin-top: 30px; text-align: center; display: flex; justify-content: center; align-items: center; gap: 10px; }
+    .btn { display: inline-block; padding: 12px 25px; border-radius: 8px; background: #5f7cff; color: white; text-decoration: none; font-weight: bold; cursor: pointer; border: none; font-size: 16px; }
     .btn-list { background: #1d295f; }
+    .btn-delete { background: #ff5f5f; } /* 삭제 버튼 전용 빨간색 */
   </style>
 </head>
 <body>
@@ -35,9 +36,13 @@
   <div class="btn-area">
     <a th:href="@{/continents/{id}/posts(id=${post.continentId})}" class="btn btn-list">목록으로</a>
 
-    <a th:if="${currentUserId != null and currentUserId == post.memberId}"
-       th:href="@{/continents/posts/edit/{id}(id=${post.postId})}"
-       class="btn">수정하기</a>
+    <th:block th:if="${currentUserId != null and currentUserId == post.memberId}">
+      <a th:href="@{/continents/posts/edit/{id}(id=${post.postId})}" class="btn">수정하기</a>
+
+      <form th:action="@{/posts/delete/{id}(id=${post.postId})}" method="post" onsubmit="return confirm('진짜 삭제하시겠습니까?');" style="margin: 0;">
+        <button type="submit" class="btn btn-delete">삭제하기</button>
+      </form>
+    </th:block>
   </div>
 </div>
 </body>

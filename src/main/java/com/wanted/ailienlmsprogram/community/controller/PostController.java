@@ -69,4 +69,33 @@ public class PostController {
 
         return "redirect:/continents/" + continentId + "/posts";
     }
+
+    // 3. 수정 화면 이동 (GET)
+    @GetMapping("/continents/posts/edit/{postId}") // HTML의 주소와 정확히 일치시킴
+    public String updatePostForm(@PathVariable Long postId, Model model) {
+        PostDTO post = postService.findPostById(postId);
+        model.addAttribute("post", post);
+        return "community/post_update";
+    }
+
+    // 4. 수정 처리 (POST)
+    // PostController.java의 수정 처리 부분
+
+    @PostMapping("/continents/posts/edit/{postId}") // HTML 폼 주소와 똑같이 맞춤!
+    public String updatePost(@PathVariable Long postId,
+                             @ModelAttribute PostCreateRequest request) {
+        postService.updatePost(postId, request);
+        return "redirect:/posts/" + postId; // 수정 완료 후 상세페이지로!
+    }
+
+    // 5. 삭제 처리 (POST)
+    @PostMapping("/posts/delete/{postId}")
+    public String deletePost(@PathVariable Long postId) {
+        PostDTO post = postService.findPostById(postId);
+        Long continentId = post.getContinentId();
+
+        postService.deletePost(postId);
+        // 삭제 후 해당 대륙의 목록 페이지로 이동
+        return "redirect:/continents/" + continentId + "/posts";
+    }
 }
