@@ -3,12 +3,9 @@ package com.wanted.ailienlmsprogram.coursecommand.controller;
 import com.wanted.ailienlmsprogram.continent.dto.ContinentAllResponseDTO;
 import com.wanted.ailienlmsprogram.continent.entity.Continent;
 import com.wanted.ailienlmsprogram.continent.service.ContinentService;
-import com.wanted.ailienlmsprogram.coursecommand.dto.CourseCommandDTO;
 import com.wanted.ailienlmsprogram.coursecommand.dto.CourseDetailResponseDTO;
 import com.wanted.ailienlmsprogram.coursecommand.dto.CourseApplyDTO;
-import com.wanted.ailienlmsprogram.coursecommand.dto.CourseEditDTO;
 import com.wanted.ailienlmsprogram.coursecommand.dto.CourseFindDTO;
-import com.wanted.ailienlmsprogram.coursecommand.entity.Course;
 import com.wanted.ailienlmsprogram.coursecommand.entity.CourseStatus;
 import com.wanted.ailienlmsprogram.coursecommand.service.CourseCommandService;
 import com.wanted.ailienlmsprogram.global.security.CustomUserDetails;
@@ -86,16 +83,27 @@ public class CourseCommandController {
     }
 
     @GetMapping("/instructor/courses/{courseId}/edit")
-    public ModelAndView editMyCourse(ModelAndView mv,
-                                     @RequestParam(value = "thumbnailFile", required = false) MultipartFile thumbnailFile,
-                                     @PathVariable Long courseId,
-                                     @ModelAttribute CourseApplyDTO request) throws IOException {
+    public ModelAndView editCoursePage(ModelAndView mv,
+                                       @RequestParam(value = "query", defaultValue = "") String query,
+                                       @PathVariable Long courseId) {
+        // 기존 강좌 정보 조회
+        CourseFindDTO course = courseCommandService.findCourseById(courseId);
+        List<ContinentAllResponseDTO> continents = continentService.findAllContinents(query);
 
-        CourseEditDTO course = courseCommandService.editMyCourse(thumbnailFile, courseId,request);
-        mv.addObject("editCourse", course);
-        mv.setViewName("/course/edit");
-
+        mv.addObject("course", course);
+        mv.addObject("continents", continents);
+        mv.setViewName("course/edit");
         return mv;
+    }
+
+    @PostMapping("/instructor/courses/{courseId}/edit")
+    public String editMyCourse(@RequestParam(value = "thumbnailFile", required = false) MultipartFile thumbnailFile,
+                               @PathVariable Long courseId,
+                               @ModelAttribute CourseApplyDTO request) throws IOException {
+
+        courseCommandService.editMyCourse(thumbnailFile, courseId,request);
+
+        return "redirect:/instructor/courses/PUBLISHED";
     }
 
 }

@@ -23,11 +23,11 @@ public class Course {
 
     @ManyToOne
     @JoinColumn(name = "continent_id", nullable = false)
-    private Continent continentId;
+    private Continent continent;
 
     @ManyToOne
     @JoinColumn(name = "instructor_id", nullable = false)
-    private User instructorId;
+    private User instructor;
 
     @Column(name = "course_title", nullable = false, length = 200)
     private String courseTitle;
@@ -56,7 +56,7 @@ public class Course {
         this.courseDescription = courseDescription;
         this.courseThumbnailUrl = courseThumbnailUrl;
         this.coursePrice = coursePrice;
-        this.continentId = continentId;
+        this.continent = continentId;
         return this;
     }
 
