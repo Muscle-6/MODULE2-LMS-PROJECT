@@ -23,8 +23,6 @@ public class SecurityLoginSuccessHandler implements AuthenticationSuccessHandler
                                         HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException {
 
-
-
         HttpSession session = request.getSession();
         session.setMaxInactiveInterval(86400);
 
