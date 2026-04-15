@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>회원/계정 관리</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Pretendard", Arial, sans-serif;
+            background: #f5f3fb;
+            color: #2d1f3d;
+        }
+
+        header {
+            background: linear-gradient(135deg, #5d2a91, #8c4ed6);
+            color: white;
+            padding: 24px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+
+        .top-links {
+            display: flex;
+            gap: 12px;
+        }
+
+        .top-links a {
+            text-decoration: none;
+            color: white;
+            background: rgba(255,255,255,0.16);
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: background 0.2s ease;
+        }
+
+        .top-links a:hover {
+            background: rgba(255,255,255,0.24);
+        }
+
+        .container {
+            width: 1280px;
+            max-width: calc(100% - 40px);
+            margin: 30px auto;
+        }
+
+        .page-description,
+        .search-card,
+        .table-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 8px 24px rgba(85, 53, 124, 0.08);
+            margin-bottom: 20px;
+        }
+
+        .page-description {
+            line-height: 1.8;
+        }
+
+        .page-description strong {
+            color: #6a2eb8;
+        }
+
+        .status-guide {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 14px;
+        }
+
+        .search-form {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .search-form input,
+        .search-form select {
+            height: 44px;
+            border: 1px solid #d7c8ec;
+            border-radius: 10px;
+            padding: 0 14px;
+            font-size: 14px;
+            background: white;
+        }
+
+        .search-form input {
+            flex: 1;
+            min-width: 260px;
+        }
+
+        .search-form select {
+            min-width: 180px;
+        }
+
+        .btn {
+            display: inline-block;
+            border: none;
+            border-radius: 10px;
+            padding: 10px 14px;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            transition: opacity 0.2s ease, transform 0.1s ease;
+        }
+
+        .btn:hover {
+            opacity: 0.92;
+        }
+
+        .btn:active {
+            transform: translateY(1px);
+        }
+
+        .btn-primary {
+            background: #7a2fb2;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #ece5f8;
+            color: #4b2f72;
+        }
+
+        .btn-danger {
+            background: #cf3d64;
+            color: white;
+        }
+
+        .btn-warning {
+            background: #f0ad4e;
+            color: white;
+        }
+
+        .result-summary {
+            margin-top: 16px;
+            color: #5a4d71;
+            font-size: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .result-summary strong {
+            color: #6a2eb8;
+        }
+
+        .alert {
+            border-radius: 12px;
+            padding: 14px 16px;
+            margin-bottom: 16px;
+            font-weight: 600;
+        }
+
+        .alert-success {
+            background: #eefaf1;
+            color: #237a3a;
+            border: 1px solid #caeed5;
+        }
+
+        .alert-error {
+            background: #fff0f2;
+            color: #b02a49;
+            border: 1px solid #f7c8d3;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: #f3ecfc;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 14px 12px;
+            border-bottom: 1px solid #eee7f7;
+            vertical-align: middle;
+            font-size: 14px;
+        }
+
+        th {
+            color: #4a3368;
+            white-space: nowrap;
+        }
+
+        td {
+            color: #433853;
+        }
+
+        tbody tr {
+            transition: background 0.2s ease;
+        }
+
+        tbody tr:hover {
+            background: #faf7ff;
+        }
+
+        .row-inactive {
+            background: #fffaf0;
+        }
+
+        .row-deleted {
+            background: #fff4f5;
+        }
+
+        .muted {
+            color: #9485ab;
+            font-weight: 600;
+        }
+
+        .action-group {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .action-group form {
+            margin: 0;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 72px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .status-active {
+            background: #eaf8ef;
+            color: #1f7a3f;
+            border: 1px solid #cdebd7;
+        }
+
+        .status-inactive {
+            background: #fff4dd;
+            color: #9b6400;
+            border: 1px solid #f3dbab;
+        }
+
+        .status-deleted {
+            background: #fdecec;
+            color: #b02a37;
+            border: 1px solid #f4c8cf;
+        }
+
+        .cell-sub-text {
+            display: block;
+            margin-top: 6px;
+            font-size: 12px;
+            color: #8b7fa1;
+        }
+
+        .empty-box {
+            padding: 36px 20px;
+            text-align: center;
+            color: #7c6f92;
+            line-height: 1.7;
+        }
+
+        @media (max-width: 1100px) {
+            .table-card {
+                overflow-x: auto;
+            }
+
+            table {
+                min-width: 1120px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            header {
+                padding: 20px;
+                flex-direction: column;
+                gap: 16px;
+                align-items: flex-start;
+            }
+
+            .container {
+                max-width: calc(100% - 24px);
+            }
+
+            .result-summary {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+<header>
+    <h1>회원/계정 관리</h1>
+    <div class="top-links">
+        <a th:href="@{/}">메인</a>
+        <a th:href="@{/admin}">관리자 홈</a>
+        <a th:href="@{/logout}">로그아웃</a>
+    </div>
+</header>
+
+<div class="container">
+    <div class="page-description">
+        MEMBER 테이블 기반 회원 목록 조회 페이지입니다.<br>
+        <strong>member_id는 화면에서 제외</strong>하고, 관리자 입장에서 처리 결과를 바로 확인할 수 있도록
+        <strong>계정 상태 표시</strong>, <strong>검색</strong>, <strong>역할별 조회</strong>,
+        <strong>활성/비활성 전환</strong>, <strong>삭제 처리</strong> 흐름을 한 화면에서 확인할 수 있도록 구성했습니다.
+
+        <div class="status-guide">
+            <span class="status-badge status-active">활성</span>
+            <span class="status-badge status-inactive">비활성</span>
+            <span class="status-badge status-deleted">삭제됨</span>
+        </div>
+    </div>
+
+    <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+    <div th:if="${errorMessage}" class="alert alert-error" th:text="${errorMessage}"></div>
+
+    <div class="search-card">
+        <form class="search-form" th:action="@{/admin/members}" method="get">
+            <input type="text"
+                   name="query"
+                   th:value="${condition.query}"
+                   placeholder="아이디, 이름, 이메일 검색">
+
+            <select name="role">
+                <option value="">전체 역할</option>
+                <option th:each="role : ${roles}"
+                        th:value="${role}"
+                        th:text="${role}"
+                        th:selected="${condition.role == role}">
+                </option>
+            </select>
+
+            <button type="submit" class="btn btn-primary">조회</button>
+            <a th:href="@{/admin/members}" class="btn btn-secondary">초기화</a>
+        </form>
+
+        <div class="result-summary">
+            <div>
+                조회 결과:
+                <strong th:text="${#lists.size(members)}">0</strong>명
+            </div>
+            <div class="muted">
+                상태 배지와 버튼 문구를 통해 처리 결과를 바로 확인할 수 있습니다.
+            </div>
+        </div>
+    </div>
+
+    <div class="table-card">
+        <table th:if="${!#lists.isEmpty(members)}">
+            <thead>
+            <tr>
+                <th>아이디</th>
+                <th>이름</th>
+                <th>이메일</th>
+                <th>전화번호</th>
+                <th>역할</th>
+                <th>등급</th>
+                <th>계정 상태</th>
+                <th>가입일</th>
+                <th>최근 로그인</th>
+                <th>관리</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="member : ${members}"
+                th:classappend="${member.displayStatus == '비활성' ? 'row-inactive' : (member.displayStatus == '삭제됨' ? 'row-deleted' : '')}">
+
+                <td th:text="${member.loginId}">loginId</td>
+                <td th:text="${member.name}">name</td>
+                <td th:text="${member.email}">email</td>
+                <td th:text="${member.phone != null ? member.phone : '-'}">phone</td>
+                <td th:text="${member.role}">role</td>
+                <td th:text="${member.rank != null ? member.rank : '-'}">rank</td>
+
+                <td>
+                    <span th:text="${member.displayStatus}"
+                          th:classappend="${member.displayStatus == '활성' ? 'status-active' : (member.displayStatus == '비활성' ? 'status-inactive' : 'status-deleted')}"
+                          class="status-badge">
+</span>
+                </td>
+
+                <td th:text="${#temporals.format(member.createdAt, 'yyyy-MM-dd HH:mm')}">createdAt</td>
+
+                <td>
+                    <span th:text="${member.lastLoginAt != null ? #temporals.format(member.lastLoginAt, 'yyyy-MM-dd HH:mm') : '-'}">lastLoginAt</span>
+                    <span class="cell-sub-text"
+                          th:if="${member.displayStatus == '비활성'}">현재 로그인 제한 상태</span>
+                    <span class="cell-sub-text"
+                          th:if="${member.displayStatus == '삭제됨'}">삭제 처리된 계정</span>
+                </td>
+
+                <td>
+                    <div class="action-group" th:if="${member.canToggleStatus()}">
+                        <form th:action="@{|/admin/members/${member.memberId}/toggle-status|}" method="post">
+                            <input type="hidden" name="query" th:if="${condition.query != null}" th:value="${condition.query}">
+                            <input type="hidden" name="role" th:if="${condition.role != null}" th:value="${condition.role}">
+                            <button type="submit"
+                                    class="btn btn-warning"
+                                    th:text="${member.actionLabel}">
+                                상태변경
+                            </button>
+                        </form>
+
+                        <form th:action="@{|/admin/members/${member.memberId}/delete|}"
+                              method="post"
+                              onsubmit="return confirm('정말 삭제 처리하시겠습니까?');">
+                            <input type="hidden" name="query" th:if="${condition.query != null}" th:value="${condition.query}">
+                            <input type="hidden" name="role" th:if="${condition.role != null}" th:value="${condition.role}">
+                            <button type="submit" class="btn btn-danger">삭제</button>
+                        </form>
+                    </div>
+
+                    <span class="muted" th:if="${!member.canToggleStatus()}">
+                        처리 불가
+                    </span>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <div class="empty-box" th:if="${#lists.isEmpty(members)}">
+            조건에 맞는 회원이 없습니다.<br>
+            검색어 또는 역할 조건을 변경해서 다시 조회해보세요.
+        </div>
+    </div>
+</div>
+</body>
+</html>

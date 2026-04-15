@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html class="dark" lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module02 LMS - 내 정보 수정</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "ow-orange": "#FF9C00",
+                        "ow-orange-hover": "#FFB84D",
+                        "ow-blue": "#00B4FF",
+                        "ow-dark": "#1D2127",
+                        "ow-panel": "rgba(29, 33, 39, 0.85)",
+                        "ow-text": "#F0F0F0",
+                    },
+                    fontFamily: {
+                        "ow": ["Oswald", "sans-serif"],
+                        "body": ["Noto Sans KR", "sans-serif"],
+                    }
+                },
+            },
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #0b0e14;
+            color: #F0F0F0;
+        }
+        .bg-sci-fi {
+            position: fixed;
+            inset: 0;
+            z-index: -3;
+            background-image:
+                radial-gradient(circle at 30% 50%, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.9) 100%),
+                url("https://images.unsplash.com/photo-1541701494587-cb58502866ab?q=80&w=2070&auto=format&fit=crop");
+            background-size: cover;
+            background-position: center;
+        }
+        .bg-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: -2;
+            background: linear-gradient(90deg, rgba(11, 14, 20, 1) 0%, rgba(11, 14, 20, 0.8) 30%, transparent 100%);
+        }
+        .ow-font-italic {
+            font-family: 'Oswald', sans-serif;
+            font-style: italic;
+            text-transform: uppercase;
+        }
+        .ow-panel {
+            background: rgba(29, 33, 39, 0.6);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-left: 6px solid #FF9C00;
+            clip-path: polygon(0 0, 100% 0, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0 100%);
+        }
+        /* 수정 가능 input */
+        .ow-input {
+            background: #1a1f2b !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            border-radius: 4px !important;
+            color: #F0F0F0 !important;
+            transition: all 0.2s;
+            width: 100%;
+            padding: 8px 12px;
+            font-size: 0.95rem;
+        }
+        .ow-input::placeholder {
+            color: rgba(255, 255, 255, 0.3) !important;
+        }
+        .ow-input:focus {
+            outline: none !important;
+            border-color: #FF9C00 !important;
+            box-shadow: 0 0 0 2px rgba(255, 156, 0, 0.2) !important;
+            background: #1a1f2b !important;
+        }
+        /* 수정 불가 input - 명확하게 보이되 비활성화 느낌 */
+        .ow-input-disabled {
+            background: #11151e !important;
+            border: 1px dashed rgba(255, 255, 255, 0.15) !important;
+            border-radius: 4px !important;
+            color: #8a9ab5 !important;
+            width: 100%;
+            padding: 8px 12px;
+            font-size: 0.95rem;
+            cursor: not-allowed;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        /* 프로필 이미지 업로드 */
+        .profile-upload-wrap {
+            position: relative;
+            cursor: pointer;
+        }
+        .profile-upload-wrap:hover .profile-overlay {
+            opacity: 1;
+        }
+        .profile-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.2s;
+            border-radius: 2px;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen relative">
+
+<div class="bg-sci-fi"></div>
+<div class="bg-overlay"></div>
+
+<!-- 헤더 -->
+<header class="fixed top-0 left-0 right-0 z-50 flex justify-between items-start p-6 pointer-events-none">
+    <div class="pointer-events-auto">
+        <h1 class="ow-font-italic text-5xl font-bold text-white tracking-wider drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">
+            <span class="text-ow-orange">MODULE02</span> LMS
+        </h1>
+        <p class="font-body text-xs text-gray-400 tracking-widest mt-1">ALIEN UNIVERSE LEARNING PLATFORM</p>
+    </div>
+
+    <div class="pointer-events-auto flex items-stretch bg-white text-black rounded-sm shadow-[0_5px_20px_rgba(0,0,0,0.6)] overflow-hidden" th:if="${loginMember != null}">
+        <div class="bg-gray-200 px-4 py-2 flex items-center justify-center border-r border-gray-300">
+            <span class="material-symbols-outlined text-gray-700 text-4xl">account_circle</span>
+        </div>
+        <div class="px-5 py-1 flex flex-col justify-center min-w-[140px]">
+            <span class="ow-font-italic font-bold text-xl leading-tight uppercase" th:text="${loginMember.name}">PLAYER</span>
+            <span class="font-body text-[11px] text-gray-600 font-bold tracking-wider" th:text="|RANK: ${loginMember.role}|">RANK</span>
+        </div>
+        <a th:href="@{/logout}" class="bg-ow-orange hover:bg-ow-orange-hover px-5 flex items-center justify-center transition-colors group cursor-pointer border-l border-orange-400">
+            <span class="material-symbols-outlined text-white group-hover:scale-110 transition-transform text-2xl">logout</span>
+        </a>
+    </div>
+</header>
+
+<!-- 메인 -->
+<main class="min-h-screen w-full max-w-[1400px] mx-auto px-6 md:px-12 pt-36 pb-16 flex flex-col md:flex-row gap-10">
+
+    <!-- 좌측 사이드바 -->
+    <aside class="w-full md:w-[260px] flex-shrink-0 flex flex-col gap-4 pt-4">
+        <a th:href="@{/student/profile}" class="ow-font-italic text-gray-500 hover:text-ow-orange text-lg font-bold flex items-center gap-2 transition-colors">
+            <span class="material-symbols-outlined text-base">arrow_back</span> BACK
+        </a>
+
+        <div class="mt-6">
+            <p class="ow-font-italic text-xs text-gray-600 tracking-widest mb-4">// OPERATIVE MENU</p>
+            <nav class="flex flex-col gap-3">
+                <a th:href="@{/student/profile}"
+                   class="ow-font-italic text-2xl font-bold text-ow-orange flex items-center gap-3 translate-x-3">
+                    <span class="text-white text-lg">></span> 내 정보
+                </a>
+                <a th:href="@{/student/enrollments}"
+                   class="ow-font-italic text-2xl font-bold text-gray-500 hover:text-white flex items-center gap-3 transition-colors hover:translate-x-3 duration-200">
+                    <span class="text-gray-700 text-lg">/</span> 수강 강좌
+                </a>
+            </nav>
+        </div>
+    </aside>
+
+    <!-- 우측 콘텐츠 -->
+    <section class="flex-1 flex flex-col gap-6">
+
+        <!-- 페이지 타이틀 -->
+        <div class="flex items-center gap-4 pb-4 border-b border-white/10">
+            <span class="material-symbols-outlined text-4xl text-ow-orange">edit</span>
+            <div>
+                <h2 class="ow-font-italic text-4xl font-bold text-white">내 정보 수정</h2>
+                <p class="font-body text-xs text-gray-500 tracking-widest mt-1">// 수정 가능한 항목만 변경할 수 있습니다</p>
+            </div>
+        </div>
+
+        <!-- 수정 폼 -->
+        <form th:action="@{/student/profile/edit}" method="post" enctype="multipart/form-data">
+            <div class="ow-panel p-8 flex flex-col md:flex-row gap-8 items-start">
+
+                <!-- 프로필 이미지 업로드 -->
+                <div class="flex flex-col items-center gap-3 flex-shrink-0">
+
+                    <!-- 이미지 클릭 시 파일 선택 -->
+                    <div class="profile-upload-wrap w-28 h-28 rounded-sm bg-gray-800 border-2 border-ow-orange/50 overflow-hidden"
+                         onclick="document.getElementById('profileImageFile').click()">
+
+                        <!-- 현재 이미지 미리보기 -->
+                        <img id="profilePreview"
+                             th:if="${user.profileImageUrl != null}"
+                             th:src="${user.profileImageUrl}"
+                             alt="프로필 이미지"
+                             class="w-full h-full object-cover"/>
+                        <span id="profileDefault"
+                              th:classappend="${user.profileImageUrl != null} ? 'hidden' : ''"
+                              class="material-symbols-outlined text-6xl text-gray-600 flex items-center justify-center w-full h-full">account_circle</span>
+
+                        <!-- 호버 오버레이 -->
+                        <div class="profile-overlay">
+                            <span class="material-symbols-outlined text-white text-2xl">photo_camera</span>
+                            <span class="text-white text-[10px] mt-1 font-body">클릭하여 변경</span>
+                        </div>
+                    </div>
+
+                    <!-- 숨겨진 파일 input -->
+                    <input type="file"
+                           id="profileImageFile"
+                           name="profileImageFile"
+                           accept="image/*"
+                           class="hidden"
+                           onchange="previewImage(event)"/>
+
+                    <div class="text-center">
+                        <p class="ow-font-italic text-xs text-ow-orange tracking-widest"
+                           th:text="${user.role != null ? user.role.displayName : 'UNKNOWN'}">ROLE</p>
+                        <p class="ow-font-italic text-xs text-gray-500 tracking-widest mt-1"
+                           th:text="${user.rank != null ? user.rank.displayName : '-'}">RANK</p>
+                    </div>
+                    <p class="font-body text-[10px] text-gray-600 text-center">이미지를 클릭하여<br/>프로필 사진 변경</p>
+                </div>
+
+                <!-- 입력 폼 -->
+                <div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-5 w-full">
+
+                    <!-- 아이디 (수정 불가) -->
+                    <div class="flex flex-col gap-1">
+                        <label class="ow-font-italic text-[10px] text-gray-500 tracking-widest flex items-center gap-2">
+                            아이디
+                            <span class="normal-case font-body text-[9px] bg-white/10 text-gray-400 px-2 py-0.5 rounded-full">수정 불가</span>
+                        </label>
+                        <input type="text"
+                               class="ow-input-disabled"
+                               th:value="${user.loginId}"
+                               disabled/>
+                    </div>
+
+                    <!-- 이름 (수정 가능) -->
+                    <div class="flex flex-col gap-1">
+                        <label class="ow-font-italic text-[10px] text-ow-orange tracking-widest">이름</label>
+                        <input type="text"
+                               name="name"
+                               class="ow-input"
+                               th:value="${user.name}"
+                               placeholder="이름을 입력하세요"/>
+                    </div>
+
+                    <!-- 이메일 (수정 가능) -->
+                    <div class="flex flex-col gap-1">
+                        <label class="ow-font-italic text-[10px] text-gray-500 tracking-widest">이메일</label>
+                        <input type="text"
+                               name="email"
+                               class="ow-input"
+                               th:value="${user.email}"
+                               placeholder="이메일을 입력하세요"/>
+                    </div>
+
+                    <!-- 전화번호 (수정 가능) -->
+                    <div class="flex flex-col gap-1">
+                        <label class="ow-font-italic text-[10px] text-ow-orange tracking-widest">전화번호</label>
+                        <input type="text"
+                               name="phone"
+                               class="ow-input"
+                               th:value="${user.phone != null ? user.phone : ''}"
+                               placeholder="전화번호를 입력하세요"/>
+                    </div>
+
+                    <!-- 자기소개 (수정 가능) -->
+                    <div class="flex flex-col gap-1 md:col-span-2">
+                        <label class="ow-font-italic text-[10px] text-ow-orange tracking-widest">자기소개</label>
+                        <textarea name="introduction"
+                                  rows="4"
+                                  class="ow-input"
+                                  placeholder="자기소개를 입력하세요"
+                                  th:text="${user.introduction != null ? user.introduction : ''}"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 버튼 -->
+            <div class="flex justify-end gap-3 mt-4">
+                <a th:href="@{/student/profile}"
+                   class="ow-font-italic text-gray-400 hover:text-white border border-white/20 hover:border-white/40 px-8 py-3 text-sm tracking-widest flex items-center gap-2 transition-colors"
+                   style="clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);">
+                    <span class="material-symbols-outlined text-base">close</span>
+                    취소
+                </a>
+                <button type="submit"
+                        class="ow-font-italic bg-ow-orange hover:bg-ow-orange-hover text-black font-bold px-8 py-3 text-sm tracking-widest flex items-center gap-2 transition-colors"
+                        style="clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);">
+                    <span class="material-symbols-outlined text-base">save</span>
+                    저장
+                </button>
+            </div>
+        </form>
+
+    </section>
+</main>
+
+<script>
+    function previewImage(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            const defaultIcon = document.getElementById('profileDefault');
+            if (defaultIcon) defaultIcon.style.display = 'none';
+
+            let preview = document.getElementById('profilePreview');
+            if (preview) {
+                preview.src = e.target.result;
+            } else {
+                const img = document.createElement('img');
+                img.id = 'profilePreview';
+                img.src = e.target.result;
+                img.alt = '프로필 이미지';
+                img.className = 'w-full h-full object-cover';
+                document.querySelector('.profile-upload-wrap').prepend(img);
+            }
+        };
+        reader.readAsDataURL(file);
+    }
+</script>
+
+</body>
+</html>

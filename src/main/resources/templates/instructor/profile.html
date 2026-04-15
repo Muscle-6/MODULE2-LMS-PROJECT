@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html class="dark" lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module02 LMS - 내 정보</title>
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#99f7ff",
+                        "on-primary-container": "#00555a",
+                        "secondary": "#c97cff",
+                        "on-secondary-container": "#fff5ff",
+                        "error": "#ff716c",
+                        "on-surface": "#ecedf6",
+                        "surface-container": "#161a21",
+                        "surface-container-highest": "#22262f",
+                        "outline-variant": "#45484f",
+                    },
+                    fontFamily: {
+                        "headline": ["Space Grotesk"],
+                        "body": ["Inter"],
+                        "label": ["Space Grotesk"]
+                    }
+                },
+            },
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0b0e14;
+            color: #ecedf6;
+            background-image:
+                radial-gradient(circle at 50% 50%, rgba(153, 247, 255, 0.05) 0%, transparent 50%),
+                url("data:image/svg+xml,%3Csvg width='400' height='400' viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M10 10L50 50M350 350L390 390' stroke='rgba(153, 247, 255, 0.1)' stroke-width='0.5'/%3E%3Ccircle cx='100' cy='100' r='1' fill='rgba(255,255,255,0.2)'/%3E%3Ccircle cx='300' cy='200' r='1' fill='rgba(255,255,255,0.3)'/%3E%3C/svg%3E");
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen">
+
+<!-- 헤더 -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-6 h-16 bg-slate-950/40 backdrop-blur-xl shadow-[0_0_20px_rgba(153,247,255,0.1)] border-b border-cyan-400/10">
+    <div class="flex items-center gap-8">
+        <span class="text-2xl font-bold tracking-tighter text-cyan-400 drop-shadow-[0_0_8px_rgba(153,247,255,0.6)] font-headline">
+            MODULE02 LMS
+        </span>
+        <span class="hidden md:inline text-xs font-label text-slate-400 tracking-widest uppercase">
+            우주/외계인 세계관 학습 플랫폼 (강사 사령부)
+        </span>
+    </div>
+    <div class="flex items-center gap-4">
+        <div class="flex items-center gap-4" th:if="${loginMember != null}">
+            <div class="text-right hidden sm:block mr-2">
+                <span class="text-xs font-label tracking-widest text-cyan-400"
+                      th:text="|${loginMember.name} 님|"></span>
+                <span class="text-[10px] text-slate-500 font-label tracking-tight ml-1"
+                      th:text="|(${loginMember.role})|"></span>
+            </div>
+            <div class="w-px h-4 bg-outline-variant/30 hidden sm:block"></div>
+            <a th:href="@{/logout}"
+               class="flex items-center gap-1 text-slate-400 hover:text-error transition-colors text-xs font-label">
+                <span class="material-symbols-outlined text-sm">power_settings_new</span>
+                로그아웃
+            </a>
+        </div>
+    </div>
+</header>
+
+<!-- 사이드바 -->
+<aside class="fixed left-0 top-16 bottom-0 flex flex-col z-40 bg-slate-950/80 backdrop-blur-lg w-64 shadow-[4px_0_24px_rgba(0,0,0,0.5)] bg-gradient-to-r from-slate-900 to-slate-950 hidden md:flex border-r border-cyan-400/5">
+
+    <div class="p-6 border-b border-outline-variant/10" th:if="${loginMember != null}">
+        <div class="flex items-center gap-3">
+            <div class="h-10 w-10 rounded-lg bg-cyan-400/10 flex items-center justify-center border border-cyan-400/20">
+                <span class="material-symbols-outlined text-cyan-400"
+                      style="font-variation-settings: 'FILL' 1;">satellite_alt</span>
+            </div>
+            <div>
+                <p class="text-xs font-label tracking-widest text-cyan-400"
+                   th:text="${loginMember.name}">OPERATIVE</p>
+                <p class="text-[10px] text-slate-500 font-label tracking-tight"
+                   th:text="|ROLE: ${loginMember.role}|">ROLE</p>
+            </div>
+        </div>
+    </div>
+
+    <nav class="flex-1 py-4">
+        <a th:href="@{/instructor}"
+           class="flex items-center gap-4 text-slate-400 hover:text-cyan-400 hover:bg-cyan-400/5 py-3 px-6 transition-colors font-label">
+            <span class="material-symbols-outlined text-sm">arrow_back</span>
+            <span class="text-sm tracking-wide">사령부로 돌아가기</span>
+        </a>
+        <a th:href="@{/instructor/profile}"
+           class="flex items-center gap-4 text-cyan-400 bg-cyan-400/10 border-r-4 border-cyan-400 py-3 px-6 shadow-[inset_0_0_15px_rgba(0,241,254,0.2)] font-label">
+            <span class="material-symbols-outlined">person</span>
+            <span class="text-sm tracking-wide">내 정보</span>
+        </a>
+        <a th:href="@{/instructor/lectures}"
+           class="flex items-center gap-4 text-slate-400 hover:text-cyan-400 hover:bg-cyan-400/5 py-3 px-6 transition-colors font-label">
+            <span class="material-symbols-outlined">library_books</span>
+            <span class="text-sm tracking-wide">강의 관리</span>
+        </a>
+    </nav>
+
+    <div class="p-6 border-t border-outline-variant/10 hidden md:block">
+        <div class="w-full bg-primary/5 border border-primary/20 text-primary/50 py-3 rounded-lg font-label text-xs tracking-widest text-center flex items-center justify-center gap-2">
+            <span class="material-symbols-outlined text-sm animate-pulse">radar</span>
+            COMMAND ONLINE
+        </div>
+    </div>
+</aside>
+
+<!-- 메인 -->
+<main class="md:ml-64 pt-24 px-6 md:px-12 pb-12">
+    <div class="max-w-4xl">
+
+        <!-- 페이지 타이틀 -->
+        <div class="mb-8">
+            <h1 class="text-3xl md:text-4xl font-headline font-bold text-on-surface tracking-tight mb-2">
+                내 정보
+            </h1>
+            <p class="text-slate-400 text-sm font-body">
+                강사 프로필 정보를 확인할 수 있습니다.
+            </p>
+        </div>
+
+        <!-- 프로필 카드 -->
+        <div class="bg-surface-container/60 backdrop-blur-xl rounded-2xl border border-outline-variant/20 p-6 md:p-8 shadow-lg shadow-cyan-500/5 overflow-hidden relative">
+            <div class="absolute -top-10 -right-10 w-40 h-40 bg-primary/10 rounded-full blur-3xl"></div>
+            <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-secondary/10 rounded-full blur-3xl"></div>
+
+            <div class="relative z-10 flex flex-col md:flex-row gap-8 items-start">
+
+                <!-- 프로필 이미지 -->
+                <div class="flex flex-col items-center gap-3 flex-shrink-0">
+                    <div class="w-28 h-28 rounded-xl bg-cyan-400/10 border-2 border-cyan-400/30 flex items-center justify-center overflow-hidden shadow-[0_0_20px_rgba(153,247,255,0.15)]">
+                        <img th:if="${user.profileImageUrl != null}"
+                             th:src="${user.profileImageUrl}"
+                             alt="프로필 이미지"
+                             class="w-full h-full object-cover"/>
+                        <span th:if="${user.profileImageUrl == null}"
+                              class="material-symbols-outlined text-6xl text-cyan-400/50"
+                              style="font-variation-settings: 'FILL' 1;">account_circle</span>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-xs font-label tracking-widest text-cyan-400"
+                           th:text="${user.role != null ? user.role.displayName : 'UNKNOWN'}">ROLE</p>
+                    </div>
+                </div>
+
+                <!-- 정보 테이블 -->
+                <div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-6 w-full">
+
+                    <!-- 아이디 -->
+                    <div class="flex flex-col gap-1">
+                        <label class="text-[10px] font-label tracking-widest text-cyan-400">아이디</label>
+                        <p class="font-body text-base text-on-surface border-b border-outline-variant/30 pb-2"
+                           th:text="${user.loginId}">-</p>
+                    </div>
+
+                    <!-- 이름 -->
+                    <div class="flex flex-col gap-1">
+                        <label class="text-[10px] font-label tracking-widest text-cyan-400">이름</label>
+                        <p class="font-body text-base text-on-surface border-b border-outline-variant/30 pb-2"
+                           th:text="${user.name}">-</p>
+                    </div>
+
+                    <!-- 이메일 -->
+                    <div class="flex flex-col gap-1">
+                        <label class="text-[10px] font-label tracking-widest text-cyan-400">이메일</label>
+                        <p class="font-body text-base text-on-surface border-b border-outline-variant/30 pb-2"
+                           th:text="${user.email}">-</p>
+                    </div>
+
+                    <!-- 전화번호 -->
+                    <div class="flex flex-col gap-1">
+                        <label class="text-[10px] font-label tracking-widest text-cyan-400">전화번호</label>
+                        <p class="font-body text-base text-on-surface border-b border-outline-variant/30 pb-2"
+                           th:text="${user.phone != null ? user.phone : '-'}">-</p>
+                    </div>
+
+                    <!-- 자기소개 -->
+                    <div class="flex flex-col gap-1 md:col-span-2">
+                        <label class="text-[10px] font-label tracking-widest text-cyan-400">자기소개</label>
+                        <p class="font-body text-sm text-slate-300 border-b border-outline-variant/30 pb-2 leading-relaxed"
+                           th:text="${user.introduction != null ? user.introduction : '자기소개가 없습니다.'}">-</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 수정 버튼 -->
+            <div class="relative z-10 flex justify-end mt-8">
+                <a th:href="@{/instructor/profile/edit}"
+                   class="flex items-center gap-2 px-6 py-3 rounded-xl bg-cyan-400/10 border border-cyan-400/30 text-cyan-400 hover:bg-cyan-400/20 hover:border-cyan-400/50 transition-all text-sm font-label tracking-wide shadow-[0_0_15px_rgba(153,247,255,0.1)]">
+                    <span class="material-symbols-outlined text-base">edit</span>
+                    수정
+                </a>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- 배경 효과 -->
+<div class="fixed inset-0 pointer-events-none -z-10">
+    <div class="absolute top-1/4 left-1/4 w-[400px] h-[400px] bg-primary/5 rounded-full blur-[120px]"></div>
+    <div class="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-secondary/5 rounded-full blur-[150px]"></div>
+</div>
+
+</body>
+</html>
