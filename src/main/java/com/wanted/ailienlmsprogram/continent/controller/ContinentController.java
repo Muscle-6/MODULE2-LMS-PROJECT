@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import com.wanted.ailienlmsprogram.community.service.PostService;
+import com.wanted.ailienlmsprogram.community.dto.PostDTO;
 
 import java.util.List;
 
@@ -18,6 +20,7 @@ public class ContinentController {
 
     private final ContinentService continentService;
     private final CourseCommandService courseCommandService;
+    private final PostService postService;
 
     // 대륙 전체 조회
     @GetMapping
@@ -36,6 +39,8 @@ public class ContinentController {
 
         List<CourseDetailResponseDTO> courses = courseCommandService.courseListByContinent(continentId);
 
+        List<PostDTO> posts = postService.findPostsByContinent(continentId);
+        model.addAttribute("posts", posts.stream().limit(10).toList());
 
         model.addAttribute("continent", continent);
         model.addAttribute("courses" , courses);
