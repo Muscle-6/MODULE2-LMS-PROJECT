@@ -40,6 +40,7 @@ public class Member {
     @Column(name = "password", nullable = false, length = 255)
     private String password;
 
+
     @Column(name = "member_name", nullable = false, length = 50)
     private String name;
 

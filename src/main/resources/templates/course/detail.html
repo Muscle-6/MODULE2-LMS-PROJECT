@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <meta charset="UTF-8">
+  <title th:text="${course.courseTitle} + ' - 상세 조회'">강좌 상세</title>
+  <style>
+    body { background: #0b1020; color: #f5f7ff; font-family: Arial, sans-serif; margin: 0; }
+    .container { width: 1100px; margin: 0 auto; padding: 40px 20px; }
+    .course-header { background: linear-gradient(135deg, #1a2447, #25336b); padding: 40px; border-radius: 18px; margin-bottom: 30px; border: 1px solid rgba(126, 224, 255, 0.2); }
+    .grid-container { display: grid; grid-template-columns: 2fr 1fr; gap: 30px; }
+    .section { background: #121a35; padding: 28px; border-radius: 18px; margin-bottom: 24px; }
+    .curriculum-card { background: #1a2447; padding: 18px; border-radius: 14px; margin-bottom: 12px; display: flex; justify-content: space-between; border: 1px solid transparent; transition: 0.2s; }
+    .curriculum-card:hover { border-color: #5f7cff; }
+    .sticky-side { position: sticky; top: 20px; }
+    .price-tag { font-size: 28px; color: #7ee0ff; font-weight: bold; margin-bottom: 20px; }
+    .btn-apply { width: 100%; padding: 18px; background: #5f7cff; color: white; border: none; border-radius: 12px; font-size: 18px; font-weight: bold; cursor: pointer; }
+    .instructor-badge { display: inline-block; padding: 4px 12px; background: rgba(126, 224, 255, 0.1); color: #7ee0ff; border-radius: 999px; font-size: 14px; margin-top: 10px; }
+    .rounded-back-btn {
+      display: inline-block;
+      padding: 12px 24px; /* 글자 주위에 넉넉한 여백 주기 오호이야~! */
+      background: rgba(95, 124, 255, 0.1); /* 반투명한 블루 배경 */
+      color: #7ee0ff; /* 글자색 (하늘색) */
+      text-decoration: none; /* 밑줄 제거 */
+      border-radius: 999px; /* 선배님이 원하시는 아주 둥글둥글한 테두리! 🚨 */
+      font-size: 14px;
+      font-weight: 500;
+      border: 1px solid rgba(126, 224, 255, 0.2); /* 은은한 테두리 */
+      transition: 0.3s;
+    }
+
+    .rounded-back-btn:hover {
+      background: rgba(95, 124, 255, 0.2); /* 호버 시 약간 더 진하게 */
+      border-color: #5f7cff;
+      transform: translateY(-2px); /* 호버 시 아주 살짝 떠오르는 느낌! */
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div style="margin-bottom: 25px;">
+    <a href="javascript:history.back();" class="rounded-back-btn">
+      목록으로 돌아가기
+    </a>
+  </div>
+  <section class="course-header">
+    <h1 th:text="${course.courseTitle}">강좌 제목</h1>
+    <p th:text="${course.courseDescription}">강좌 상세 설명</p>
+    <div class="instructor-badge">
+      <span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle;"></span>
+      강사 : <span th:text="${course.instructorName}">2</span>
+    </div>
+  </section>
+
+  <div class="grid-container">
+    <div class="main-content">
+      <section class="section">
+        <h2>강의 커리큘럼</h2>
+        <div class="curriculum-list" th:if="${!#lists.isEmpty(lectures)}">
+          <div class="curriculum-card" th:each="lecture : ${lectures}">
+            <div>
+              <span style="color: #7ee0ff; margin-right: 10px;" th:text="${lecture.lectureOrderIndex} + '.'">1.</span>
+              <span th:text="${lecture.lectureTitle}">강의 제목</span>
+            </div>
+            <span style="font-size: 12px; color: #a9b6ec;">무료 공개</span>
+          </div>
+        </div>
+        <p class="empty" th:if="${#lists.isEmpty(lectures)}">등록된 강의가 없습니다.</p>
+      </section>
+    </div>
+
+    <div class="sticky-side">
+      <div class="section">
+        <h3 style="margin-top: 0;">수강 신청</h3>
+        <div class="price-tag" th:text="${#numbers.formatInteger(course.coursePrice, 3, 'COMMA')} + '원'"></div>
+
+        <button class="btn-apply">지금 바로 침공하기</button>
+
+        <div style="margin-top: 20px; font-size: 13px; color: #b8c1e7; line-height: 1.6;">
+          <p>✔ 수강 기간: 무제한</p>
+          <p>✔ 난이도:
+            <span th:switch="${course.courseStatus}">
+              <span th:case="'PUBLISHED'" style="color: #5f7cff; font-weight: bold;">침공가능</span>
+              <span th:case="'DRAFT'" style="color: #ffb648;">침공대기중</span>
+              <span th:case="*" th:text="${course.courseStatus}">상태불명</span>
+            </span>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
