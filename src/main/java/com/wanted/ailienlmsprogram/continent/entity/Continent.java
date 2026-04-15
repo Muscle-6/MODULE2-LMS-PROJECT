@@ -17,12 +17,12 @@ public class Continent {
     @Column(name = "continent_id")
     private Long continentId;
 
-    @Column(name = "name", nullable = false, unique = true, length = 100)
+    @Column(name = "continent_name", nullable = false, unique = true, length = 100)
     private String continentName;
 
-    @Column(name = "description", columnDefinition = "TEXT")
+    @Column(name = "continent_description", columnDefinition = "TEXT")
     private String description;
 
-    @Column(name = "thumbnail_url", length = 500)
+    @Column(name = "continent_thumbnail_url", length = 500)
     private String thumbnailUrl;
 }
