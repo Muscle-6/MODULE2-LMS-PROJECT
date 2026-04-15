@@ -1,9 +1,8 @@
 <!DOCTYPE html>
-
 <html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
-    <title th:text="${detail.continent.continentName} + ' 상세'">대륙 상세</title>
+    <title th:text="${continent.continentName} + ' 상세'">대륙 상세</title>
     <style>
         body {
             margin: 0;
@@ -134,6 +133,7 @@
 
     <div class="top-bar">
         <a th:href="@{/}">← 메인으로</a>
+
         <div class="auth-buttons">
             <a sec:authorize="isAnonymous()" th:href="@{/login}">로그인</a>
 
@@ -152,6 +152,7 @@
 
     <section class="section">
         <h2>강좌 목록</h2>
+
         <div class="course-list" th:if="${!#lists.isEmpty(courses)}">
             <div class="card" th:each="course : ${courses}">
                 <div class="card-left">
@@ -170,6 +171,7 @@
 
     <section class="section">
         <h2>대륙 게시판 TOP 10</h2>
+
         <div class="post-list" th:if="${!#lists.isEmpty(posts)}">
             <div class="card" th:each="post : ${posts}">
                 <div class="card-left">
