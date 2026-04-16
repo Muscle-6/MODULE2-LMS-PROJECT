@@ -8,7 +8,7 @@ import lombok.*;
 @Getter
 @Setter
 @ToString
-public class CourseCommandDTO {
+public class CourseApplyDTO {
 
     private String courseTitle;
     private String courseDescription;

@@ -51,19 +51,14 @@ public class Course {
     // 수정 메서드
     public Course editCourseInfo(String courseTitle, String courseDescription,
                                   String courseThumbnailUrl, Integer coursePrice,
-                                  CourseStatus courseStatus) {
+                                  Continent continentId) {
         this.courseTitle = courseTitle;
         this.courseDescription = courseDescription;
         this.courseThumbnailUrl = courseThumbnailUrl;
         this.coursePrice = coursePrice;
-        this.courseStatus = courseStatus;
+        this.continent = continentId;
         return this;
     }
 
-    // 빌더 메서드
-    public Course builder() {
-        return new Course(courseId, continent, instructor, courseTitle,
-                courseDescription, courseThumbnailUrl, coursePrice,
-                createdAt, courseStatus);
-    }
+
 }

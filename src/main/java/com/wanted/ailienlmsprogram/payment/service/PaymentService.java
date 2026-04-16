@@ -6,6 +6,7 @@ import com.wanted.ailienlmsprogram.member.entity.Member;
 import com.wanted.ailienlmsprogram.payment.client.TossPaymentClient;
 import com.wanted.ailienlmsprogram.payment.dto.PaymentDetailResponse;
 import com.wanted.ailienlmsprogram.payment.dto.PaymentSummaryResponse;
+import com.wanted.ailienlmsprogram.payment.dto.TossPaymentResponse;
 import com.wanted.ailienlmsprogram.payment.entity.Cart;
 import com.wanted.ailienlmsprogram.payment.entity.Payment;
 import com.wanted.ailienlmsprogram.payment.entity.PaymentItem;
@@ -131,8 +132,25 @@ public class PaymentService {
                     "결제 금액이 일치하지 않습니다. (예상: " + expectedAmount + "원, 수신: " + amount + "원)");
         }
 
-        // 3. 토스페이먼츠 서버 측 결제 확인 (금액 검증 통과 후 호출)
-        tossPaymentClient.confirm(paymentKey, orderId, amount);
+
+        // 3. 토스페이먼츠 서버 측 결제 확인 (금액 검증 통과 후 1회만 호출)
+        TossPaymentResponse response = tossPaymentClient.confirm(paymentKey, orderId, amount);
+
+        if (response == null) {
+            throw new IllegalArgumentException("토스페이먼츠 응답을 받지 못했습니다.");
+        }
+        if (!"DONE".equals(response.getStatus())) {
+            throw new IllegalArgumentException("결제가 완료되지 않았습니다. (status: " + response.getStatus() + ")");
+        }
+        if (response.getTotalAmount() != expectedAmount) {
+            throw new IllegalArgumentException("Toss 응답 금액이 일치하지 않습니다.");
+        }
+        if (!response.getOrderId().equals(orderId)) {
+            throw new IllegalArgumentException("Toss 응답 주문번호가 일치하지 않습니다.");
+        }
+
+
+
 
         // 4. Payment 생성
         Payment payment = new Payment();
@@ -142,6 +160,8 @@ public class PaymentService {
         payment.setPaymentTotalPrice(expectedAmount);
         payment.setPaymentCompletedAt(LocalDateTime.now());
         paymentRepository.save(payment);
+
+
 
         // 5. PaymentItem 생성 + 수강 등록
         for (Cart cart : cartItems) {

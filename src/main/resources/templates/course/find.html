@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html class="dark" lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module02 LMS - 내 강좌 목록</title>
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#99f7ff",
+                        "on-primary-container": "#00555a",
+                        "secondary": "#c97cff",
+                        "on-secondary-container": "#fff5ff",
+                        "error": "#ff716c",
+                        "on-surface": "#ecedf6",
+                        "surface-container": "#161a21",
+                        "surface-container-highest": "#22262f",
+                        "outline-variant": "#45484f",
+                    },
+                    fontFamily: {
+                        "headline": ["Space Grotesk"],
+                        "body": ["Inter"],
+                        "label": ["Space Grotesk"]
+                    }
+                },
+            },
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0b0e14;
+            color: #ecedf6;
+            background-image:
+                radial-gradient(circle at 50% 50%, rgba(153, 247, 255, 0.05) 0%, transparent 50%),
+                url("data:image/svg+xml,%3Csvg width='400' height='400' viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M10 10L50 50M350 350L390 390' stroke='rgba(153, 247, 255, 0.1)' stroke-width='0.5'/%3E%3Ccircle cx='100' cy='100' r='1' fill='rgba(255,255,255,0.2)'/%3E%3Ccircle cx='300' cy='200' r='1' fill='rgba(255,255,255,0.3)'/%3E%3C/svg%3E");
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+
+        .filter-btn-active-published {
+            background-color: rgba(153, 247, 255, 0.15);
+            border-color: rgba(153, 247, 255, 0.5);
+            color: #99f7ff;
+            box-shadow: 0 0 12px rgba(153, 247, 255, 0.15);
+        }
+
+        .filter-btn-active-draft {
+            background-color: rgba(201, 124, 255, 0.15);
+            border-color: rgba(201, 124, 255, 0.5);
+            color: #c97cff;
+            box-shadow: 0 0 12px rgba(201, 124, 255, 0.15);
+        }
+
+        .filter-btn-inactive {
+            background-color: transparent;
+            border-color: rgba(69, 72, 79, 0.5);
+            color: #94a3b8;
+        }
+
+        .filter-btn-inactive:hover {
+            border-color: rgba(153, 247, 255, 0.3);
+            color: #ecedf6;
+        }
+
+        #course-list-area {
+            transition: opacity 0.2s ease;
+        }
+
+        #course-list-area.loading {
+            opacity: 0.4;
+            pointer-events: none;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen">
+
+<!-- ===== HEADER ===== -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-6 h-16 bg-slate-950/40 backdrop-blur-xl shadow-[0_0_20px_rgba(153,247,255,0.1)] border-b border-cyan-400/10">
+    <div class="flex items-center gap-8">
+        <span class="text-2xl font-bold tracking-tighter text-cyan-400 drop-shadow-[0_0_8px_rgba(153,247,255,0.6)] font-headline">
+            MODULE02 LMS
+        </span>
+        <span class="hidden md:inline text-xs font-label text-slate-400 tracking-widest uppercase">
+            우주/외계인 세계관 학습 플랫폼 (강사 사령부)
+        </span>
+    </div>
+
+    <div class="flex items-center gap-4">
+        <div class="flex items-center gap-4" th:if="${loginMember != null}">
+            <div class="text-right hidden sm:block mr-2">
+                <span class="text-xs font-label tracking-widest text-cyan-400"
+                      th:text="|${loginMember.name} 님|"></span>
+                <span class="text-[10px] text-slate-500 font-label tracking-tight ml-1"
+                      th:text="|(${loginMember.role})|"></span>
+            </div>
+            <div class="w-px h-4 bg-outline-variant/30 hidden sm:block"></div>
+            <a th:href="@{/logout}"
+               class="flex items-center gap-1 text-slate-400 hover:text-error transition-colors text-xs font-label">
+                <span class="material-symbols-outlined text-sm">power_settings_new</span>
+                로그아웃
+            </a>
+        </div>
+    </div>
+</header>
+
+<!-- ===== LEFT SIDEBAR (네비게이션만) ===== -->
+<aside class="fixed left-0 top-16 bottom-0 flex flex-col z-40 bg-slate-950/80 backdrop-blur-lg w-64 shadow-[4px_0_24px_rgba(0,0,0,0.5)] bg-gradient-to-r from-slate-900 to-slate-950 hidden md:flex border-r border-cyan-400/5">
+
+    <!-- 프로필 -->
+    <div class="p-6 border-b border-outline-variant/10" th:if="${loginMember != null}">
+        <div class="flex items-center gap-3">
+            <div class="h-10 w-10 rounded-lg bg-cyan-400/10 flex items-center justify-center border border-cyan-400/20">
+                <span class="material-symbols-outlined text-cyan-400"
+                      style="font-variation-settings: 'FILL' 1;">satellite_alt</span>
+            </div>
+            <div>
+                <p class="text-xs font-label tracking-widest text-cyan-400"
+                   th:text="${loginMember.name}">OPERATIVE</p>
+                <p class="text-[10px] text-slate-500 font-label tracking-tight"
+                   th:text="|ROLE: ${loginMember.role}|">ROLE</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 네비게이션 -->
+    <nav class="flex-1 py-4 flex flex-col gap-1">
+        <a th:href="@{/instructor}"
+           class="flex items-center gap-4 text-slate-400 hover:text-cyan-400 hover:bg-cyan-400/5 py-3 px-6 transition-colors font-label">
+            <span class="material-symbols-outlined">satellite_alt</span>
+            <span class="text-sm tracking-wide">강사 사령부</span>
+        </a>
+        <a th:href="@{/instructor/profile}"
+           class="flex items-center gap-4 text-slate-400 hover:text-cyan-400 hover:bg-cyan-400/5 py-3 px-6 transition-colors font-label">
+            <span class="material-symbols-outlined">person</span>
+            <span class="text-sm tracking-wide">내 정보</span>
+        </a>
+        <a href="#"
+           class="flex items-center gap-4 text-cyan-400 bg-cyan-400/10 border-r-4 border-cyan-400 py-3 px-6 shadow-[inset_0_0_15px_rgba(0,241,254,0.2)] font-label">
+            <span class="material-symbols-outlined">library_books</span>
+            <span class="text-sm tracking-wide">내 강좌</span>
+        </a>
+        <a th:href="@{/instructor/courses/apply}"
+           class="flex items-center gap-4 text-slate-400 hover:text-cyan-400 hover:bg-cyan-400/5 py-3 px-6 transition-colors font-label">
+            <span class="material-symbols-outlined">add_box</span>
+            <span class="text-sm tracking-wide">강좌 신청</span>
+        </a>
+    </nav>
+
+    <div class="p-6 border-t border-outline-variant/10 hidden md:block">
+        <div class="w-full bg-primary/5 border border-primary/20 text-primary/50 py-3 rounded-lg font-label text-xs tracking-widest text-center flex items-center justify-center gap-2">
+            <span class="material-symbols-outlined text-sm animate-pulse">radar</span>
+            COMMAND ONLINE
+        </div>
+    </div>
+</aside>
+
+<!-- ===== MAIN ===== -->
+<main class="md:ml-64 pt-24 px-6 md:px-12 pb-12">
+    <section class="max-w-6xl">
+
+        <!-- 페이지 타이틀 -->
+        <div class="mb-8">
+            <div class="flex items-center gap-3 mb-3">
+                <a th:href="@{/instructor}"
+                   class="flex items-center gap-1 text-slate-500 hover:text-cyan-400 transition-colors text-xs font-label">
+                    <span class="material-symbols-outlined text-sm">arrow_back</span>
+                    사령부로
+                </a>
+            </div>
+            <h1 class="text-3xl md:text-4xl font-headline font-bold text-on-surface tracking-tight mb-2">
+                MY COURSES
+            </h1>
+            <p class="text-slate-400 text-sm font-body">
+                공개/비공개 버튼으로 강좌를 필터링하세요.
+            </p>
+        </div>
+
+        <!-- 필터 버튼 + 강좌 수 (메인 영역 상단) -->
+        <div class="flex items-center justify-between mb-6 flex-wrap gap-4">
+            <div class="flex items-center gap-3">
+                <button id="btn-published"
+                        onclick="filterCourses('PUBLISHED')"
+                        class="filter-btn flex items-center gap-2 px-5 py-2.5 rounded-xl border text-sm font-label tracking-wide transition-all">
+                    <span class="material-symbols-outlined text-base">public</span>
+                    공개 강좌
+                </button>
+                <button id="btn-draft"
+                        onclick="filterCourses('DRAFT')"
+                        class="filter-btn flex items-center gap-2 px-5 py-2.5 rounded-xl border text-sm font-label tracking-wide transition-all">
+                    <span class="material-symbols-outlined text-base">lock</span>
+                    비공개 강좌
+                </button>
+            </div>
+            <span id="course-count" class="text-slate-500 text-xs font-label"></span>
+        </div>
+
+        <!-- 강좌 목록 영역 (fetch로 교체되는 영역) -->
+        <div id="course-list-area">
+
+            <!-- 강좌 있을 때 -->
+            <div th:if="${courses != null and !#lists.isEmpty(courses)}"
+                 class="grid grid-cols-1 gap-4">
+                <div th:each="course : ${courses}"
+                     class="group bg-surface-container/60 backdrop-blur-xl rounded-2xl border border-outline-variant/20 p-6 hover:border-cyan-400/20 transition-all shadow-lg shadow-cyan-500/5 relative overflow-hidden">
+
+                    <div class="absolute -top-6 -right-6 w-24 h-24 bg-primary/5 rounded-full blur-2xl"></div>
+
+                    <div class="relative z-10 flex items-start justify-between gap-6">
+
+                        <!-- 썸네일 + 강좌 정보 → 클릭 시 강의 목록으로 이동 -->
+                        <a th:href="@{/instructor/courses/{courseId}/lectures(courseId=${course.courseId})}"
+                           class="flex items-start gap-6 flex-1 min-w-0 hover:opacity-80 transition-opacity">
+
+                            <!-- 썸네일 -->
+                            <div class="flex-shrink-0 w-20 h-20 rounded-xl bg-slate-800/60 border border-outline-variant/20 overflow-hidden flex items-center justify-center">
+                                <img th:if="${course.courseThumbnailUrl != null}"
+                                     th:src="${course.courseThumbnailUrl}"
+                                     class="w-full h-full object-cover" alt="썸네일"/>
+                                <span th:if="${course.courseThumbnailUrl == null}"
+                                      class="material-symbols-outlined text-slate-600 text-3xl">image</span>
+                            </div>
+
+                            <!-- 강좌 정보 -->
+                            <div class="flex-1 min-w-0">
+
+                                <!-- 강좌 제목 + 상태 뱃지 -->
+                                <div class="flex items-center gap-3 mb-2 flex-wrap">
+                                    <h3 class="text-lg font-headline font-bold text-on-surface truncate"
+                                        th:text="${course.courseTitle}">강좌 제목</h3>
+                                    <span th:if="${course.courseStatus.name() == 'PUBLISHED'}"
+                                          class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-label tracking-widest bg-cyan-400/10 text-cyan-400 border border-cyan-400/20">
+                                        <span class="material-symbols-outlined text-xs">public</span>
+                                        공개
+                                    </span>
+                                    <span th:if="${course.courseStatus.name() == 'DRAFT'}"
+                                          class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-label tracking-widest bg-purple-400/10 text-purple-400 border border-purple-400/20">
+                                        <span class="material-symbols-outlined text-xs">lock</span>
+                                        비공개
+                                    </span>
+                                </div>
+
+                                <!-- 강좌 설명 -->
+                                <p class="text-sm text-slate-400 font-body leading-relaxed line-clamp-2 mb-4"
+                                   th:text="${course.courseDescription != null ? course.courseDescription : '강좌 설명이 없습니다.'}">
+                                    강좌 설명
+                                </p>
+
+                                <!-- 메타 정보 -->
+                                <div class="flex items-center gap-4 flex-wrap">
+                                    <span class="flex items-center gap-1 text-xs text-slate-500 font-label">
+                                        <span class="material-symbols-outlined text-sm">payments</span>
+                                        <span th:text="|${#numbers.formatInteger(course.coursePrice, 1, 'COMMA')}원|">가격</span>
+                                    </span>
+                                    <span class="flex items-center gap-1 text-xs text-slate-500 font-label">
+                                        <span class="material-symbols-outlined text-sm">schedule</span>
+                                        <span th:text="${#temporals.format(course.createdAt, 'yyyy.MM.dd')}">등록일</span>
+                                    </span>
+                                </div>
+                            </div>
+                        </a>
+
+                        <!-- 버튼 영역 (수정) -->
+                        <div class="flex-shrink-0 flex items-center gap-2 self-center">
+                            <!-- 수정 버튼 -->
+                            <a th:href="@{/instructor/courses/{id}/edit(id=${course.courseId})}"
+                               class="flex items-center gap-2 px-4 py-2 rounded-lg border border-secondary/30 bg-secondary/10 text-secondary text-sm font-label tracking-wide hover:bg-secondary/20 hover:border-secondary/50 transition-all">
+                                <span class="material-symbols-outlined text-base">edit</span>
+                                수정
+                            </a>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- 강좌 없을 때 -->
+            <div th:if="${courses == null or #lists.isEmpty(courses)}"
+                 class="flex flex-col items-center justify-center py-24 text-center">
+                <div class="w-16 h-16 rounded-2xl bg-outline-variant/10 border border-outline-variant/20 flex items-center justify-center mb-4">
+                    <span class="material-symbols-outlined text-slate-600 text-3xl">library_books</span>
+                </div>
+                <p class="text-slate-400 font-label tracking-wide mb-1">등록된 강좌가 없습니다</p>
+                <p class="text-slate-600 text-xs font-body mb-6">해당 상태의 강좌가 존재하지 않습니다.</p>
+                <a th:href="@{/instructor/courses/apply}"
+                   class="flex items-center gap-2 px-5 py-2.5 rounded-lg border border-primary/30 bg-primary/10 text-primary text-sm font-label tracking-wide hover:bg-primary/20 transition-all">
+                    <span class="material-symbols-outlined text-base">add_box</span>
+                    새 강좌 신청하기
+                </a>
+            </div>
+
+        </div>
+    </section>
+</main>
+
+<!-- 배경 그라디언트 -->
+<div class="fixed inset-0 pointer-events-none -z-10">
+    <div class="absolute top-1/4 left-1/4 w-[400px] h-[400px] bg-primary/5 rounded-full blur-[120px]"></div>
+    <div class="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-secondary/5 rounded-full blur-[150px]"></div>
+</div>
+
+<script th:inline="javascript">
+    const currentStatus = /*[[${currentStatus}]]*/ 'PUBLISHED';
+
+    document.addEventListener('DOMContentLoaded', function () {
+        updateFilterUI(currentStatus.toString());
+        updateCourseCount();
+    });
+
+    function updateFilterUI(status) {
+        const btnPublished = document.getElementById('btn-published');
+        const btnDraft = document.getElementById('btn-draft');
+
+        const baseClass = 'filter-btn flex items-center gap-2 px-5 py-2.5 rounded-xl border text-sm font-label tracking-wide transition-all';
+        btnPublished.className = baseClass;
+        btnDraft.className = baseClass;
+
+        if (status === 'PUBLISHED') {
+            btnPublished.classList.add('filter-btn-active-published');
+            btnDraft.classList.add('filter-btn-inactive');
+        } else {
+            btnDraft.classList.add('filter-btn-active-draft');
+            btnPublished.classList.add('filter-btn-inactive');
+        }
+    }
+
+    function updateCourseCount() {
+        const countEl = document.getElementById('course-count');
+        const cards = document.querySelectorAll('#course-list-area .group');
+        countEl.textContent = cards.length > 0 ? `총 ${cards.length}개` : '';
+    }
+
+    async function filterCourses(status) {
+        const listArea = document.getElementById('course-list-area');
+
+        listArea.classList.add('loading');
+        updateFilterUI(status);
+
+        try {
+            const response = await fetch(`/instructor/courses/${status}`, {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            });
+
+            if (!response.ok) throw new Error('요청 실패');
+
+            const html = await response.text();
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const newListArea = doc.getElementById('course-list-area');
+
+            if (newListArea) {
+                listArea.innerHTML = newListArea.innerHTML;
+            }
+
+            updateCourseCount();
+
+        } catch (error) {
+            console.error('강좌 목록 로딩 실패:', error);
+        } finally {
+            listArea.classList.remove('loading');
+        }
+    }
+</script>
+
+</body>
+</html>

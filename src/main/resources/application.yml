@@ -27,3 +27,7 @@ server:
         http-only: true
         secure: false
         same-site: lax
+
+gcs:
+  bucket-name: module02-lms-video-upload
+  credentials-path: classpath:gcs/gcs-key.json

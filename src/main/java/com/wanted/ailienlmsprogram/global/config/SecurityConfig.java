@@ -13,8 +13,6 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
-import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 
 
@@ -48,6 +46,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/login", "/signup", "/access-denied", "/continents", "/continents/*").permitAll()
                         .requestMatchers("/continents/*/posts", "/courses/*").authenticated()
+                        .requestMatchers("main").hasRole("STUDENT")
                         .requestMatchers("/student/**").hasRole("STUDENT")
                         .requestMatchers("/instructor/**").hasRole("INSTRUCTOR")
                         .requestMatchers("/admin/**").hasRole("ADMIN")
@@ -79,10 +78,7 @@ public class SecurityConfig {
                         .invalidSessionUrl("/login?expired=true")
                         .sessionFixation(fixation -> fixation.changeSessionId())
                 )
-                .csrf(csrf -> csrf
-                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                        .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler())
-                );
+                .csrf(csrf -> csrf.disable());
 
         return http.build();
     }

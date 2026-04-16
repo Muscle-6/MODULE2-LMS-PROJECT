@@ -6,11 +6,15 @@ import lombok.Getter;
 
 import java.time.LocalDateTime;
 
+/*관리자 회원 목록 화면에 필요한 데이터를 담는 응답 DTO.
+*
+* - 회원 기본 정보를 계쩡 상태를 포함하며,
+* - 화면 표시를 돕기 위한 상태 문자열/버튼 활성화 관련 메소드를 제공한다.*/
 @Getter
 @AllArgsConstructor
 public class AdminMemberListResponse {
 
-    private Long memberId; // 내부 처리용
+    private Long memberId;
     private String loginId;
     private String name;
     private String email;
@@ -19,29 +23,9 @@ public class AdminMemberListResponse {
     private Member.MemberRank rank;
     private LocalDateTime createdAt;
     private LocalDateTime lastLoginAt;
-
     private Member.AccountStatus accountStatus;
-    private boolean deleted;
+    private LocalDateTime bannedAt;
 
-    public String getDisplayStatus() {
-        if (deleted) {
-            return "삭제됨";
-        }
-        return switch (accountStatus) {
-            case ACTIVE -> "활성";
-            case INACTIVE -> "비활성";
-            case BANNED -> "제재";
-        };
-    }
 
-    public boolean canToggleStatus() {
-        return !deleted && role != Member.MemberRole.ADMIN;
-    }
 
-    public String getActionLabel() {
-        if (deleted) {
-            return "처리불가";
-        }
-        return accountStatus == Member.AccountStatus.ACTIVE ? "비활성화" : "활성화";
-    }
 }

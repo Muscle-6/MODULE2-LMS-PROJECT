@@ -2,11 +2,109 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>접근 거부</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>403 - Classified Area</title>
+    <style>
+        /* GitHub 다크 모드 베이스 + 외계인 네온 그린 포인트 */
+        body {
+            background-color: #0d1117; /* GitHub Dark 배경 */
+            color: #c9d1d9; /* GitHub Dark 기본 텍스트 */
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 600px;
+            padding: 40px;
+        }
+
+        .icon {
+            font-size: 72px;
+            margin-bottom: 24px;
+            color: #3fb950; /* GitHub Success Green */
+            text-shadow: 0 0 15px rgba(63, 185, 80, 0.4);
+            animation: pulse 3s infinite;
+        }
+
+        h1 {
+            font-size: 32px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #f0f6fc;
+            letter-spacing: -0.5px;
+        }
+
+        p {
+            font-size: 16px;
+            color: #8b949e; /* GitHub Muted Text */
+            margin-bottom: 32px;
+            line-height: 1.6;
+        }
+
+        .highlight {
+            color: #3fb950;
+            font-weight: bold;
+        }
+
+        /* GitHub 스타일 버튼 */
+        .btn {
+            display: inline-block;
+            padding: 5px 16px;
+            font-size: 14px;
+            font-weight: 500;
+            line-height: 20px;
+            color: #c9d1d9;
+            background-color: #21262d;
+            border: 1px solid rgba(240, 246, 252, 0.1);
+            border-radius: 6px;
+            text-decoration: none;
+            transition: 0.2s;
+        }
+
+        .btn:hover {
+            background-color: #30363d;
+            border-color: #8b949e;
+        }
+
+        .system-log {
+            font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+            font-size: 12px;
+            color: #484f58;
+            margin-top: 60px;
+            border-top: 1px solid #21262d;
+            padding-top: 20px;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.8; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.05); }
+            100% { opacity: 0.8; transform: scale(1); }
+        }
+    </style>
 </head>
 <body>
-<h1>접근 권한이 없습니다.</h1>
-<p>해당 페이지는 현재 계정으로 접근할 수 없습니다.</p>
-<a th:href="@{/}">홈으로 이동</a>
+<div class="container">
+    <div class="icon">🛸👁️</div>
+
+    <h1>403 : 접근이 거부되었습니다</h1>
+
+    <p>
+        당신의 <span class="highlight">탄소 기반 생명체 계정</span>으로는 이 기밀 저장소에 접근할 수 없습니다.<br>
+        데이터를 열람하려면 일루미나티 최고 위원회의 인가 코드가 필요합니다.
+    </p>
+
+    <a th:href="@{/}" class="btn">지구(홈)로 은폐 귀환하기</a>
+
+    <div class="system-log">
+        [SYSTEM_LOG] UNAUTHORIZED_DNA_DETECTED<br>
+        ERR_CODE: ILLUMINATI_PROTOCOL_BREACH<br>
+        WE ARE WATCHING YOU.
+    </div>
+</div>
 </body>
 </html>
