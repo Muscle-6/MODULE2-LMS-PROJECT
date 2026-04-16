@@ -12,20 +12,7 @@
     <script id="tailwind-config">
         tailwind.config = {
             darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        "ow-orange": "#FF9C00",
-                        "ow-orange-hover": "#FFB84D",
-                        "ow-blue": "#00B4FF",
-                        "ow-dark": "#1D2127",
-                    },
-                    fontFamily: {
-                        "ow": ["Oswald", "sans-serif"],
-                        "body": ["Noto Sans KR", "sans-serif"],
-                    }
-                },
-            },
+            theme: { extend: { colors: { "ow-orange": "#FF9C00", "ow-orange-hover": "#FFB84D", "ow-blue": "#00B4FF" }, fontFamily: { "ow": ["Oswald", "sans-serif"], "body": ["Noto Sans KR", "sans-serif"] } } }
         }
     </script>
 
@@ -34,30 +21,73 @@
         .bg-sci-fi {
             position: fixed; inset: 0; z-index: -3;
             background-image: radial-gradient(circle at 30% 50%, rgba(0,0,0,.2) 0%, rgba(0,0,0,.9) 100%),
-                              url("https://images.unsplash.com/photo-1541701494587-cb58502866ab?q=80&w=2070&auto=format&fit=crop");
+            url("https://images.unsplash.com/photo-1541701494587-cb58502866ab?q=80&w=2070&auto=format&fit=crop");
             background-size: cover; background-position: center;
         }
-        .bg-overlay {
-            position: fixed; inset: 0; z-index: -2;
-            background: linear-gradient(90deg, rgba(11,14,20,1) 0%, rgba(11,14,20,.8) 30%, transparent 100%);
-        }
+        .bg-overlay { position: fixed; inset: 0; z-index: -2; background: linear-gradient(90deg, rgba(11,14,20,1) 0%, rgba(11,14,20,.8) 30%, transparent 100%); }
         .ow-font-italic { font-family: 'Oswald', sans-serif; font-style: italic; text-transform: uppercase; }
-        .ow-card {
-            background: rgba(29,33,39,.6); backdrop-filter: blur(15px);
-            border: 1px solid rgba(255,255,255,.1); border-left: 6px solid rgba(255,255,255,.2);
-            clip-path: polygon(0 0,100% 0,100% calc(100% - 16px),calc(100% - 16px) 100%,0 100%);
-            transition: border-left-color .25s ease, background .25s ease;
-        }
-        .ow-card:hover { background: rgba(40,45,55,.95); border-left-color: #FF9C00; }
         .material-symbols-outlined { font-variation-settings: 'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24; vertical-align: middle; }
+
+        /* 결제 카드 */
+        .payment-card {
+            background: rgba(29,33,39,.75); backdrop-filter: blur(16px);
+            border: 1px solid rgba(255,255,255,.08); border-radius: 4px;
+            border-left: 3px solid rgba(255,255,255,.1);
+            padding: 18px 22px;
+            margin-bottom: 10px;
+            display: flex; align-items: center; gap: 18px;
+            transition: border-left-color .2s, background .2s;
+        }
+        .payment-card:hover { background: rgba(40,45,55,.9); border-left-color: #FF9C00; }
+
+        .payment-icon {
+            width: 42px; height: 42px; flex-shrink: 0;
+            background: rgba(255,156,0,.08); border: 1px solid rgba(255,156,0,.15);
+            border-radius: 4px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .payment-icon span { color: #FF9C00; font-size: 20px; }
+
+        .payment-order-no { font-family: 'Oswald', sans-serif; font-style: italic; font-size: 15px; color: #e5e7eb; margin-bottom: 4px; }
+        .payment-meta { font-size: 12px; color: #6b7280; }
+        .payment-meta .sep { margin: 0 6px; color: rgba(255,255,255,.1); }
+        .payment-amount { font-family: 'Oswald', sans-serif; font-style: italic; font-size: 20px; font-weight: 700; color: #00B4FF; white-space: nowrap; flex-shrink: 0; }
+
+        /* 상태 뱃지 */
+        .status-badge {
+            font-family: 'Oswald', sans-serif; font-style: italic;
+            display: inline-block; padding: 4px 10px; font-size: 11px; font-weight: 600;
+            white-space: nowrap; flex-shrink: 0; letter-spacing: .5px;
+        }
+        .badge-requested { background: rgba(234,179,8,.1); border: 1px solid rgba(234,179,8,.3); color: #fbbf24; }
+        .badge-approved  { background: rgba(34,197,94,.1);  border: 1px solid rgba(34,197,94,.3);  color: #4ade80; }
+        .badge-rejected  { background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1); color: #6b7280; }
+
+        /* 환불 버튼 */
+        .refund-btn {
+            font-family: 'Oswald', sans-serif; font-style: italic;
+            padding: 4px 12px; font-size: 11px; font-weight: 600; letter-spacing: .5px;
+            border: 1px solid rgba(239,68,68,.4); color: #f87171;
+            background: rgba(239,68,68,.06); cursor: pointer;
+            transition: all .15s; white-space: nowrap;
+        }
+        .refund-btn:hover { background: rgba(239,68,68,.15); border-color: #ef4444; }
+        .refund-btn:disabled { opacity: .5; cursor: not-allowed; }
+
+        /* 빈 목록 */
+        .empty-card { background: rgba(29,33,39,.75); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,.08); border-radius: 4px; padding: 80px 24px; text-align: center; }
+
+        /* 알림 */
+        .alert-success { background: rgba(34,197,94,.08); border: 1px solid rgba(34,197,94,.25); color: #86efac; padding: 13px 16px; border-radius: 4px; font-size: 13px; margin-bottom: 16px; }
+        .alert-error   { background: rgba(239,68,68,.08); border: 1px solid rgba(239,68,68,.25); color: #fca5a5; padding: 13px 16px; border-radius: 4px; font-size: 13px; margin-bottom: 16px; }
     </style>
 </head>
 
 <body class="min-h-screen relative">
-
 <div class="bg-sci-fi"></div>
 <div class="bg-overlay"></div>
 
+<!-- ── 헤더 ── -->
 <header class="fixed top-0 left-0 right-0 z-50 flex justify-between items-start p-6 pointer-events-none">
     <div class="pointer-events-auto">
         <h1 class="ow-font-italic text-5xl font-bold text-white tracking-wider drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">
@@ -65,7 +95,6 @@
         </h1>
         <p class="font-body text-xs text-gray-400 tracking-widest mt-1">ALIEN UNIVERSE LEARNING PLATFORM</p>
     </div>
-
     <div class="pointer-events-auto flex items-stretch bg-white text-black rounded-sm shadow-[0_5px_20px_rgba(0,0,0,0.6)] overflow-hidden" th:if="${loginMember != null}">
         <div class="bg-gray-200 px-4 py-2 flex items-center justify-center border-r border-gray-300">
             <span class="material-symbols-outlined text-gray-700 text-4xl">account_circle</span>
@@ -80,107 +109,75 @@
     </div>
 </header>
 
+<!-- ── 메인 ── -->
 <main class="min-h-screen max-w-5xl mx-auto px-6 pt-36 pb-16">
-
     <div class="mb-8 flex items-center justify-between">
         <h2 class="ow-font-italic text-4xl font-bold text-white tracking-wide flex items-center gap-3">
             <span class="text-ow-orange">></span>
             PAYMENT LOG <span class="text-gray-600 text-xl font-normal">// 자원 소모 기록</span>
         </h2>
-        <a th:href="@{/student}" class="font-body text-sm text-gray-400 hover:text-ow-orange transition-colors">
-            &larr; 학생 홈
-        </a>
+        <a th:href="@{/student}" class="font-body text-sm text-gray-400 hover:text-ow-orange transition-colors">← 학생 홈</a>
     </div>
 
-    <!-- 알림 -->
-    <div th:if="${successMsg}" class="mb-6 p-4 bg-green-900/40 border border-green-500/40 text-green-300 font-body text-sm rounded"
-         th:text="${successMsg}"></div>
-    <div th:if="${errorMsg}" class="mb-6 p-4 bg-red-900/40 border border-red-500/40 text-red-300 font-body text-sm rounded"
-         th:text="${errorMsg}"></div>
+    <div th:if="${successMsg}" class="alert-success" th:text="${successMsg}"></div>
+    <div th:if="${errorMsg}"   class="alert-error"   th:text="${errorMsg}"></div>
 
-    <!-- 결제 내역 없음 -->
-    <div th:if="${#lists.isEmpty(payments)}" class="ow-card p-16 text-center">
+    <!-- 빈 목록 -->
+    <div th:if="${#lists.isEmpty(payments)}" class="empty-card">
         <span class="material-symbols-outlined text-6xl text-gray-600 mb-4 block">receipt_long</span>
         <p class="ow-font-italic text-2xl text-gray-500">NO TRANSACTIONS</p>
         <p class="font-body text-sm text-gray-600 mt-2">아직 결제 내역이 없습니다.</p>
     </div>
 
     <!-- 결제 목록 -->
-    <div th:if="${!#lists.isEmpty(payments)}" class="flex flex-col gap-4">
-        <div th:each="payment : ${payments}" class="ow-card p-6 flex items-center gap-5">
+    <div th:if="${!#lists.isEmpty(payments)}">
+        <div th:each="payment : ${payments}" class="payment-card">
 
             <!-- 아이콘 -->
-            <div class="flex-shrink-0">
-                <span class="material-symbols-outlined text-4xl text-gray-500">receipt_long</span>
+            <div class="payment-icon">
+                <span class="material-symbols-outlined">receipt_long</span>
             </div>
 
-            <!-- 주문 정보 (클릭 시 상세 이동) -->
+            <!-- 주문 정보 (클릭 → 상세) -->
             <a th:href="@{/student/payments/{id}(id=${payment.paymentId})}"
-               class="flex-1 min-w-0 hover:text-ow-orange transition-colors group">
-                <p class="ow-font-italic text-lg text-white group-hover:text-ow-orange transition-colors truncate"
-                   th:text="${payment.paymentOrderNo}">ORD-20260414-XXXXXXXX</p>
-                <p class="font-body text-sm text-gray-400 mt-1">
+               style="flex:1; min-width:0; text-decoration:none;">
+                <p class="payment-order-no hover:text-ow-orange transition-colors" th:text="${payment.paymentOrderNo}">ORD-20260414</p>
+                <div class="payment-meta">
                     <span th:text="${payment.itemCount} + '개 강좌'">0개 강좌</span>
-                    <span class="mx-2 text-gray-600">|</span>
+                    <span class="sep">|</span>
                     <span th:text="${#temporals.format(payment.paymentCompletedAt, 'yyyy-MM-dd HH:mm')}">날짜</span>
-                </p>
+                </div>
             </a>
 
             <!-- 결제 금액 -->
-            <div class="flex-shrink-0 text-right mr-2">
-                <p class="ow-font-italic text-2xl font-bold text-ow-blue"
-                   th:text="${#numbers.formatInteger(payment.paymentTotalPrice, 3, 'COMMA')} + '원'">0원</p>
-            </div>
+            <p class="payment-amount" th:text="${#numbers.formatInteger(payment.paymentTotalPrice, 3, 'COMMA')} + '원'">0원</p>
 
             <!-- 환불 영역 -->
-            <div class="flex-shrink-0 w-28 flex justify-end">
-
-                <!-- 환불 내역 없음 → 환불 요청 버튼 -->
+            <div style="flex-shrink:0; min-width:80px; text-align:right;">
                 <form th:if="${payment.refundStatus == null}"
                       th:action="@{/student/payments/{id}/refund(id=${payment.paymentId})}"
-                      method="post"
-                      class="refund-form">
+                      method="post" class="refund-form" style="display:inline;">
                     <input type="hidden" name="refundReason" value=""/>
-                    <button type="submit"
-                            class="refund-btn ow-font-italic text-xs px-4 py-2 border border-red-500/60 hover:border-red-400 hover:bg-red-500/10 text-red-400 transition-colors cursor-pointer whitespace-nowrap">
-                        환불 신청
-                    </button>
+                    <button type="submit" class="refund-btn">환불 신청</button>
                 </form>
-
-                <!-- 환불 요청됨 → 상태 배지 (버튼 없음) -->
-                <div th:if="${payment.refundStatus != null}" class="text-right">
+                <div th:if="${payment.refundStatus != null}">
                     <span th:switch="${payment.refundStatus.name()}">
-                        <span th:case="'REQUESTED'"
-                              class="ow-font-italic text-xs px-3 py-1.5 bg-yellow-500/10 border border-yellow-500/40 text-yellow-400 whitespace-nowrap">
-                            검토 중
-                        </span>
-                        <span th:case="'APPROVED'"
-                              class="ow-font-italic text-xs px-3 py-1.5 bg-green-500/10 border border-green-500/40 text-green-400 whitespace-nowrap">
-                            승인됨
-                        </span>
-                        <span th:case="'REJECTED'"
-                              class="ow-font-italic text-xs px-3 py-1.5 bg-gray-500/10 border border-gray-500/40 text-gray-400 whitespace-nowrap">
-                            거절됨
-                        </span>
+                        <span th:case="'REQUESTED'" class="status-badge badge-requested">검토 중</span>
+                        <span th:case="'APPROVED'"  class="status-badge badge-approved">승인됨</span>
+                        <span th:case="'REJECTED'"  class="status-badge badge-rejected">거절됨</span>
                     </span>
                 </div>
-
             </div>
-
         </div>
     </div>
-
 </main>
 
 <script>
-    // 환불 신청 버튼: 클릭 즉시 "검토 중" 비활성화 상태로 전환한 뒤 폼 제출
     document.querySelectorAll('.refund-form').forEach(function(form) {
-        form.addEventListener('submit', function() {
+        form.addEventListener('submit', function(e) {
+            if (!confirm('환불을 신청하시겠습니까? 관리자 검토 후 처리됩니다.')) { e.preventDefault(); return; }
             var btn = form.querySelector('.refund-btn');
-            btn.textContent = '검토 중';
-            btn.disabled = true;
-            btn.classList.remove('border-red-500/60', 'hover:border-red-400', 'hover:bg-red-500/10', 'text-red-400', 'cursor-pointer');
-            btn.classList.add('border-yellow-500/40', 'text-yellow-400', 'cursor-not-allowed', 'opacity-70');
+            btn.textContent = '검토 중'; btn.disabled = true;
         });
     });
 </script>
