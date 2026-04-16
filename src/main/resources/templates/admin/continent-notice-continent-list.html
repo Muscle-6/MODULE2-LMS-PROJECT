@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>대륙 공지사항 작성 - 대륙 선택</title>
+  <style>
+    body { font-family: Arial, sans-serif; background:#f6f8fb; margin:0; color:#222; }
+    header { background:#3a1f44; color:white; padding:20px 40px; }
+    .container { width:1100px; max-width:calc(100% - 40px); margin:30px auto; }
+    .card-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(320px, 1fr)); gap:18px; }
+    .card { background:white; border-radius:14px; padding:20px; box-shadow:0 4px 12px rgba(0,0,0,0.08); }
+    .card h3 { margin-top:0; }
+    .meta { color:#666; font-size:14px; margin-bottom:12px; }
+    .btn {
+      display:inline-block; border:none; border-radius:10px; padding:10px 14px;
+      background:#5f2b8a; color:white; font-weight:700; cursor:pointer;
+    }
+    .top-link { color:white; text-decoration:none; margin-right:12px; }
+  </style>
+</head>
+<body>
+<header>
+  <h1>대륙 공지사항 작성</h1>
+  <a th:href="@{/admin}" class="top-link">관리자 홈</a>
+</header>
+
+<div class="container">
+  <h2>공지사항을 작성할 대륙을 선택하세요</h2>
+
+  <div class="card-grid">
+    <div class="card" th:each="continent : ${continents}">
+      <h3 th:text="${continent.continentName}">대륙명</h3>
+      <p class="meta">
+        기존 공지 수:
+        <span th:text="${continent.noticeCount}">0</span>
+      </p>
+      <p th:text="${continent.description != null ? continent.description : '설명 없음'}">대륙 설명</p>
+
+      <form th:action="@{/admin/continent-notices/select}" method="post">
+        <input type="hidden" name="continentId" th:value="${continent.continentId}">
+        <button type="submit" class="btn">이 대륙에 공지 작성</button>
+      </form>
+    </div>
+  </div>
+</div>
+</body>
+</html>
