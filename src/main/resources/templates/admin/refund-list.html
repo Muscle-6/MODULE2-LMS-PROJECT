@@ -215,10 +215,7 @@
     <tbody>
     <tr th:each="refund : ${refunds}">
       <td th:text="${refund.refundId}">1</td>
-      <td>
-        <div th:text="${refund.paymentOrderNo}">ORD-20260416-ABCD1234</div>
-        <small th:text="'paymentId: ' + ${refund.paymentId}">paymentId: 1</small>
-      </td>
+      <td th:text="${refund.paymentOrderNo}">ORD-20260416-ABCD1234</td>
       <td>
         <div th:text="${refund.memberName}">홍길동</div>
         <small th:text="${refund.memberLoginId}">student01</small>

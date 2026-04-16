@@ -12,7 +12,6 @@ import java.time.LocalDateTime;
 public class AdminRefundListResponse {
 
     private Long refundId;
-    private Long paymentId;
     private String paymentOrderNo;
     private Integer paymentTotalPrice;
 
@@ -30,7 +29,6 @@ public class AdminRefundListResponse {
 
         return new AdminRefundListResponse(
                 refund.getRefundId(),
-                payment.getPaymentId(),
                 payment.getPaymentOrderNo(),
                 payment.getPaymentTotalPrice(),
                 refund.getMember().getMemberId(),
