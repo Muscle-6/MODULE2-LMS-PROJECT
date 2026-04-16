@@ -5,8 +5,10 @@ import com.wanted.ailienlmsprogram.continent.repository.ContinentRepository;
 import com.wanted.ailienlmsprogram.coursecommand.dao.CourseRepository;
 import com.wanted.ailienlmsprogram.coursecommand.dto.CourseCommandDTO;
 import com.wanted.ailienlmsprogram.coursecommand.dto.CourseDetailResponseDTO;
+import com.wanted.ailienlmsprogram.coursecommand.dto.CourseFindResponseDTO;
 import com.wanted.ailienlmsprogram.coursecommand.entity.Course;
 import com.wanted.ailienlmsprogram.coursecommand.entity.CourseStatus;
+import com.wanted.ailienlmsprogram.global.security.CustomUserDetails;
 import com.wanted.ailienlmsprogram.user.entity.User;
 import com.wanted.ailienlmsprogram.user.repository.UserRepository;
 import lombok.AllArgsConstructor;
@@ -118,4 +120,5 @@ public class CourseCommandService {
                 .collect(Collectors.toList());
 
     }
+
 }

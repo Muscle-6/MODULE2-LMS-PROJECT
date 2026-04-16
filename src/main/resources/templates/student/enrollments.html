@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${studentName} + '의 학습 터미널'">My Learning Protocols - Alien LMS</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            background: #0b1020;
+            color: #f5f7ff;
+            min-height: 100vh;
+        }
+        .container { width: 1100px; margin: 0 auto; padding: 40px 20px 80px; }
+
+        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; }
+        .top-bar a { color: #fff; text-decoration: none; padding: 10px 16px; border: 1px solid #5f7cff; border-radius: 8px; font-weight: bold; }
+
+        .hero {
+            background: linear-gradient(135deg, #111933, #1d295f);
+            border-radius: 18px; padding: 40px; margin-bottom: 40px;
+            border: 1px solid rgba(95, 124, 255, 0.2); text-align: center;
+        }
+        .hero h1 { margin: 0 0 12px; font-size: 2.5rem; color: #7ee0ff; }
+
+        .enrollment-grid { display: grid; grid-template-cols: repeat(2, 1fr); gap: 24px; }
+
+        .ow-card {
+            background: #121a35; border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 20px; padding: 28px; transition: all 0.3s ease;
+            display: flex; flex-direction: column; min-height: 220px;
+        }
+        .ow-card:hover { transform: translateY(-5px); border-color: #5f7cff; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+
+        .card-header { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); padding-bottom: 15px; }
+        .icon-box { color: #5f7cff; font-size: 35px; }
+        .card-header h3 { margin: 0; font-size: 1.4rem; color: #fff; }
+
+        .card-body { flex-grow: 1; margin-bottom: 20px; }
+        .info-row { display: flex; flex-direction: column; gap: 8px; font-size: 0.9rem; color: #a9b6ec; }
+        .label { color: #5f7cff; font-weight: bold; margin-right: 8px; font-size: 0.8rem; }
+
+        .card-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 15px; border-top: 1px solid rgba(255, 255, 255, 0.05); }
+        .status-badge { font-size: 11px; padding: 3px 8px; background: rgba(126, 224, 255, 0.1); color: #7ee0ff; border-radius: 4px; border: 1px solid rgba(126, 224, 255, 0.3); }
+        .enter-link { color: #ffb648; font-weight: bold; text-decoration: none; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="top-bar">
+        <a th:href="@{/}">← MAIN TERMINAL</a>
+        <div sec:authorize="isAuthenticated()">
+            <span style="margin-right: 15px; color: #7ee0ff;">
+                STUDENT: <span th:text="${studentName}">UNKNOWN ENTITY</span>
+            </span>
+            <a th:href="@{/logout}" style="color: #ff5f5f; border-color: #ff5f5f;">LOGOUT</a>
+        </div>
+    </div>
+
+    <section class="hero">
+        <h1 th:text="'ACTIVE PROTOCOLS '"></h1>
+        <p th:text="${studentName} + ' 요원이 현재 학습 중인 프로토콜 목록입니다.'">학습 프로토콜 로딩 중...</p>
+    </section>
+
+    <div class="enrollment-grid">
+        <div th:each="item : ${enrollments}" class="ow-card">
+            <div class="card-header">
+                <span class="material-symbols-outlined icon-box">school</span>
+                <h3 th:text="${item.courseTitle}">SUBJECT TITLE</h3>
+            </div>
+
+            <div class="card-body">
+                <div class="info-row">
+                    <div>
+                        <span class="label">INSTRUCTOR:</span>
+                        <span th:text="${item.instructorName != null ? item.instructorName : 'NOT ASSIGNED'}">강사 미지정</span>
+                    </div>
+                    <div>
+                        <span class="label">ENROLLED AT:</span>
+                        <span th:text="${item.enrolledAt != null ? #temporals.format(item.enrolledAt, 'yyyy-MM-dd HH:mm') : 'PENDING'}">2026-00-00</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-footer">
+                <span class="status-badge" th:text="'STATUS: ' + ${item.status}">STATUS: UNKNOWN</span>
+                <a th:href="@{/student/course/{id}(id=${item.enrollmentId})}" class="enter-link">ENTER CLASSROOM →</a>
+            </div>
+        </div>
+
+        <div th:if="${#lists.isEmpty(enrollments)}" style="grid-column: span 2; text-align: center; padding: 100px 0; color: #626e9f;">
+            <p th:text="'[침공 실패] ' + ${studentName} + ' 요원의 활성화된 프로토콜이 없습니다.'"></p>
+            <a th:href="@{/courses}" style="color: #5f7cff; text-decoration: underline;">신규 프로토콜 탐색하기</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

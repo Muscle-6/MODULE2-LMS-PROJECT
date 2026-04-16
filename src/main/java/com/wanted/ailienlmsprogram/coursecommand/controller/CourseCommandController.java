@@ -5,6 +5,7 @@ import com.wanted.ailienlmsprogram.continent.entity.Continent;
 import com.wanted.ailienlmsprogram.continent.service.ContinentService;
 import com.wanted.ailienlmsprogram.coursecommand.dto.CourseCommandDTO;
 import com.wanted.ailienlmsprogram.coursecommand.dto.CourseDetailResponseDTO;
+import com.wanted.ailienlmsprogram.coursecommand.dto.CourseFindResponseDTO;
 import com.wanted.ailienlmsprogram.coursecommand.service.CourseCommandService;
 import com.wanted.ailienlmsprogram.global.security.CustomUserDetails;
 import lombok.AllArgsConstructor;
