@@ -27,9 +27,14 @@ public class AdminMemberService {
         validateAdminTarget(member);
 
         if (member.getAccountStatus() == Member.AccountStatus.ACTIVE) {
-            member.setAccountStatus(Member.AccountStatus.INACTIVE);
-        } else if (member.getAccountStatus() == Member.AccountStatus.INACTIVE) {
+            member.setAccountStatus(Member.AccountStatus.BANNED);
+            member.setDeletedAt(LocalDateTime.now());
+        } else if (member.getAccountStatus() == Member.AccountStatus.BANNED
+        || member.getAccountStatus() == Member.AccountStatus.INACTIVE) {
             member.setAccountStatus(Member.AccountStatus.ACTIVE);
+            member.setDeletedAt(null);
+        }else{
+            throw new IllegalArgumentException("처리할 수 없는 계정 상태입니다.");
         }
 
         member.setUpdatedAt(LocalDateTime.now());
@@ -39,9 +44,7 @@ public class AdminMemberService {
         Member member = getTarget(memberId);
         validateAdminTarget(member);
 
-        member.setAccountStatus(Member.AccountStatus.INACTIVE);
-        member.setDeletedAt(LocalDateTime.now());
-        member.setUpdatedAt(LocalDateTime.now());
+        adminMemberQueryRepository.delete(member);
     }
 
     private Member getTarget(Long memberId) {

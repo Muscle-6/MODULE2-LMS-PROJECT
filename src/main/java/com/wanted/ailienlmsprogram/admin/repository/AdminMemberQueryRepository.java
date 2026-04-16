@@ -30,7 +30,7 @@ public class AdminMemberQueryRepository {
                 m.createdAt,
                 m.lastLoginAt,
                 m.accountStatus,
-                case when m.deletedAt is not null then true else false end
+                m.deletedAt
             )
             from Member m
             where 1=1
@@ -67,5 +67,10 @@ public class AdminMemberQueryRepository {
 
     public Member findMember(Long memberId) {
         return em.find(Member.class, memberId);
+    }
+
+    public void delete(Member member) {
+        Member managedMember = em.contains(member) ? member : em.merge(member);
+        em.remove(managedMember);
     }
 }

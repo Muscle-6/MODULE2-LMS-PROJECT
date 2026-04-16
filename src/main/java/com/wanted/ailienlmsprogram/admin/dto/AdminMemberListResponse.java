@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class AdminMemberListResponse {
 
-    private Long memberId; // 내부 처리용
+    private Long memberId;
     private String loginId;
     private String name;
     private String email;
@@ -19,29 +19,23 @@ public class AdminMemberListResponse {
     private Member.MemberRank rank;
     private LocalDateTime createdAt;
     private LocalDateTime lastLoginAt;
-
     private Member.AccountStatus accountStatus;
-    private boolean deleted;
+    private LocalDateTime bannedAt;
 
     public String getDisplayStatus() {
-        if (deleted) {
-            return "삭제됨";
-        }
         return switch (accountStatus) {
             case ACTIVE -> "활성";
-            case INACTIVE -> "비활성";
-            case BANNED -> "제재";
+            case BANNED, INACTIVE -> "제재";
         };
     }
 
     public boolean canToggleStatus() {
-        return !deleted && role != Member.MemberRole.ADMIN;
+        return role != Member.MemberRole.ADMIN;
     }
 
     public String getActionLabel() {
-        if (deleted) {
-            return "처리불가";
-        }
-        return accountStatus == Member.AccountStatus.ACTIVE ? "비활성화" : "활성화";
+        return accountStatus == Member.AccountStatus.ACTIVE ? "제재" : "제재 해제";
     }
+
+
 }
