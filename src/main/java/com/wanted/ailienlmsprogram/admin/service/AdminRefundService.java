@@ -1,5 +1,6 @@
 package com.wanted.ailienlmsprogram.admin.service;
 
+import com.wanted.ailienlmsprogram.admin.dto.AdminRefundListResponse;
 import com.wanted.ailienlmsprogram.coursecommand.entity.Course;
 import com.wanted.ailienlmsprogram.enrollment.service.EnrollmentService;
 import com.wanted.ailienlmsprogram.payment.entity.Payment;
@@ -13,6 +14,11 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/*관리자 환불 처리 비즈니스 로직을 담당하는 서비스
+*
+* - 환불 요청 승인 처리
+* - 환불 요청 거절 처리
+* - 승인 시 결제에 포함된 강좌의 수강 취소 처리*/
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -21,10 +27,20 @@ public class AdminRefundService {
     private final RefundRepository refundRepository;
     private final EnrollmentService enrollmentService;
 
+
+    public List<AdminRefundListResponse> getRefunds(Refund.RefundStatus status){
+        List<Refund> refunds = (status == null)
+                ? refundRepository.findAllByOrderByRefundRequestedAtDesc()
+                : refundRepository.findByRefundStatusOrderByRefundRequestedAtDesc(status);
+
+        return refunds.stream().map(AdminRefundListResponse::from)
+                .toList();
+    }
     /**
      * 서버사이드 결제의 REQUESTED 환불을 승인 처리한다.
      * 수강 취소(REFUNDED)까지 한 트랜잭션에서 처리.
      */
+    //환불 요청을 승인 처리한다
     @Transactional
     public void approveRefund(Long refundId) {
         Refund refund = refundRepository.findById(refundId)
@@ -48,6 +64,8 @@ public class AdminRefundService {
     /**
      * 서버사이드 결제의 REQUESTED 환불을 거절 처리한다.
      */
+
+    //환불 요청을 거절 처리한다
     @Transactional
     public void rejectRefund(Long refundId) {
         Refund refund = refundRepository.findById(refundId)

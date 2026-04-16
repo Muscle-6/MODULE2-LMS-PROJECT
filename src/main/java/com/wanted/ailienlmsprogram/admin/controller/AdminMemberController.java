@@ -9,6 +9,12 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+/*관리자 회원 관리 기능을 담당하는 컨트롤러
+*
+* - 회원 목록 및 검색 결과를 조회한다.
+* - 회원 상태를 변경한다.
+* - 회원 삭제 요청을 처리한다.
+* - 처리 후 기존 검색 조건을 유지한 채 목록 화면으로 리다이렉트한다.*/
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/admin/members")
@@ -16,6 +22,7 @@ public class AdminMemberController {
 
     private final AdminMemberService adminMemberService;
 
+    //회원 목록 화면을 조회한다.
     @GetMapping
     public String memberList(@ModelAttribute("condition") AdminMemberSearchCondition condition,
                              Model model) {
@@ -24,6 +31,7 @@ public class AdminMemberController {
         return "admin/member-list";
     }
 
+    //특정 회원의 상태를 토글한다.
     @PostMapping("/{memberId}/toggle-status")
     public String toggleStatus(@PathVariable Long memberId,
                                @RequestParam(required = false) String query,
@@ -46,6 +54,7 @@ public class AdminMemberController {
         return "redirect:/admin/members";
     }
 
+    //특정 회원을 삭제처리한다.
     @PostMapping("/{memberId}/delete")
     public String delete(@PathVariable Long memberId,
                          @RequestParam(required = false) String query,
