@@ -1,10 +1,12 @@
 package com.wanted.ailienlmsprogram.admin.repository;
 
+import com.wanted.ailienlmsprogram.admin.dto.AdminCourseDetailResponse;
 import com.wanted.ailienlmsprogram.admin.dto.AdminCourseListResponse;
 import com.wanted.ailienlmsprogram.admin.dto.AdminCourseSearchCondition;
 import com.wanted.ailienlmsprogram.coursecommand.entity.Course;
 import com.wanted.ailienlmsprogram.coursecommand.entity.CourseStatus;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 import org.springframework.stereotype.Repository;
@@ -69,6 +71,33 @@ public class AdminCourseQueryRepository {
         }
 
         return query.getResultList();
+    }
+
+    public AdminCourseDetailResponse findCourseDetail(Long courseId) {
+        try {
+            return em.createQuery("""
+                select new com.wanted.ailienlmsprogram.admin.dto.AdminCourseDetailResponse(
+                    c.courseId,
+                    c.courseTitle,
+                    c.courseDescription,
+                    c.courseThumbnailUrl,
+                    c.coursePrice,
+                    c.createdAt,
+                    c.courseStatus,
+                    c.continent.continentName,
+                    c.continent.description,
+                    c.instructor.memberId,
+                    c.instructor.loginId,
+                    c.instructor.name
+                )
+                from Course c
+                where c.courseId = :courseId
+                """, AdminCourseDetailResponse.class)
+                    .setParameter("courseId", courseId)
+                    .getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
     }
 
     public Course findCourse(Long courseId) {

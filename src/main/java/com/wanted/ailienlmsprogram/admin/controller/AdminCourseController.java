@@ -11,12 +11,11 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/admin/courses")
 public class AdminCourseController {
 
     private final AdminCourseService adminCourseService;
 
-    @GetMapping
+    @GetMapping("/admin/courses")
     public String courseList(@ModelAttribute("condition") AdminCourseSearchCondition condition,
                              Model model) {
 
@@ -26,7 +25,20 @@ public class AdminCourseController {
         return "admin/course-list";
     }
 
-    @PostMapping("/{courseId}/status")
+    @PostMapping("/admin/course/detail")
+    public String courseDetail(@RequestParam Long courseId,
+                               @RequestParam(required = false) String query,
+                               @RequestParam(required = false) CourseStatus status,
+                               Model model) {
+
+        model.addAttribute("course", adminCourseService.getCourseDetail(courseId));
+        model.addAttribute("query", query);
+        model.addAttribute("status", status);
+
+        return "admin/course-detail";
+    }
+
+    @PostMapping("/admin/courses/{courseId}/status")
     public String changeStatus(@PathVariable Long courseId,
                                @RequestParam CourseStatus targetStatus,
                                @RequestParam(required = false) String query,

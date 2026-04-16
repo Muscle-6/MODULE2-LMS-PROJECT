@@ -1,5 +1,6 @@
 package com.wanted.ailienlmsprogram.admin.service;
 
+import com.wanted.ailienlmsprogram.admin.dto.AdminCourseDetailResponse;
 import com.wanted.ailienlmsprogram.admin.dto.AdminCourseListResponse;
 import com.wanted.ailienlmsprogram.admin.dto.AdminCourseSearchCondition;
 import com.wanted.ailienlmsprogram.admin.repository.AdminCourseQueryRepository;
@@ -21,6 +22,17 @@ public class AdminCourseService {
     @Transactional(readOnly = true)
     public List<AdminCourseListResponse> getCourses(AdminCourseSearchCondition condition) {
         return adminCourseQueryRepository.findCourses(condition);
+    }
+
+    @Transactional(readOnly = true)
+    public AdminCourseDetailResponse getCourseDetail(Long courseId) {
+        AdminCourseDetailResponse detail = adminCourseQueryRepository.findCourseDetail(courseId);
+
+        if (detail == null) {
+            throw new IllegalArgumentException("강좌가 존재하지 않습니다.");
+        }
+
+        return detail;
     }
 
     public void changeCourseStatus(Long courseId, CourseStatus targetStatus) {

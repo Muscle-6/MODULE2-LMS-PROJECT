@@ -135,15 +135,6 @@
             background: #dde3ec;
         }
 
-        .btn-warning {
-            background: #f59e0b;
-            color: white;
-        }
-
-        .btn-warning:hover {
-            background: #d97706;
-        }
-
         .result-summary {
             margin-top: 16px;
             display: flex;
@@ -231,6 +222,10 @@
             font-weight: 700;
         }
 
+        .inline-form {
+            margin: 0;
+        }
+
         @media (max-width: 768px) {
             header {
                 padding: 18px 20px;
@@ -261,7 +256,7 @@
 <body>
 <header>
     <h1>관리자 강좌 관리</h1>
-    <p>강사 신청 강좌를 조회하고 공개 상태를 DRAFT / PUBLISHED로 변경합니다.</p>
+    <p>강사 신청 강좌를 조회하고 상세 내용을 확인한 뒤 공개 상태를 결정합니다.</p>
 </header>
 
 <div class="container">
@@ -291,10 +286,10 @@
 
             <select name="status">
                 <option value="">전체 상태</option>
-                <option th:each="status : ${statuses}"
-                        th:value="${status}"
-                        th:text="${status.displayName}"
-                        th:selected="${condition.status == status}">
+                <option th:each="statusItem : ${statuses}"
+                        th:value="${statusItem}"
+                        th:text="${statusItem.displayName}"
+                        th:selected="${condition.status == statusItem}">
                 </option>
             </select>
 
@@ -308,7 +303,7 @@
                 <strong th:text="${#lists.size(courses)}">0</strong>건
             </div>
             <div class="muted">
-                DRAFT 우선 정렬 후 신청일 최신순으로 표시됩니다.
+                상세 페이지에서 강좌 내용을 검토한 후 공개 여부를 결정합니다.
             </div>
         </div>
     </div>
@@ -323,7 +318,7 @@
                 <th>가격</th>
                 <th>신청일</th>
                 <th>현재 상태</th>
-                <th>관리</th>
+                <th>상세</th>
             </tr>
             </thead>
             <tbody>
@@ -357,22 +352,15 @@
                 </td>
 
                 <td>
-                    <form th:action="@{|/admin/courses/${course.courseId}/status|}"
-                          method="post"
-                          onsubmit="return confirm('강좌 공개 상태를 변경하시겠습니까?');">
-
-                        <input type="hidden" name="targetStatus" th:value="${course.nextStatus}">
+                    <form class="inline-form"
+                          th:action="@{/admin/course/detail}"
+                          method="post">
+                        <input type="hidden" name="courseId" th:value="${course.courseId}">
                         <input type="hidden" name="query" th:value="${condition.query}">
                         <input type="hidden" name="status"
                                th:if="${condition.status != null}"
                                th:value="${condition.status}">
-
-                        <button type="submit"
-                                class="btn"
-                                th:classappend="${course.draft} ? ' btn-primary' : ' btn-warning'"
-                                th:text="${course.actionLabel}">
-                            공개 전환
-                        </button>
+                        <button type="submit" class="btn btn-primary">상세 보기</button>
                     </form>
                 </td>
             </tr>
