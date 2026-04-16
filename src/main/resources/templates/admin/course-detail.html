@@ -263,9 +263,11 @@
 
   <div class="card">
     <h2 class="section-title">썸네일</h2>
-    <div class="thumbnail-box" th:if="${course.courseThumbnailUrl != null and !#strings.isEmpty(course.courseThumbnailUrl)}">
+    <div class="thumbnail-box"
+         th:if="${course.courseThumbnailUrl != null and !#strings.isEmpty(course.courseThumbnailUrl)}">
       <img th:src="${course.courseThumbnailUrl}" alt="강좌 썸네일">
     </div>
+
     <div class="empty-thumbnail"
          th:if="${course.courseThumbnailUrl == null or #strings.isEmpty(course.courseThumbnailUrl)}">
       등록된 썸네일이 없습니다.
