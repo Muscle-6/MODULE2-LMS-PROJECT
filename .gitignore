@@ -35,3 +35,6 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### GCS 키 파일 (절대 Git에 올리면 안 됨) ###
+src/main/resources/gcs/

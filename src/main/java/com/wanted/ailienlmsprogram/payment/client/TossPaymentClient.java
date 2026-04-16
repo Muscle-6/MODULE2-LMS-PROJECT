@@ -1,5 +1,6 @@
 package com.wanted.ailienlmsprogram.payment.client;
 
+import com.wanted.ailienlmsprogram.payment.dto.TossPaymentResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
@@ -29,8 +30,10 @@ public class TossPaymentClient {
     /**
      * POST /v1/payments/confirm
      * 결제 승인: 클라이언트 SDK가 반환한 paymentKey, orderId, amount로 서버 측 최종 승인.
+     *
+     * @return
      */
-    public void confirm(String paymentKey, String orderId, long amount) {
+    public TossPaymentResponse confirm(String paymentKey, String orderId, long amount) {
         Map<String, Object> body = Map.of(
                 "paymentKey", paymentKey,
                 "orderId",    orderId,
@@ -38,13 +41,14 @@ public class TossPaymentClient {
         );
 
         try {
-            restClient.post()
+            return restClient.post()
                     .uri("https://api.tosspayments.com/v1/payments/confirm")
                     .header("Authorization", basicAuth())
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(body)
                     .retrieve()
-                    .toBodilessEntity();
+                    .body(TossPaymentResponse.class); // 토스 결과값
+
         } catch (RestClientException e) {
             log.error("Toss confirm failed: paymentKey={}, orderId={}", paymentKey, orderId, e);
             throw new IllegalArgumentException("토스페이먼츠 결제 확인에 실패했습니다.");
@@ -85,4 +89,5 @@ public class TossPaymentClient {
         return "Basic " + Base64.getEncoder()
                 .encodeToString((secretKey + ":").getBytes(StandardCharsets.UTF_8));
     }
+
 }

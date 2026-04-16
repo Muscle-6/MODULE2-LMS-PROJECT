@@ -4,6 +4,7 @@ import com.wanted.ailienlmsprogram.continent.dto.ContinentAllResponseDTO;
 import com.wanted.ailienlmsprogram.continent.entity.Continent;
 import com.wanted.ailienlmsprogram.continent.service.ContinentService;
 import com.wanted.ailienlmsprogram.coursecommand.dto.CourseDetailResponseDTO;
+import com.wanted.ailienlmsprogram.coursecommand.dto.CourseFindResponseDTO;
 import com.wanted.ailienlmsprogram.coursecommand.dto.CourseApplyDTO;
 import com.wanted.ailienlmsprogram.coursecommand.dto.CourseFindDTO;
 import com.wanted.ailienlmsprogram.coursecommand.entity.CourseStatus;
