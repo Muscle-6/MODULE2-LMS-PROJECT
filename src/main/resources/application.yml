@@ -15,6 +15,11 @@ spring:
   thymeleaf:
     cache: false
 
+  servlet:
+    multipart:
+      max-file-size: 500MB
+      max-request-size: 500MB
+
 toss:
   client-key: test_ck_AQ92ymxN34NMmQE699GyrajRKXvd
   secret-key: test_sk_vZnjEJeQVxnX4wEzW1Nb8PmOoBN0

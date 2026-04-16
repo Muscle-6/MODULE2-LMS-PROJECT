@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html class="dark" lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module02 LMS - 강의 등록</title>
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#99f7ff",
+                        "on-primary-container": "#00555a",
+                        "secondary": "#c97cff",
+                        "on-secondary-container": "#fff5ff",
+                        "error": "#ff716c",
+                        "on-surface": "#ecedf6",
+                        "surface-container": "#161a21",
+                        "surface-container-highest": "#22262f",
+                        "outline-variant": "#45484f",
+                    },
+                    fontFamily: {
+                        "headline": ["Space Grotesk"],
+                        "body": ["Inter"],
+                        "label": ["Space Grotesk"]
+                    }
+                },
+            },
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0b0e14;
+            color: #ecedf6;
+            background-image:
+                radial-gradient(circle at 50% 50%, rgba(153, 247, 255, 0.05) 0%, transparent 50%),
+                url("data:image/svg+xml,%3Csvg width='400' height='400' viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M10 10L50 50M350 350L390 390' stroke='rgba(153, 247, 255, 0.1)' stroke-width='0.5'/%3E%3Ccircle cx='100' cy='100' r='1' fill='rgba(255,255,255,0.2)'/%3E%3Ccircle cx='300' cy='200' r='1' fill='rgba(255,255,255,0.3)'/%3E%3C/svg%3E");
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .cy-input {
+            background: #0d1117 !important;
+            border: 1px solid rgba(153, 247, 255, 0.2) !important;
+            border-radius: 8px !important;
+            color: #ecedf6 !important;
+            transition: all 0.2s;
+            width: 100%;
+            padding: 10px 14px;
+            font-size: 0.95rem;
+            font-family: 'Inter', sans-serif;
+        }
+        .cy-input:focus {
+            outline: none !important;
+            border-color: #99f7ff !important;
+            box-shadow: 0 0 0 2px rgba(153, 247, 255, 0.15) !important;
+        }
+        .cy-input::placeholder {
+            color: rgba(236, 237, 246, 0.3) !important;
+        }
+        .required-dot::after {
+            content: " *";
+            color: #99f7ff;
+            font-size: 0.75rem;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen">
+
+<!-- ===== HEADER ===== -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-6 h-16 bg-slate-950/40 backdrop-blur-xl shadow-[0_0_20px_rgba(153,247,255,0.1)] border-b border-cyan-400/10">
+    <div class="flex items-center gap-8">
+        <span class="text-2xl font-bold tracking-tighter text-cyan-400 drop-shadow-[0_0_8px_rgba(153,247,255,0.6)] font-headline">
+            MODULE02 LMS
+        </span>
+        <span class="hidden md:inline text-xs font-label text-slate-400 tracking-widest uppercase">
+            우주/외계인 세계관 학습 플랫폼 (강사 사령부)
+        </span>
+    </div>
+    <div class="flex items-center gap-4">
+        <div class="flex items-center gap-4" th:if="${loginMember != null}">
+            <div class="text-right hidden sm:block mr-2">
+                <span class="text-xs font-label tracking-widest text-cyan-400"
+                      th:text="|${loginMember.name} 님|"></span>
+                <span class="text-[10px] text-slate-500 font-label tracking-tight ml-1"
+                      th:text="|(${loginMember.role})|"></span>
+            </div>
+            <div class="w-px h-4 bg-outline-variant/30 hidden sm:block"></div>
+            <a th:href="@{/logout}"
+               class="flex items-center gap-1 text-slate-400 hover:text-error transition-colors text-xs font-label">
+                <span class="material-symbols-outlined text-sm">power_settings_new</span>
+                로그아웃
+            </a>
+        </div>
+    </div>
+</header>
+
+<!-- ===== LEFT SIDEBAR ===== -->
+<aside class="fixed left-0 top-16 bottom-0 flex flex-col z-40 bg-slate-950/80 backdrop-blur-lg w-64 shadow-[4px_0_24px_rgba(0,0,0,0.5)] bg-gradient-to-r from-slate-900 to-slate-950 hidden md:flex border-r border-cyan-400/5">
+    <div class="p-6 border-b border-outline-variant/10" th:if="${loginMember != null}">
+        <div class="flex items-center gap-3">
+            <div class="h-10 w-10 rounded-lg bg-cyan-400/10 flex items-center justify-center border border-cyan-400/20">
+                <span class="material-symbols-outlined text-cyan-400"
+                      style="font-variation-settings: 'FILL' 1;">satellite_alt</span>
+            </div>
+            <div>
+                <p class="text-xs font-label tracking-widest text-cyan-400"
+                   th:text="${loginMember.name}">OPERATIVE</p>
+                <p class="text-[10px] text-slate-500 font-label tracking-tight"
+                   th:text="|ROLE: ${loginMember.role}|">ROLE</p>
+            </div>
+        </div>
+    </div>
+    <nav class="flex-1 py-4 flex flex-col gap-1">
+        <a th:href="@{/instructor}"
+           class="flex items-center gap-4 text-slate-400 hover:text-cyan-400 hover:bg-cyan-400/5 py-3 px-6 transition-colors font-label">
+            <span class="material-symbols-outlined">satellite_alt</span>
+            <span class="text-sm tracking-wide">강사 사령부</span>
+        </a>
+        <a th:href="@{/instructor/profile}"
+           class="flex items-center gap-4 text-slate-400 hover:text-cyan-400 hover:bg-cyan-400/5 py-3 px-6 transition-colors font-label">
+            <span class="material-symbols-outlined">person</span>
+            <span class="text-sm tracking-wide">내 정보</span>
+        </a>
+        <a th:href="@{/instructor/courses/PUBLISHED}"
+           class="flex items-center gap-4 text-cyan-400 bg-cyan-400/10 border-r-4 border-cyan-400 py-3 px-6 shadow-[inset_0_0_15px_rgba(0,241,254,0.2)] font-label">
+            <span class="material-symbols-outlined">library_books</span>
+            <span class="text-sm tracking-wide">내 강좌</span>
+        </a>
+        <a th:href="@{/instructor/courses/apply}"
+           class="flex items-center gap-4 text-slate-400 hover:text-cyan-400 hover:bg-cyan-400/5 py-3 px-6 transition-colors font-label">
+            <span class="material-symbols-outlined">add_box</span>
+            <span class="text-sm tracking-wide">강좌 신청</span>
+        </a>
+    </nav>
+    <div class="p-6 border-t border-outline-variant/10 hidden md:block">
+        <div class="w-full bg-primary/5 border border-primary/20 text-primary/50 py-3 rounded-lg font-label text-xs tracking-widest text-center flex items-center justify-center gap-2">
+            <span class="material-symbols-outlined text-sm animate-pulse">radar</span>
+            COMMAND ONLINE
+        </div>
+    </div>
+</aside>
+
+<!-- ===== MAIN ===== -->
+<main class="md:ml-64 pt-24 px-6 md:px-12 pb-12">
+    <div class="max-w-4xl">
+
+        <!-- 뒤로가기 + 페이지 타이틀 -->
+        <div class="mb-8">
+            <div class="flex items-center gap-3 mb-3">
+                <a th:href="@{/instructor/courses/{courseId}/lectures(courseId=${courseId})}"
+                   class="flex items-center gap-1 text-slate-500 hover:text-cyan-400 transition-colors text-xs font-label">
+                    <span class="material-symbols-outlined text-sm">arrow_back</span>
+                    강의 목록으로
+                </a>
+            </div>
+            <h1 class="text-3xl md:text-4xl font-headline font-bold text-on-surface tracking-tight mb-2">
+                강의 등록
+            </h1>
+            <p class="text-slate-400 text-sm font-body">
+                강의 정보와 영상 파일을 업로드하세요.
+            </p>
+        </div>
+
+        <!-- 등록 폼 -->
+        <form th:action="@{/instructor/courses/{courseId}/lectures/add(courseId=${courseId})}"
+              method="post"
+              enctype="multipart/form-data">
+
+            <div class="bg-surface-container/60 backdrop-blur-xl rounded-2xl border border-outline-variant/20 p-6 md:p-8 shadow-lg shadow-cyan-500/5 relative overflow-hidden">
+                <div class="absolute -top-10 -right-10 w-40 h-40 bg-primary/10 rounded-full blur-3xl"></div>
+                <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-secondary/10 rounded-full blur-3xl"></div>
+
+                <div class="relative z-10 flex flex-col md:flex-row gap-8">
+
+                    <!-- 왼쪽: 영상 업로드 -->
+                    <div class="flex flex-col gap-3 w-full md:w-1/2">
+                        <label class="text-[11px] font-label tracking-widest text-cyan-400">
+                            강의 영상
+                        </label>
+
+                        <!-- 업로드 영역 -->
+                        <div id="videoUploadArea"
+                             class="w-full h-64 md:h-full min-h-[300px] rounded-xl bg-slate-900/80 border-2 border-dashed border-cyan-400/30 flex flex-col items-center justify-center gap-3 cursor-pointer hover:border-cyan-400/60 hover:bg-slate-900 transition-all"
+                             onclick="document.getElementById('lectureVideo').click()">
+                            <span class="material-symbols-outlined text-cyan-400/50 text-5xl"
+                                  style="font-variation-settings: 'FILL' 1;">video_file</span>
+                            <div class="text-center">
+                                <p class="text-sm font-label text-slate-400 tracking-wide">클릭하여 영상 파일 선택</p>
+                                <p class="text-xs font-body text-slate-600 mt-1">MP4, MOV, AVI 등 영상 파일</p>
+                            </div>
+                        </div>
+
+                        <!-- 파일 선택 후 표시 영역 -->
+                        <div id="videoFileInfo" class="hidden items-center gap-3 bg-slate-800/60 border border-outline-variant/20 rounded-xl px-5 py-4">
+                            <span class="material-symbols-outlined text-cyan-400 text-2xl"
+                                  style="font-variation-settings: 'FILL' 1;">video_file</span>
+                            <div class="flex-1 min-w-0">
+                                <p id="videoFileName" class="text-sm font-label text-on-surface truncate">파일명</p>
+                                <p id="videoFileSize" class="text-xs font-body text-slate-500 mt-0.5">파일 크기</p>
+                            </div>
+                            <button type="button"
+                                    onclick="document.getElementById('lectureVideo').click()"
+                                    class="flex-shrink-0 flex items-center gap-1 px-3 py-1.5 rounded-lg border border-outline-variant/30 text-slate-400 hover:text-cyan-400 hover:border-cyan-400/30 transition-all text-xs font-label">
+                                <span class="material-symbols-outlined text-sm">edit</span>
+                                변경
+                            </button>
+                        </div>
+
+                        <input type="file"
+                               id="lectureVideo"
+                               name="lectureVideo"
+                               accept="video/*"
+                               class="hidden"
+                               onchange="previewVideo(event)"/>
+
+                        <p class="text-[10px] font-body text-slate-600">
+                            * 소용량 영상을 권장합니다. 대용량 파일은 업로드에 시간이 걸릴 수 있습니다.
+                        </p>
+                    </div>
+
+                    <!-- 오른쪽: 강의 정보 입력 -->
+                    <div class="flex flex-col gap-6 w-full md:w-1/2">
+
+                        <!-- 강의 제목 -->
+                        <div class="flex flex-col gap-2">
+                            <label class="text-[11px] font-label tracking-widest text-cyan-400 required-dot">
+                                강의 제목
+                            </label>
+                            <input type="text"
+                                   name="lectureTitle"
+                                   class="cy-input"
+                                   placeholder="강의 제목을 입력하세요"
+                                   required/>
+                        </div>
+
+                        <!-- 강의 설명 -->
+                        <div class="flex flex-col gap-2 flex-1">
+                            <label class="text-[11px] font-label tracking-widest text-cyan-400">
+                                강의 설명
+                            </label>
+                            <textarea name="lectureDescription"
+                                      rows="10"
+                                      class="cy-input h-full"
+                                      placeholder="강의에 대한 설명을 입력하세요"></textarea>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- 버튼 -->
+            <div class="flex justify-end gap-3 mt-6">
+                <a th:href="@{/instructor/courses/{courseId}/lectures(courseId=${courseId})}"
+                   class="flex items-center gap-2 px-6 py-3 rounded-xl bg-slate-800/50 border border-slate-700/40 text-slate-400 hover:text-white hover:border-slate-600 transition-all text-sm font-label tracking-wide">
+                    <span class="material-symbols-outlined text-base">close</span>
+                    취소
+                </a>
+                <button type="submit"
+                        class="flex items-center gap-2 px-6 py-3 rounded-xl bg-cyan-400/10 border border-cyan-400/30 text-cyan-400 hover:bg-cyan-400/20 hover:border-cyan-400/50 transition-all text-sm font-label tracking-wide shadow-[0_0_15px_rgba(153,247,255,0.1)]">
+                    <span class="material-symbols-outlined text-base">upload</span>
+                    등록하기
+                </button>
+            </div>
+
+        </form>
+    </div>
+</main>
+
+<!-- 배경 그라디언트 -->
+<div class="fixed inset-0 pointer-events-none -z-10">
+    <div class="absolute top-1/4 left-1/4 w-[400px] h-[400px] bg-primary/5 rounded-full blur-[120px]"></div>
+    <div class="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-secondary/5 rounded-full blur-[150px]"></div>
+</div>
+
+<script>
+    function previewVideo(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const uploadArea = document.getElementById('videoUploadArea');
+        const fileInfo   = document.getElementById('videoFileInfo');
+        const fileName   = document.getElementById('videoFileName');
+        const fileSize   = document.getElementById('videoFileSize');
+
+        // 파일명 표시
+        fileName.textContent = file.name;
+
+        // 파일 크기 변환 (MB 단위)
+        const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
+        fileSize.textContent = sizeMB + ' MB';
+
+        // 업로드 영역 숨기고 파일 정보 표시
+        uploadArea.classList.add('hidden');
+        fileInfo.classList.remove('hidden');
+        fileInfo.classList.add('flex');
+    }
+</script>
+
+</body>
+</html>
