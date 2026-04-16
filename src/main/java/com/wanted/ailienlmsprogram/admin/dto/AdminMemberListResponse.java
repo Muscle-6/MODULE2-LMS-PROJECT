@@ -6,6 +6,10 @@ import lombok.Getter;
 
 import java.time.LocalDateTime;
 
+/*관리자 회원 목록 화면에 필요한 데이터를 담는 응답 DTO.
+*
+* - 회원 기본 정보를 계쩡 상태를 포함하며,
+* - 화면 표시를 돕기 위한 상태 문자열/버튼 활성화 관련 메소드를 제공한다.*/
 @Getter
 @AllArgsConstructor
 public class AdminMemberListResponse {
@@ -22,20 +26,6 @@ public class AdminMemberListResponse {
     private Member.AccountStatus accountStatus;
     private LocalDateTime bannedAt;
 
-    public String getDisplayStatus() {
-        return switch (accountStatus) {
-            case ACTIVE -> "활성";
-            case BANNED, INACTIVE -> "제재";
-        };
-    }
-
-    public boolean canToggleStatus() {
-        return role != Member.MemberRole.ADMIN;
-    }
-
-    public String getActionLabel() {
-        return accountStatus == Member.AccountStatus.ACTIVE ? "제재" : "제재 해제";
-    }
 
 
 }

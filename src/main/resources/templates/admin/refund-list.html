@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>환불 요청 관리</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f6f8fb;
+      margin: 0;
+      color: #222;
+    }
+
+    header {
+      background: #3a1f44;
+      color: white;
+      padding: 20px 40px;
+    }
+
+    header h1 {
+      margin: 0 0 10px 0;
+    }
+
+    .top-links a {
+      color: white;
+      text-decoration: none;
+      margin-right: 12px;
+      font-weight: 600;
+    }
+
+    .container {
+      width: 1200px;
+      max-width: calc(100% - 40px);
+      margin: 30px auto;
+    }
+
+    .panel {
+      background: white;
+      border-radius: 14px;
+      padding: 20px 24px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      margin-bottom: 20px;
+    }
+
+    .message {
+      padding: 14px 16px;
+      border-radius: 10px;
+      margin-bottom: 16px;
+      font-weight: 600;
+    }
+
+    .success {
+      background: #eefaf1;
+      color: #237a3b;
+      border: 1px solid #b8e0c2;
+    }
+
+    .error {
+      background: #fff1f1;
+      color: #b42318;
+      border: 1px solid #f5c2c7;
+    }
+
+    .filter-form {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    select, button {
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+
+    .btn {
+      cursor: pointer;
+      border: none;
+      font-weight: 700;
+    }
+
+    .btn-primary {
+      background: #3a1f44;
+      color: white;
+    }
+
+    .btn-secondary {
+      background: #ece8f0;
+      color: #3a1f44;
+    }
+
+    .btn-approve {
+      background: #1f7a3a;
+      color: white;
+    }
+
+    .btn-reject {
+      background: #b42318;
+      color: white;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    th, td {
+      padding: 14px 12px;
+      border-bottom: 1px solid #ececec;
+      text-align: left;
+      vertical-align: top;
+      font-size: 14px;
+    }
+
+    th {
+      background: #f4eff7;
+      color: #3a1f44;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .requested {
+      background: #fff4e5;
+      color: #9a6700;
+    }
+
+    .approved {
+      background: #eefaf1;
+      color: #237a3b;
+    }
+
+    .rejected {
+      background: #fff1f1;
+      color: #b42318;
+    }
+
+    .action-group {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .empty-box {
+      background: white;
+      border-radius: 14px;
+      padding: 30px;
+      text-align: center;
+      color: #666;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+  </style>
+</head>
+<body>
+<header>
+  <h1>환불 요청 관리</h1>
+  <div class="top-links">
+    <a th:href="@{/admin}">관리자 홈</a>
+    <a th:href="@{/logout}">로그아웃</a>
+  </div>
+</header>
+
+<div class="container">
+
+  <div th:if="${successMsg}" class="message success" th:text="${successMsg}"></div>
+  <div th:if="${errorMsg}" class="message error" th:text="${errorMsg}"></div>
+
+  <div class="panel">
+    <form th:action="@{/admin/refunds}" method="get" class="filter-form">
+      <label for="status"><strong>상태 필터</strong></label>
+      <select id="status" name="status">
+        <option value="">전체</option>
+        <option th:each="refundStatus : ${refundStatuses}"
+                th:value="${refundStatus}"
+                th:text="${refundStatus}"
+                th:selected="${selectedStatus == refundStatus}">
+        </option>
+      </select>
+
+      <button type="submit" class="btn btn-primary">조회</button>
+      <a th:href="@{/admin/refunds}">
+        <button type="button" class="btn btn-secondary">초기화</button>
+      </a>
+    </form>
+  </div>
+
+  <div th:if="${#lists.isEmpty(refunds)}" class="empty-box">
+    조회된 환불 요청이 없습니다.
+  </div>
+
+  <table th:if="${!#lists.isEmpty(refunds)}">
+    <thead>
+    <tr>
+      <th>환불 ID</th>
+      <th>주문번호</th>
+      <th>회원</th>
+      <th>결제금액</th>
+      <th>환불사유</th>
+      <th>상태</th>
+      <th>요청일</th>
+      <th>처리일</th>
+      <th>관리</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="refund : ${refunds}">
+      <td th:text="${refund.refundId}">1</td>
+      <td>
+        <div th:text="${refund.paymentOrderNo}">ORD-20260416-ABCD1234</div>
+        <small th:text="'paymentId: ' + ${refund.paymentId}">paymentId: 1</small>
+      </td>
+      <td>
+        <div th:text="${refund.memberName}">홍길동</div>
+        <small th:text="${refund.memberLoginId}">student01</small>
+      </td>
+      <td th:text="${#numbers.formatInteger(refund.paymentTotalPrice, 3, 'COMMA')} + '원'">10,000원</td>
+      <td th:text="${refund.refundReason}">환불 사유</td>
+      <td>
+                <span th:classappend="${refund.refundStatus.name() == 'REQUESTED'} ? 'status-badge requested' :
+                                       (${refund.refundStatus.name() == 'APPROVED'} ? 'status-badge approved' : 'status-badge rejected')"
+                      th:text="${refund.displayStatus}">
+                    처리 대기
+                </span>
+      </td>
+      <td th:text="${refund.refundRequestedAt != null ? #temporals.format(refund.refundRequestedAt, 'yyyy-MM-dd HH:mm') : '-'}">2026-04-16 10:30</td>
+      <td th:text="${refund.refundProcessedAt != null ? #temporals.format(refund.refundProcessedAt, 'yyyy-MM-dd HH:mm') : '-'}">-</td>
+      <td>
+        <div th:if="${refund.requested}" class="action-group">
+          <form th:action="@{/admin/refunds/{refundId}/approve(refundId=${refund.refundId})}" method="post">
+            <input type="hidden" name="status" th:value="${selectedStatus}">
+            <button type="submit" class="btn btn-approve">승인</button>
+          </form>
+          <form th:action="@{/admin/refunds/{refundId}/reject(refundId=${refund.refundId})}" method="post">
+            <input type="hidden" name="status" th:value="${selectedStatus}">
+            <button type="submit" class="btn btn-reject">거절</button>
+          </form>
+        </div>
+        <div th:unless="${refund.requested}">
+          처리 완료
+        </div>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+</body>
+</html>
