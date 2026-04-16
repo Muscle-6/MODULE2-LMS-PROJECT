@@ -1,21 +1,26 @@
 package com.wanted.ailienlmsprogram.enrollment.service;
 
+import com.wanted.ailienlmsprogram.coursecommand.dto.CourseFindResponseDTO;
 import com.wanted.ailienlmsprogram.coursecommand.entity.Course;
+import com.wanted.ailienlmsprogram.enrollment.dto.EnrollmentResponseDTO;
 import com.wanted.ailienlmsprogram.enrollment.entity.Enrollment;
 import com.wanted.ailienlmsprogram.enrollment.repository.EnrollmentRepository;
 import com.wanted.ailienlmsprogram.member.entity.Member;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class EnrollmentService {
 
     private final EnrollmentRepository enrollmentRepository;
+    private final ModelMapper modelMapper;
 
     /**
      * 결제 완료 시 수강 등록.
@@ -51,5 +56,20 @@ public class EnrollmentService {
                     .findByMemberMemberIdAndCourseCourseId(member.getMemberId(), course.getCourseId())
                     .ifPresent(e -> e.setStatus(Enrollment.EnrollmentStatus.REFUNDED));
         }
+    }
+
+    // 내가 수강 중인 강좌 조회
+    public List<EnrollmentResponseDTO> enrollmentsByMemberId(Long studentId) {
+        List<Enrollment> enrollmentList = enrollmentRepository.findAllByMember_MemberId(studentId);
+
+        return enrollmentList.stream()
+                .map(enrollment -> {
+                    EnrollmentResponseDTO dto = modelMapper.map(enrollment, EnrollmentResponseDTO.class);
+                    if (enrollment.getCourse().getInstructor() != null) {
+                        dto.setInstructorName(enrollment.getCourse().getInstructor().getName());
+                    }
+                    return dto;
+                })
+                .collect(Collectors.toList());
     }
 }
