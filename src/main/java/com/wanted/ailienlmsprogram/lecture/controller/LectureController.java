@@ -32,4 +32,6 @@ public class LectureController {
         return mv;
     }
 
+
+
 }
