@@ -44,7 +44,7 @@ public class PostController {
         PostDTO post = postService.findPostById(postId);
         model.addAttribute("post", post);
 
-        // 2. ★댓글 목록 가져와서 모델에 담기★
+        // 2. 댓글 목록 가져와서 모델에 담기★
         // 서비스의 findComments 메서드를 호출해서 'comments'라는 이름으로 넘김
         List<CommentResponse> comments = commentService.findComments(postId);
         model.addAttribute("comments", comments);
@@ -104,4 +104,8 @@ public class PostController {
         postService.deletePost(postId);
         return "redirect:/continents/" + continentId + "/posts";
     }
+
+
+
+
 }
