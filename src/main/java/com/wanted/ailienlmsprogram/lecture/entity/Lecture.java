@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Entity(name = "lecture")
 @AllArgsConstructor
 @NoArgsConstructor
@@ -19,7 +21,7 @@ public class Lecture {
 
     @ManyToOne
     @JoinColumn(name = "course_id", nullable = false)
-    private Course courseId;
+    private Course course;
 
     @Column(name = "lecture_title")
     private String lectureTitle;
@@ -28,9 +30,9 @@ public class Lecture {
     private String lectureDescription;
 
     @Column(name = "lecture_order_index")
-    private String lectureOrderIndex;
+    private Integer lectureOrderIndex;
 
     @Column(name = "created_at")
-    private String createdAt;
+    private LocalDateTime createdAt;
 
 }

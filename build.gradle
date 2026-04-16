@@ -35,6 +35,9 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     testAnnotationProcessor 'org.projectlombok:lombok'
     implementation("org.modelmapper:modelmapper:3.1.1")
+
+    // Google Cloud Storage
+    implementation 'com.google.cloud:google-cloud-storage:2.40.1'
 }
 
 tasks.named('test') {
