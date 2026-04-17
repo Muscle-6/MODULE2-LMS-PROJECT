@@ -34,6 +34,7 @@ public class ContinentController {
     // 대륙 상세 조회
     @GetMapping("/{continentId}")
     public String continentDetail(@PathVariable("continentId") Long continentId, Model model) {
+        // TODO. 개선 포인트 로직 연관관계를 맺어서 강좌랑 top10 맺어서 나중에 logging
 
         ContinentAllResponseDTO continent = continentService.getContinentDetail(continentId);
 
