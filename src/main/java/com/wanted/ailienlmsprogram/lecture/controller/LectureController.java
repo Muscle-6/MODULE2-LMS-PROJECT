@@ -82,4 +82,31 @@ public class LectureController {
 
         return "redirect:/instructor/courses/" + courseId + "/lectures";
     }
+
+    @GetMapping("/instructor/courses/{courseId}/lectures/{lectureId}/edit")
+    public ModelAndView editMyCoursePage(ModelAndView mv,
+                                         @PathVariable Long courseId,
+                                         @PathVariable Long lectureId) {
+
+        LectureFindDTO lecture = lectureService.findLectureById(lectureId);
+        mv.addObject("lecture", lecture);
+        mv.addObject("courseId", courseId);
+        mv.setViewName("lecture/edit");
+
+        return mv;
+    }
+
+    @PostMapping("/instructor/courses/{courseId}/lectures/{lectureId}/edit")
+    public String editMyLecture(@ModelAttribute LectureAddDTO request,
+                                 @RequestParam(value = "lectureVideo", required = false) MultipartFile lectureVideo,
+                                 @PathVariable Long courseId,
+                                 @PathVariable Long lectureId,
+                                 @AuthenticationPrincipal CustomUserDetails userDetails) throws IOException {
+
+        Long memberId = userDetails.getMember().getMemberId();
+        lectureService.editLecture(request, lectureId, memberId, lectureVideo);
+
+        return "redirect:/instructor/courses/" + courseId + "/lectures";
+    }
+
 }

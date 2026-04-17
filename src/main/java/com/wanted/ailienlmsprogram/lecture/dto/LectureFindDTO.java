@@ -12,9 +12,11 @@ import java.time.LocalDateTime;
 public class LectureFindDTO {
 
     private Long lectureId;
+    private Long courseId;
     private String lectureTitle;
     private String lectureDescription;
     private Integer lectureOrderIndex;
+    private String videoUrl;
     private LocalDateTime createdAt;
 
 

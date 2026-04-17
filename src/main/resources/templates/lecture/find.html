@@ -214,6 +214,13 @@
                             <span th:text="${#temporals.format(lecture.createdAt, 'yyyy.MM.dd')}">등록일</span>
                         </span>
 
+                        <!-- 수정 버튼 -->
+                        <a th:href="@{/instructor/courses/{courseId}/lectures/{lectureId}/edit(courseId=${course.courseId}, lectureId=${lecture.lectureId})}"
+                           class="flex-shrink-0 flex items-center gap-1 px-3 py-1.5 rounded-lg border border-outline-variant/30 text-slate-400 hover:text-cyan-400 hover:border-cyan-400/30 transition-all text-xs font-label">
+                            <span class="material-symbols-outlined text-sm">edit</span>
+                            수정
+                        </a>
+
                     </div>
                 </div>
             </div>

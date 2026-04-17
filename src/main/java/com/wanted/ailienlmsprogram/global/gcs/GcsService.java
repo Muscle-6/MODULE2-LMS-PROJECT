@@ -40,4 +40,14 @@ public class GcsService {
         // 5. 공개 접근 URL 반환 (DB에 저장할 값)
         return "https://storage.googleapis.com/" + bucketName + "/" + savedName;
     }
+
+    public void deleteFile(String fileUrl) {
+        // URL에서 blobName 추출
+        // "https://storage.googleapis.com/{bucketName}/{blobName}" 형태에서
+        // {bucketName}/ 이후 문자열만 잘라냄
+        String blobName = fileUrl.replace(
+                "https://storage.googleapis.com/" + bucketName + "/", ""
+        );
+        storage.delete(bucketName, blobName);
+    }
 }
