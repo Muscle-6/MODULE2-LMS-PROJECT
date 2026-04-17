@@ -4,89 +4,149 @@
     <meta charset="UTF-8">
     <title>관리자 홈</title>
     <style>
+        /* 기본 리셋 및 폰트 설정 */
         body {
-            font-family: Arial, sans-serif;
-            background: #f6f8fb;
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #f4f6f9; /* 배경을 살짝 더 부드러운 톤으로 변경 */
             margin: 0;
-            color: #222;
+            color: #333;
         }
 
+        /* 헤더 디자인 (Flexbox 적용으로 깔끔한 정렬) */
         header {
-            background: #3a1f44;
+            background: #2c1e36; /* 조금 더 세련된 다크 퍼플 */
             color: white;
-            padding: 20px 40px;
+            padding: 16px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
 
         header h1 {
-            margin: 0 0 10px 0;
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .top-links {
+            display: flex;
+            gap: 20px;
         }
 
         .top-links a {
-            color: white;
+            color: rgba(255, 255, 255, 0.85);
             text-decoration: none;
-            margin-right: 12px;
-            font-weight: 600;
+            font-weight: 500;
+            transition: color 0.2s ease;
         }
 
+        .top-links a:hover {
+            color: #ffffff;
+        }
+
+        /* 레이아웃 컨테이너 */
         .container {
             width: 1100px;
             max-width: calc(100% - 40px);
-            margin: 30px auto;
+            margin: 40px auto;
         }
 
+        /* 페이지 설명 박스 (포인트 컬러 추가) */
         .page-description {
             background: white;
-            padding: 20px 24px;
-            border-radius: 14px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-            margin-bottom: 20px;
+            padding: 24px 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+            margin-bottom: 30px;
             line-height: 1.6;
+            color: #4b5563;
+            border-left: 4px solid #7a2fb2; /* 강조선 추가 */
+            font-size: 0.95rem;
         }
 
+        /* 그리드 (반응형 대응 강화) */
         .menu-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 18px;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
         }
 
+        /* 메뉴 카드 */
         .menu-card {
             background: white;
-            padding: 24px;
-            border-radius: 14px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            border: 1px solid #edf2f7;
+            display: flex;
+            flex-direction: column; /* 내용이 적어도 버튼이 하단에 고정되도록 설정 */
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        /* 카드 Hover 애니메이션 */
+        .menu-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.08);
         }
 
         .menu-card h3 {
             margin-top: 0;
             margin-bottom: 12px;
-            color: #3a1f44;
+            color: #2c1e36;
+            font-size: 1.25rem;
         }
 
         .menu-card p {
             margin: 0;
             line-height: 1.6;
-            color: #555;
+            color: #64748b;
+            font-size: 0.95rem;
+            flex-grow: 1; /* 버튼을 아래로 밀어냄 */
             min-height: 72px;
         }
 
+        /* 통일된 버튼 디자인 */
         a.btn {
-            display: inline-block;
-            margin-top: 14px;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
             text-decoration: none;
             color: white;
             background: #7a2fb2;
-            padding: 10px 14px;
+            padding: 12px 20px;
             border-radius: 8px;
             font-weight: 600;
+            font-size: 0.95rem;
+            transition: background-color 0.2s ease, transform 0.1s ease;
         }
 
-        @media (max-width: 900px) {
-            .menu-grid {
-                grid-template-columns: 1fr;
+        /* 버튼 Hover 애니메이션 */
+        a.btn:hover {
+            background: #642594;
+        }
+
+        a.btn:active {
+            transform: scale(0.98);
+        }
+
+        /* 모바일 및 태블릿 반응형 처리 */
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+                padding: 20px;
             }
 
             .container {
-                max-width: calc(100% - 24px);
+                margin: 20px auto;
+                max-width: calc(100% - 32px);
+            }
+
+            .menu-grid {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -143,8 +203,6 @@
             <a th:href="@{/admin/statistics}" class="btn">이동</a>
         </div>
 
-
-
         <div class="menu-card">
             <h3>개발자 모니터링</h3>
             <p>
@@ -170,6 +228,12 @@
                 신청 승인/반려 처리 기능으로 이동합니다.
             </p>
             <a th:href="@{/admin/courses}" class="btn">이동</a>
+        </div>
+
+        <div class="menu-card">
+            <h3>대륙 공지사항 작성</h3>
+            <p>관리자가 대륙을 선택한 뒤 해당 대륙 공지사항을 작성합니다.</p>
+            <a th:href="@{/admin/continent-notices/continents}" class="btn">이동</a>
         </div>
     </div>
 </div>

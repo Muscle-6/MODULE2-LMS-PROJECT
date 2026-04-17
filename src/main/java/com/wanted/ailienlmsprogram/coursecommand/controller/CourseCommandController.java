@@ -4,11 +4,14 @@ import com.wanted.ailienlmsprogram.continent.dto.ContinentAllResponseDTO;
 import com.wanted.ailienlmsprogram.continent.entity.Continent;
 import com.wanted.ailienlmsprogram.continent.service.ContinentService;
 import com.wanted.ailienlmsprogram.coursecommand.dto.CourseDetailResponseDTO;
+import com.wanted.ailienlmsprogram.coursecommand.dto.CourseFindResponseDTO;
 import com.wanted.ailienlmsprogram.coursecommand.dto.CourseApplyDTO;
 import com.wanted.ailienlmsprogram.coursecommand.dto.CourseFindDTO;
 import com.wanted.ailienlmsprogram.coursecommand.entity.CourseStatus;
 import com.wanted.ailienlmsprogram.coursecommand.service.CourseCommandService;
 import com.wanted.ailienlmsprogram.global.security.CustomUserDetails;
+import com.wanted.ailienlmsprogram.lecture.dto.LectureResponseDTO;
+import com.wanted.ailienlmsprogram.lecture.service.LectureService;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -31,6 +34,7 @@ public class CourseCommandController {
 
     private final ContinentService continentService;
     private final CourseCommandService courseCommandService;
+    private final LectureService lectureService;
 
     // 강좌 등록 페이지로 이동
     @GetMapping("/instructor/courses/apply")
@@ -62,7 +66,10 @@ public class CourseCommandController {
 
         CourseDetailResponseDTO course = courseCommandService.courseDetail(courseId);
 
+        List<LectureResponseDTO> lectures = lectureService.lectureByCourse(courseId);
+
         model.addAttribute("course" ,course);
+        model.addAttribute("lectures", lectures);
 
         return "course/detail";
     }
