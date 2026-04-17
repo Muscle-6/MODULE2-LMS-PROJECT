@@ -9,12 +9,18 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+/*관리자 강좌 관리 화면 요청을 처리하는 컨트롤러.
+*
+* - 강좌 목록을 조회
+* - 특정 강좌의 상세 정보를 확인한다.
+* - 강좌의 공개 상태(DRAFT/PUBLISHED)를 변경할 수 있다.*/
 @Controller
 @RequiredArgsConstructor
 public class AdminCourseController {
 
     private final AdminCourseService adminCourseService;
 
+    // 관리자 강좌 목록 화면을 조회한다.
     @GetMapping("/admin/courses")
     public String courseList(@ModelAttribute("condition") AdminCourseSearchCondition condition,
                              Model model) {
@@ -25,6 +31,7 @@ public class AdminCourseController {
         return "admin/course-list";
     }
 
+    // 특정 강좌의 상세 정보를 조회한다.
     @PostMapping("/admin/course/detail")
     public String courseDetail(@RequestParam Long courseId,
                                @RequestParam(required = false) String query,
@@ -38,6 +45,7 @@ public class AdminCourseController {
         return "admin/course-detail";
     }
 
+    // 특정 강좌의 공개 상태를 변경한다.
     @PostMapping("/admin/courses/{courseId}/status")
     public String changeStatus(@PathVariable Long courseId,
                                @RequestParam CourseStatus targetStatus,

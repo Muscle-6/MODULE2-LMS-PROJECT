@@ -6,6 +6,11 @@ import lombok.Getter;
 
 import java.time.LocalDateTime;
 
+/*관리자 신고 목록 화면에 출력할 데이터를 담는 DTO.
+*
+* - 신고 기본 정보, 신고자 정보, 대상 회원 정보,
+* - 대륙 정보, 대상 제목/미리보기, 삭제 여부를 함께 보관하며
+* - 화면 출력에 필요한 가공 메서드를 제공한다.*/
 @Getter
 @AllArgsConstructor
 public class AdminReportListResponse {
@@ -27,6 +32,7 @@ public class AdminReportListResponse {
     private String targetPreview;
     private boolean targetDeleted;
 
+    // 신고 대상 회원 정보가 존재하는지 여부를 반환한다.
     public boolean hasTargetMember() {
         return targetMemberId != null;
     }

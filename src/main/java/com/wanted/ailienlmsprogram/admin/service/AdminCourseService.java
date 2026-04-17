@@ -12,6 +12,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+/*관리자 강좌 관리 비즈니스 로직을 담당하는 서비스
+* - 강좌 목록 조회, 강좌 상세 조회, 강좌 공개 상태 변경과 같이
+* - 관리자 강좌 관리 기능의 핵심 흐름을 처리한다.*/
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -19,11 +22,13 @@ public class AdminCourseService {
 
     private final AdminCourseQueryRepository adminCourseQueryRepository;
 
+    // 검색 조건에 맞는 강좌 목록을 조회한다.
     @Transactional(readOnly = true)
     public List<AdminCourseListResponse> getCourses(AdminCourseSearchCondition condition) {
         return adminCourseQueryRepository.findCourses(condition);
     }
 
+    //특정 강좌의 상세 정보를 조회한다.
     @Transactional(readOnly = true)
     public AdminCourseDetailResponse getCourseDetail(Long courseId) {
         AdminCourseDetailResponse detail = adminCourseQueryRepository.findCourseDetail(courseId);
@@ -35,6 +40,7 @@ public class AdminCourseService {
         return detail;
     }
 
+    //특정 강좌의 공개 상태를 변경한다.
     public void changeCourseStatus(Long courseId, CourseStatus targetStatus) {
         Course course = getTarget(courseId);
 
@@ -53,6 +59,7 @@ public class AdminCourseService {
         }
     }
 
+    //상태 변경 대상 강좌 엔티티를 조회한다.
     private Course getTarget(Long courseId) {
         Course course = adminCourseQueryRepository.findCourse(courseId);
 

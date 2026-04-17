@@ -19,12 +19,17 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+/*관리자 신고 목록 화면에 필요한 조회 전용 리포지토리
+*
+* - 신고 엔티티를 기준으로 신고자, 게시글, 댓글, 대륙 정보를 수집한 뒤
+* - 관리자 화면에 바로 출력할 수 있는 DTO로 가공한다.*/
 @Repository
 public class AdminReportQueryRepository {
 
     @PersistenceContext
     private EntityManager em;
 
+    // 현재 신고 목록을 조회한다.
     public List<AdminReportListResponse> findReports() {
         List<Report> reports = em.createQuery("""
                 select r
@@ -64,6 +69,7 @@ public class AdminReportQueryRepository {
                 .toList();
     }
 
+    //단일 신고 엔티티를 관리자 화면을 DTO로 변환한다.
     private AdminReportListResponse toResponse(
             Report report,
             Map<Long, Member> reporterMap,
@@ -91,6 +97,7 @@ public class AdminReportQueryRepository {
         );
     }
 
+    // 신고 대상 타입에 따라 대상 정보 해석 로직을 분기한다.
     private TargetInfo resolveTargetInfo(
             Report report,
             Map<Long, CommunityPost> postMap,
@@ -108,6 +115,7 @@ public class AdminReportQueryRepository {
         return buildQnaPlaceholderInfo();
     }
 
+    //게시글 신고 대상 정보를 생성한다.
     private TargetInfo buildPostTargetInfo(CommunityPost post, Map<Long, Continent> continentMap) {
         if (post == null) {
             return TargetInfo.missing();
@@ -127,6 +135,7 @@ public class AdminReportQueryRepository {
         );
     }
 
+    // 댓글 신고 대상 정보를 생성한다.
     private TargetInfo buildCommentTargetInfo(CommunityComment comment, Map<Long, Continent> continentMap) {
         if (comment == null) {
             return TargetInfo.missing();
@@ -149,6 +158,7 @@ public class AdminReportQueryRepository {
         );
     }
 
+    //Q&A 신고용 임시 대상 정보를 생성한다.
     private TargetInfo buildQnaPlaceholderInfo() {
         return new TargetInfo(
                 null,
@@ -161,6 +171,7 @@ public class AdminReportQueryRepository {
         );
     }
 
+    // 신고자 회원 정보를 ID 집합으로 일괄 조회한다.
     private Map<Long, Member> findMembers(Set<Long> memberIds) {
         if (memberIds.isEmpty()) {
             return Collections.emptyMap();
@@ -177,6 +188,7 @@ public class AdminReportQueryRepository {
                 .collect(Collectors.toMap(Member::getMemberId, Function.identity()));
     }
 
+    // 신고 대상 게시글 정보를 ID 집합으로 일괄 조회한다.
     private Map<Long, CommunityPost> findPosts(Set<Long> postIds) {
         if (postIds.isEmpty()) {
             return Collections.emptyMap();
@@ -194,6 +206,7 @@ public class AdminReportQueryRepository {
                 .collect(Collectors.toMap(CommunityPost::getPostId, Function.identity()));
     }
 
+    // 신고 대상 댓글 정보를 ID 집합으로 일괄 조회한다.
     private Map<Long, CommunityComment> findComments(Set<Long> commentIds) {
         if (commentIds.isEmpty()) {
             return Collections.emptyMap();
@@ -212,6 +225,7 @@ public class AdminReportQueryRepository {
                 .collect(Collectors.toMap(CommunityComment::getCommentId, Function.identity()));
     }
 
+    // 게시글/댓글로부터 연관 대륙 ID를 수집하여 대륙 정보를 일괄 조회한다.
     private Map<Long, Continent> findContinents(
             Map<Long, CommunityPost> postMap,
             Map<Long, CommunityComment> commentMap
@@ -245,6 +259,7 @@ public class AdminReportQueryRepository {
                 .collect(Collectors.toMap(Continent::getContinentId, Function.identity()));
     }
 
+    // 긴 본문을 목록 화면에 맞게 잘라내어 미리보기 문자열로 변환한다.
     private String abbreviate(String value, int maxLength) {
         if (value == null || value.isBlank()) {
             return null;
@@ -261,6 +276,10 @@ public class AdminReportQueryRepository {
         return normalized.substring(0, maxLength) + "...";
     }
 
+    /*신고 대상의 화면 표시용 벙보를 임시로 묶는 내부 클래스.
+    *
+    * - 대상 회원, 대륙, 제목, 미리보기, 삭제 여부를 함께 들고 다니며
+    * - 최종 AdminReportListResponse 조립에 사용된다.*/
     private static class TargetInfo {
         private final Long targetMemberId;
         private final String targetMemberLoginId;
@@ -288,6 +307,7 @@ public class AdminReportQueryRepository {
             this.targetDeleted = targetDeleted;
         }
 
+        // 대상이 이미 삭제되었거나 조회되지 않을 때 사용할 기본 정보를 생성한다.
         private static TargetInfo missing() {
             return new TargetInfo(
                     null,

@@ -14,12 +14,17 @@ import org.springframework.util.StringUtils;
 
 import java.util.List;
 
+/*관리자 강좌 관리용 조회/변경 쿼리를 담당하는 리포지토리
+*
+* - 관리자 화면에 필요한 강좌 목록, 강좌 상세 정보를 JPQL로 조회하고,
+* - 강좌 공개 상태 변경 쿼리도 함께 제공한다.*/
 @Repository
 public class AdminCourseQueryRepository {
 
     @PersistenceContext
     private EntityManager em;
 
+    // 검색 조건에 있는 강좌 목록을 조회한다.
     public List<AdminCourseListResponse> findCourses(AdminCourseSearchCondition condition) {
 
         StringBuilder jpql = new StringBuilder("""
@@ -73,6 +78,7 @@ public class AdminCourseQueryRepository {
         return query.getResultList();
     }
 
+    //특정 강좌의 상세 정보를 조회한다.
     public AdminCourseDetailResponse findCourseDetail(Long courseId) {
         try {
             return em.createQuery("""
@@ -100,10 +106,12 @@ public class AdminCourseQueryRepository {
         }
     }
 
+    //특정 강좌 엔티티를 ID로 조회한다.
     public Course findCourse(Long courseId) {
         return em.find(Course.class, courseId);
     }
 
+    //특정 강좌의 상태를 변경한다.
     public int updateCourseStatus(Long courseId, CourseStatus targetStatus) {
         int updatedCount = em.createQuery("""
                 update Course c
