@@ -2,231 +2,379 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>회원/계정 관리</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>회원/계정 관리 | ADMIN</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * {
-            box-sizing: border-box;
+        :root {
+            --primary: #4f46e5;
+            --primary-dark: #4338ca;
+            --secondary: #64748b;
+            --bg-body: #f8fafc;
+            --bg-sidebar: #1e293b;
+            --white: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
         }
 
         body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+            background: var(--bg-body);
             margin: 0;
-            font-family: "Pretendard", Arial, sans-serif;
-            background: #f5f3fb;
-            color: #2d1f3d;
+            display: flex;
+            min-height: 100vh;
+            color: var(--text-main);
+        }
+
+        /* --- Sidebar --- */
+        aside {
+            width: 260px;
+            background: var(--bg-sidebar);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+
+        .sidebar-header {
+            padding: 30px 24px;
+            font-size: 1.25rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .sidebar-menu {
+            flex: 1;
+            padding: 20px 12px;
+            overflow-y: auto;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            color: #cbd5e1;
+            text-decoration: none;
+            border-radius: 8px;
+            margin-bottom: 4px;
+            transition: all 0.2s;
+            font-size: 0.95rem;
+        }
+
+        .nav-item i {
+            width: 24px;
+            font-size: 1.1rem;
+        }
+
+        .nav-item:hover,
+        .nav-item.active {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .nav-item.logout {
+            margin-top: 20px;
+            color: #fca5a5;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            padding-top: 20px;
+        }
+
+        /* --- Main Content --- */
+        main {
+            flex: 1;
+            margin-left: 260px;
+            display: flex;
+            flex-direction: column;
         }
 
         header {
-            background: linear-gradient(135deg, #5d2a91, #8c4ed6);
-            color: white;
-            padding: 24px 32px;
+            background: var(--white);
+            padding: 16px 40px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 50;
         }
 
-        header h1 {
-            margin: 0;
-            font-size: 28px;
-        }
-
-        .top-links {
-            display: flex;
-            gap: 12px;
+        .breadcrumb {
+            color: var(--text-muted);
+            font-size: 0.875rem;
         }
 
         .top-links a {
             text-decoration: none;
-            color: white;
-            background: rgba(255,255,255,0.16);
-            padding: 10px 14px;
-            border-radius: 8px;
+            color: var(--primary);
             font-weight: 600;
-            transition: background 0.2s ease;
-        }
-
-        .top-links a:hover {
-            background: rgba(255,255,255,0.24);
+            font-size: 0.9rem;
         }
 
         .container {
-            width: 1280px;
-            max-width: calc(100% - 40px);
-            margin: 30px auto;
+            padding: 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+            box-sizing: border-box;
         }
 
-        .page-description,
-        .search-card,
-        .table-card {
-            background: white;
-            border-radius: 16px;
-            padding: 24px;
-            box-shadow: 0 8px 24px rgba(85, 53, 124, 0.08);
-            margin-bottom: 20px;
+        /* --- Page Header --- */
+        .page-header {
+            margin-bottom: 32px;
+        }
+
+        .page-header h2 {
+            margin: 0;
+            font-size: 1.75rem;
+            font-weight: 700;
         }
 
         .page-description {
-            line-height: 1.8;
+            background: #eff6ff;
+            border-left: 4px solid var(--primary);
+            padding: 16px 20px;
+            border-radius: 0 8px 8px 0;
+            margin-top: 16px;
+            color: #1e40af;
+            font-size: 0.9rem;
+            line-height: 1.6;
         }
 
-        .page-description strong {
-            color: #6a2eb8;
-        }
-
-        .status-guide {
+        /* --- Alert --- */
+        .alert {
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 24px;
             display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-top: 14px;
+            align-items: center;
+            gap: 12px;
+            font-weight: 500;
+            border: 1px solid transparent;
+        }
+
+        .alert-success {
+            background: #ecfdf5;
+            color: #065f46;
+            border-color: #a7f3d0;
+        }
+
+        .alert-error {
+            background: #fef2f2;
+            color: #991b1b;
+            border-color: #fecaca;
+        }
+
+        /* --- Search Card --- */
+        .search-card {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid var(--border);
+            margin-bottom: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
         }
 
         .search-form {
             display: flex;
             gap: 12px;
-            flex-wrap: wrap;
             align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .input-group {
+            flex: 1;
+            min-width: 300px;
+            position: relative;
+        }
+
+        .input-group i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--secondary);
         }
 
         .search-form input,
         .search-form select {
-            height: 44px;
-            border: 1px solid #d7c8ec;
+            height: 48px;
+            border: 1px solid var(--border);
             border-radius: 10px;
-            padding: 0 14px;
-            font-size: 14px;
-            background: white;
+            font-size: 0.95rem;
+            outline: none;
+            transition: 0.2s;
+            box-sizing: border-box;
         }
 
         .search-form input {
-            flex: 1;
-            min-width: 260px;
+            width: 100%;
+            padding: 0 14px 0 40px;
         }
 
         .search-form select {
-            min-width: 180px;
-        }
-
-        .btn {
-            display: inline-block;
-            border: none;
-            border-radius: 10px;
-            padding: 10px 14px;
-            font-weight: 700;
+            width: 200px;
+            padding: 0 14px;
             cursor: pointer;
-            text-decoration: none;
-            transition: opacity 0.2s ease, transform 0.1s ease;
+            background: white;
         }
 
-        .btn:hover {
-            opacity: 0.92;
+        .search-form input:focus,
+        .search-form select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
         }
 
-        .btn:active {
-            transform: translateY(1px);
-        }
-
-        .btn-primary {
-            background: #7a2fb2;
-            color: white;
-        }
-
-        .btn-secondary {
-            background: #ece5f8;
-            color: #4b2f72;
-        }
-
-        .btn-danger {
-            background: #cf3d64;
-            color: white;
-        }
-
-        .btn-warning {
-            background: #f0ad4e;
-            color: white;
-        }
-
-        .result-summary {
-            margin-top: 16px;
-            color: #5a4d71;
-            font-size: 14px;
+        /* --- Result Bar --- */
+        .result-bar {
+            margin-bottom: 12px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex-wrap: wrap;
-            gap: 8px;
         }
 
-        .result-summary strong {
-            color: #6a2eb8;
+        .result-count {
+            font-size: 0.9rem;
+            color: var(--secondary);
         }
 
-        .alert {
-            border-radius: 12px;
-            padding: 14px 16px;
-            margin-bottom: 16px;
-            font-weight: 600;
+        /* --- Table --- */
+        .table-card {
+            background: var(--white);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
         }
 
-        .alert-success {
-            background: #eefaf1;
-            color: #237a3a;
-            border: 1px solid #caeed5;
-        }
-
-        .alert-error {
-            background: #fff0f2;
-            color: #b02a49;
-            border: 1px solid #f7c8d3;
+        .table-wrap {
+            overflow-x: auto;
         }
 
         table {
             width: 100%;
+            min-width: 1100px;
             border-collapse: collapse;
-        }
-
-        thead {
-            background: #f3ecfc;
-        }
-
-        th, td {
             text-align: left;
-            padding: 14px 12px;
-            border-bottom: 1px solid #eee7f7;
-            vertical-align: middle;
-            font-size: 14px;
         }
 
         th {
-            color: #4a3368;
+            background: #f8fafc;
+            padding: 16px 12px;
+            font-size: 0.85rem;
+            color: var(--secondary);
+            font-weight: 600;
+            border-bottom: 1px solid var(--border);
             white-space: nowrap;
         }
 
         td {
-            color: #433853;
+            padding: 16px 12px;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.9rem;
+            vertical-align: middle;
         }
 
-        tbody tr {
-            transition: background 0.2s ease;
+        tr:hover {
+            background: #f8fafc;
         }
 
-        tbody tr:hover {
-            background: #faf7ff;
+        /* --- Status Badge --- */
+        .status-badge {
+            display: inline-flex;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            border: 1px solid transparent;
         }
 
-        .row-inactive {
-            background: #fffaf0;
+        .status-active {
+            background: #ecfdf5;
+            color: #065f46;
+            border-color: #a7f3d0;
         }
 
-        .row-deleted {
-            background: #fff4f5;
+        .status-inactive {
+            background: #fffbeb;
+            color: #92400e;
+            border-color: #fde68a;
         }
 
-        .muted {
-            color: #9485ab;
+        .cell-sub-text {
+            display: block;
+            margin-top: 4px;
+            font-size: 11px;
+            color: var(--secondary);
+        }
+
+        /* --- Buttons --- */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 8px 12px;
+            border-radius: 8px;
             font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: 0.2s;
+            text-decoration: none;
+            border: none;
+            box-sizing: border-box;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background: #f1f5f9;
+            color: var(--secondary);
+        }
+
+        .btn-secondary:hover {
+            background: #e2e8f0;
+        }
+
+        .btn-warning {
+            background: var(--warning);
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: #d97706;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
         }
 
         .action-group {
             display: flex;
+            justify-content: center;
             gap: 8px;
             flex-wrap: wrap;
         }
@@ -235,214 +383,283 @@
             margin: 0;
         }
 
-        .status-badge {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            min-width: 72px;
-            padding: 6px 10px;
-            border-radius: 999px;
-            font-size: 12px;
-            font-weight: 700;
-        }
-
-        .status-active {
-            background: #eaf8ef;
-            color: #1f7a3f;
-            border: 1px solid #cdebd7;
-        }
-
-        .status-inactive {
-            background: #fff4dd;
-            color: #9b6400;
-            border: 1px solid #f3dbab;
-        }
-
-        .status-deleted {
-            background: #fdecec;
-            color: #b02a37;
-            border: 1px solid #f4c8cf;
-        }
-
-        .cell-sub-text {
-            display: block;
-            margin-top: 6px;
-            font-size: 12px;
-            color: #8b7fa1;
-        }
-
+        /* --- Empty --- */
         .empty-box {
-            padding: 36px 20px;
+            padding: 80px 0;
             text-align: center;
-            color: #7c6f92;
-            line-height: 1.7;
+            color: var(--secondary);
         }
 
-        @media (max-width: 1100px) {
-            .table-card {
-                overflow-x: auto;
+        .empty-box i {
+            font-size: 3rem;
+            margin-bottom: 16px;
+            opacity: 0.3;
+        }
+
+        /* --- Responsive --- */
+        @media (max-width: 1024px) {
+            aside {
+                width: 80px;
             }
 
-            table {
-                min-width: 1120px;
+            aside .sidebar-header span,
+            aside .nav-item span {
+                display: none;
+            }
+
+            main {
+                margin-left: 80px;
+            }
+
+            .sidebar-header {
+                justify-content: center;
+                padding: 20px 0;
+            }
+
+            .nav-item {
+                justify-content: center;
             }
         }
 
-        @media (max-width: 768px) {
-            header {
-                padding: 20px;
-                flex-direction: column;
-                gap: 16px;
-                align-items: flex-start;
+        @media (max-width: 640px) {
+            main {
+                margin-left: 0;
+            }
+
+            aside {
+                transform: translateX(-100%);
             }
 
             .container {
-                max-width: calc(100% - 24px);
+                padding: 20px;
             }
 
-            .result-summary {
-                align-items: flex-start;
+            header {
+                padding: 16px 20px;
+            }
+
+            .search-form {
                 flex-direction: column;
+                align-items: stretch;
+            }
+
+            .input-group,
+            .search-form select,
+            .search-form .btn {
+                width: 100%;
+            }
+
+            .result-bar {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+
+            .action-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .action-group form,
+            .action-group button {
+                width: 100%;
             }
         }
     </style>
 </head>
 <body>
-<header>
-    <h1>회원/계정 관리</h1>
-    <div class="top-links">
-        <a th:href="@{/}">메인</a>
-        <a th:href="@{/admin}">관리자 홈</a>
-        <a th:href="@{/logout}">로그아웃</a>
+
+<aside>
+    <div class="sidebar-header">
+        <i class="fa-solid fa-shield-halved"></i>
+        <span>ADMIN PANEL</span>
     </div>
-</header>
+    <nav class="sidebar-menu">
+        <a th:href="@{/admin}" class="nav-item">
+            <i class="fa-solid fa-house"></i>
+            <span>대시보드 홈</span>
+        </a>
+        <a th:href="@{/admin/members}" class="nav-item active">
+            <i class="fa-solid fa-users"></i>
+            <span>회원/계정 관리</span>
+        </a>
+        <a th:href="@{/admin/instructors/new}" class="nav-item">
+            <i class="fa-solid fa-user-plus"></i>
+            <span>강사 계정 생성</span>
+        </a>
+        <a th:href="@{/admin/reports}" class="nav-item">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            <span>게시판/신고 관리</span>
+        </a>
+        <a th:href="@{/admin/statistics}" class="nav-item">
+            <i class="fa-solid fa-chart-line"></i>
+            <span>통계/모니터링</span>
+        </a>
+        <a th:href="@{/admin/refunds}" class="nav-item">
+            <i class="fa-solid fa-receipt"></i>
+            <span>환불 요청 관리</span>
+        </a>
+        <a th:href="@{/admin/courses}" class="nav-item">
+            <i class="fa-solid fa-book-open"></i>
+            <span>강좌 신청 관리</span>
+        </a>
+        <a th:href="@{/admin/continent-notices/continents}" class="nav-item">
+            <i class="fa-solid fa-bullhorn"></i>
+            <span>대륙 공지 작성</span>
+        </a>
+        <a th:href="@{/logout}" class="nav-item logout">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+            <span>로그아웃</span>
+        </a>
+    </nav>
+</aside>
 
-<div class="container">
-    <div class="page-description">
-        MEMBER 테이블 기반 회원 목록 조회 페이지입니다.<br>
-        <strong>member_id는 화면에서 제외</strong>하고, 관리자 입장에서 처리 결과를 바로 확인할 수 있도록
-        <strong>계정 상태 표시</strong>, <strong>검색</strong>, <strong>역할별 조회</strong>,
-        <strong>활성/비활성 전환</strong>, <strong>삭제 처리</strong> 흐름을 한 화면에서 확인할 수 있도록 구성했습니다.
-
-        <div class="status-guide">
-            <span class="status-badge status-active">활성</span>
-            <span class="status-badge status-inactive">비활성</span>
-            <span class="status-badge status-deleted">삭제됨</span>
+<main>
+    <header>
+        <div class="breadcrumb">
+            Admin &gt; <span style="color: var(--text-main); font-weight: 600;">회원/계정 관리</span>
         </div>
-    </div>
+        <div class="top-links">
+            <a th:href="@{/}">
+                <i class="fa-solid fa-globe"></i> 사이트 바로가기
+            </a>
+        </div>
+    </header>
 
-    <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
-    <div th:if="${errorMessage}" class="alert alert-error" th:text="${errorMessage}"></div>
-
-    <div class="search-card">
-        <form class="search-form" th:action="@{/admin/members}" method="get">
-            <input type="text"
-                   name="query"
-                   th:value="${condition.query}"
-                   placeholder="아이디, 이름, 이메일 검색">
-
-            <select name="role">
-                <option value="">전체 역할</option>
-                <option th:each="role : ${roles}"
-                        th:value="${role}"
-                        th:text="${role}"
-                        th:selected="${condition.role == role}">
-                </option>
-            </select>
-
-            <button type="submit" class="btn btn-primary">조회</button>
-            <a th:href="@{/admin/members}" class="btn btn-secondary">초기화</a>
-        </form>
-
-        <div class="result-summary">
-            <div>
-                조회 결과:
-                <strong th:text="${#lists.size(members)}">0</strong>명
+    <div class="container">
+        <div class="page-header">
+            <h2>전체 회원 관리</h2>
+            <div class="page-description">
+                <i class="fa-solid fa-circle-info"></i>
+                시스템에 등록된 모든 회원의 정보를 조회하고 계정 상태를 관리합니다.<br>
+                제재된 회원은 로그인이 제한되며, <strong>제재 일시</strong>는 최근 로그인 항목 하단에서 확인할 수 있습니다.
             </div>
-            <div class="muted">
-                상태 배지와 버튼 문구를 통해 처리 결과를 바로 확인할 수 있습니다.
+        </div>
+
+        <div th:if="${successMessage}" class="alert alert-success">
+            <i class="fa-solid fa-check-circle"></i>
+            <span th:text="${successMessage}">성공 메시지</span>
+        </div>
+
+        <div th:if="${errorMessage}" class="alert alert-error">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <span th:text="${errorMessage}">에러 메시지</span>
+        </div>
+
+        <div class="search-card">
+            <form class="search-form" th:action="@{/admin/members}" method="get">
+                <div class="input-group">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" name="query" th:value="${condition.query}" placeholder="아이디, 이름, 이메일 검색">
+                </div>
+
+                <select name="role">
+                    <option value="">전체 역할</option>
+                    <option th:each="role : ${roles}"
+                            th:value="${role}"
+                            th:text="${role}"
+                            th:selected="${condition.role == role}">역할</option>
+                </select>
+
+                <button type="submit" class="btn btn-primary" style="height: 48px; padding: 0 24px;">
+                    조회
+                </button>
+                <a th:href="@{/admin/members}" class="btn btn-secondary" style="height: 48px; padding: 0 20px; display: inline-flex; align-items: center;">
+                    초기화
+                </a>
+            </form>
+        </div>
+
+        <div class="result-bar">
+            <div class="result-count">
+                총 <strong th:text="${#lists.size(members)}" style="color: var(--primary);">0</strong>명의 회원이 검색되었습니다.
+            </div>
+        </div>
+
+        <div class="table-card">
+            <div class="table-wrap">
+                <table th:if="${!#lists.isEmpty(members)}">
+                    <thead>
+                    <tr>
+                        <th>아이디</th>
+                        <th>성함</th>
+                        <th>연락처 정보</th>
+                        <th>역할/등급</th>
+                        <th>계정 상태</th>
+                        <th>가입일</th>
+                        <th>최근 로그인 / 제재 정보</th>
+                        <th style="text-align: center;">계정 관리</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="member : ${members}">
+                        <td style="font-weight: 700;" th:text="${member.loginId}">ID</td>
+                        <td th:text="${member.name}">이름</td>
+                        <td>
+                            <div th:text="${member.email}">이메일</div>
+                            <div class="cell-sub-text" th:text="${member.phone != null ? member.phone : '-'}">전화번호</div>
+                        </td>
+                        <td>
+                            <span style="font-weight: 600;" th:text="${member.role}">ROLE</span>
+                            <div class="cell-sub-text" th:text="${member.rank != null ? '등급: ' + member.rank : '-'}">RANK</div>
+                        </td>
+                        <td>
+                            <span class="status-badge"
+                                  th:classappend="${member.displayStatus == '활성'} ? ' status-active' : ' status-inactive'"
+                                  th:text="${member.displayStatus}">상태</span>
+                        </td>
+                        <td th:text="${#temporals.format(member.createdAt, 'yyyy-MM-dd')}">가입일</td>
+                        <td>
+                            <span th:text="${member.lastLoginAt != null ? #temporals.format(member.lastLoginAt, 'yyyy-MM-dd HH:mm') : '-'}">로그인</span>
+
+                            <div class="cell-sub-text"
+                                 th:if="${member.displayStatus == '제재'}"
+                                 style="color: var(--danger); font-weight: 600;">
+                                <i class="fa-solid fa-ban"></i>
+                                <span th:if="${member.bannedAt != null}"
+                                      th:text="'제재: ' + ${#temporals.format(member.bannedAt, 'MM-dd HH:mm')}">일시</span>
+                                <span th:unless="${member.bannedAt != null}">접속 제한 중</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="action-group" th:if="${member.canToggleStatus()}">
+                                <form th:action="@{|/admin/members/${member.memberId}/toggle-status|}" method="post">
+                                    <input type="hidden" name="query" th:if="${condition.query != null}" th:value="${condition.query}">
+                                    <input type="hidden" name="role" th:if="${condition.role != null}" th:value="${condition.role}">
+                                    <button type="submit" class="btn btn-warning">
+                                        <i class="fa-solid fa-arrows-rotate"></i>
+                                        [[${member.actionLabel}]]
+                                    </button>
+                                </form>
+
+                                <form th:action="@{|/admin/members/${member.memberId}/delete|}"
+                                      method="post"
+                                      onsubmit="return confirm('회원을 정말 삭제 처리하시겠습니까?\n이 작업은 되돌릴 수 없습니다.');">
+                                    <input type="hidden" name="query" th:if="${condition.query != null}" th:value="${condition.query}">
+                                    <input type="hidden" name="role" th:if="${condition.role != null}" th:value="${condition.role}">
+                                    <button type="submit" class="btn btn-danger">
+                                        <i class="fa-solid fa-user-xmark"></i>
+                                        삭제
+                                    </button>
+                                </form>
+                            </div>
+
+                            <div th:if="${!member.canToggleStatus()}"
+                                 style="text-align: center; color: var(--secondary); font-size: 0.8rem;">
+                                관리 불가
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div th:if="${#lists.isEmpty(members)}" class="empty-box">
+                <i class="fa-solid fa-users-slash"></i>
+                <p>조건에 맞는 회원을 찾을 수 없습니다.<br><small>검색어나 역할을 다시 확인해 주세요.</small></p>
             </div>
         </div>
     </div>
-
-    <div class="table-card">
-        <table th:if="${!#lists.isEmpty(members)}">
-            <thead>
-            <tr>
-                <th>아이디</th>
-                <th>이름</th>
-                <th>이메일</th>
-                <th>전화번호</th>
-                <th>역할</th>
-                <th>등급</th>
-                <th>계정 상태</th>
-                <th>가입일</th>
-                <th>최근 로그인</th>
-                <th>관리</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="member : ${members}"
-                th:classappend="${member.displayStatus == '비활성' ? 'row-inactive' : (member.displayStatus == '삭제됨' ? 'row-deleted' : '')}">
-
-                <td th:text="${member.loginId}">loginId</td>
-                <td th:text="${member.name}">name</td>
-                <td th:text="${member.email}">email</td>
-                <td th:text="${member.phone != null ? member.phone : '-'}">phone</td>
-                <td th:text="${member.role}">role</td>
-                <td th:text="${member.rank != null ? member.rank : '-'}">rank</td>
-
-                <td>
-                    <span th:text="${member.displayStatus}"
-                          th:classappend="${member.displayStatus == '활성' ? 'status-active' : (member.displayStatus == '비활성' ? 'status-inactive' : 'status-deleted')}"
-                          class="status-badge">
-</span>
-                </td>
-
-                <td th:text="${#temporals.format(member.createdAt, 'yyyy-MM-dd HH:mm')}">createdAt</td>
-
-                <td>
-                    <span th:text="${member.lastLoginAt != null ? #temporals.format(member.lastLoginAt, 'yyyy-MM-dd HH:mm') : '-'}">lastLoginAt</span>
-                    <span class="cell-sub-text"
-                          th:if="${member.displayStatus == '비활성'}">현재 로그인 제한 상태</span>
-                    <span class="cell-sub-text"
-                          th:if="${member.displayStatus == '삭제됨'}">삭제 처리된 계정</span>
-                </td>
-
-                <td>
-                    <div class="action-group" th:if="${member.canToggleStatus()}">
-                        <form th:action="@{|/admin/members/${member.memberId}/toggle-status|}" method="post">
-                            <input type="hidden" name="query" th:if="${condition.query != null}" th:value="${condition.query}">
-                            <input type="hidden" name="role" th:if="${condition.role != null}" th:value="${condition.role}">
-                            <button type="submit"
-                                    class="btn btn-warning"
-                                    th:text="${member.actionLabel}">
-                                상태변경
-                            </button>
-                        </form>
-
-                        <form th:action="@{|/admin/members/${member.memberId}/delete|}"
-                              method="post"
-                              onsubmit="return confirm('정말 삭제 처리하시겠습니까?');">
-                            <input type="hidden" name="query" th:if="${condition.query != null}" th:value="${condition.query}">
-                            <input type="hidden" name="role" th:if="${condition.role != null}" th:value="${condition.role}">
-                            <button type="submit" class="btn btn-danger">삭제</button>
-                        </form>
-                    </div>
-
-                    <span class="muted" th:if="${!member.canToggleStatus()}">
-                        처리 불가
-                    </span>
-                </td>
-            </tr>
-            </tbody>
-        </table>
-
-        <div class="empty-box" th:if="${#lists.isEmpty(members)}">
-            조건에 맞는 회원이 없습니다.<br>
-            검색어 또는 역할 조건을 변경해서 다시 조회해보세요.
-        </div>
-    </div>
-</div>
+</main>
 </body>
 </html>
