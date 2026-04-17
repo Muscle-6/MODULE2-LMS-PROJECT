@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+/*관리자 신고 관리 기능의 조회 로직을 담당하는 서비스.*/
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)

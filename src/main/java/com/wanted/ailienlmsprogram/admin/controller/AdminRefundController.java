@@ -10,6 +10,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+/*관리자 환불 처리 요청을 담당하는 컨트롤러.
+*
+* - 관리자는 환불 목록 화면에서 특정 환불 요청을 승인하거나 거절할 수 있다.
+* - 실제 비즈니스 로직은 서비스 계층에 위임.*/
 @Controller
 @RequestMapping("/admin/refunds")
 @RequiredArgsConstructor
@@ -17,6 +21,7 @@ public class AdminRefundController {
 
     private final AdminRefundService adminRefundService;
 
+    // 특정 환불 요청을 승인한다.
     @PostMapping("/{refundId}/approve")
     public String approve(@PathVariable Long refundId,
                           @RequestParam(required = false) Refund.RefundStatus status,
@@ -34,6 +39,7 @@ public class AdminRefundController {
         return "redirect:/admin/refunds";
     }
 
+    //특정 환불 요청을 거절한다.
     @PostMapping("/{refundId}/reject")
     public String reject(@PathVariable Long refundId,
                          @RequestParam(required = false) Refund.RefundStatus status,

@@ -2,59 +2,175 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>신고 관리</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>신고 관리 | ADMIN</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-dark: #4338ca;
+            --secondary: #64748b;
+            --bg-body: #f8fafc;
+            --bg-sidebar: #1e293b;
+            --white: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+        }
+
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+            background: var(--bg-body);
             margin: 0;
-            background: #f6f8fb;
-            color: #222;
+            display: flex;
+            min-height: 100vh;
+            color: var(--text-main);
+        }
+
+        /* --- Sidebar --- */
+        aside {
+            width: 260px;
+            background: var(--bg-sidebar);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+
+        .sidebar-header {
+            padding: 30px 24px;
+            font-size: 1.25rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .sidebar-menu {
+            flex: 1;
+            padding: 20px 12px;
+            overflow-y: auto;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            color: #cbd5e1;
+            text-decoration: none;
+            border-radius: 8px;
+            margin-bottom: 4px;
+            transition: all 0.2s;
+            font-size: 0.95rem;
+        }
+
+        .nav-item i {
+            width: 24px;
+            font-size: 1.1rem;
+        }
+
+        .nav-item:hover,
+        .nav-item.active {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .nav-item.logout {
+            margin-top: 20px;
+            color: #fca5a5;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            padding-top: 20px;
+        }
+
+        /* --- Main Content --- */
+        main {
+            flex: 1;
+            margin-left: 260px;
+            display: flex;
+            flex-direction: column;
         }
 
         header {
-            background: #3a1f44;
-            color: white;
-            padding: 20px 40px;
+            background: var(--white);
+            padding: 16px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 50;
         }
 
-        header h1 {
-            margin: 0 0 8px 0;
-            font-size: 28px;
+        .breadcrumb {
+            color: var(--text-muted);
+            font-size: 0.875rem;
         }
 
         .top-links a {
-            color: white;
             text-decoration: none;
-            margin-right: 14px;
+            color: var(--primary);
             font-weight: 600;
+            font-size: 0.9rem;
         }
 
         .container {
-            width: 1400px;
-            max-width: calc(100% - 40px);
-            margin: 30px auto;
+            padding: 40px;
+            max-width: 1600px;
+            margin: 0 auto;
+            width: 100%;
+            box-sizing: border-box;
         }
 
-        .page-box {
-            background: white;
+        /* --- Page Header --- */
+        .page-header {
+            margin-bottom: 32px;
+        }
+
+        .page-header h2 {
+            margin: 0;
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+
+        .page-description {
+            background: #eff6ff;
+            border-left: 4px solid var(--primary);
+            padding: 16px 20px;
+            border-radius: 0 8px 8px 0;
+            margin-top: 16px;
+            color: #1e40af;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .result-bar {
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .result-count {
+            font-size: 0.9rem;
+            color: var(--secondary);
+        }
+
+        /* --- Table Styling --- */
+        .table-card {
+            background: var(--white);
             border-radius: 16px;
-            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
-            padding: 24px;
-            margin-bottom: 20px;
-        }
-
-        .page-box h2 {
-            margin-top: 0;
-            margin-bottom: 10px;
-        }
-
-        .summary {
-            font-size: 15px;
-            color: #555;
-        }
-
-        .summary strong {
-            color: #3a1f44;
+            border: 1px solid var(--border);
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
         }
 
         .table-wrap {
@@ -64,202 +180,346 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 1250px;
-            background: white;
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
-        }
-
-        thead {
-            background: #ede7f6;
-        }
-
-        th, td {
-            padding: 14px 12px;
-            border-bottom: 1px solid #ececec;
             text-align: left;
-            vertical-align: top;
-            font-size: 14px;
+            min-width: 1300px;
         }
 
         th {
-            color: #3a1f44;
-            font-weight: 700;
+            background: #f8fafc;
+            padding: 16px 12px;
+            font-size: 0.85rem;
+            color: var(--secondary);
+            font-weight: 600;
+            border-bottom: 1px solid var(--border);
             white-space: nowrap;
         }
 
-        tr:last-child td {
-            border-bottom: none;
+        td {
+            padding: 16px 12px;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.9rem;
+            vertical-align: top;
         }
 
-        .badge {
-            display: inline-block;
-            padding: 6px 10px;
+        tr:hover {
+            background: #f8fafc;
+        }
+
+        /* --- Content Preview Styles --- */
+        .post-info {
+            max-width: 300px;
+        }
+
+        .post-title {
+            font-weight: 700;
+            color: var(--text-main);
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .post-preview {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            line-height: 1.4;
+        }
+
+        .reason-box {
+            font-size: 0.85rem;
+            color: #475569;
+            background: #f8fafc;
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid #f1f5f9;
+        }
+
+        /* --- Badges --- */
+        .badge-type {
+            display: inline-flex;
+            padding: 4px 10px;
+            border-radius: 6px;
+            background: #eef2ff;
+            color: #4338ca;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            padding: 4px 10px;
             border-radius: 999px;
-            background: #efe5ff;
-            color: #5f2d82;
+            font-size: 0.75rem;
             font-weight: 700;
-            font-size: 12px;
         }
 
-        .status {
-            display: inline-block;
-            padding: 6px 10px;
-            border-radius: 999px;
-            font-weight: 700;
-            font-size: 12px;
+        .status-active {
+            background: #ecfdf5;
+            color: #065f46;
         }
 
-        .status.active {
-            background: #e8f7e8;
-            color: #267326;
+        .status-deleted {
+            background: #fef2f2;
+            color: #991b1b;
         }
 
-        .status.deleted {
-            background: #fdeaea;
-            color: #b23b3b;
-        }
-
-        .title {
-            font-weight: 700;
-            margin-bottom: 6px;
-            color: #222;
-        }
-
-        .preview, .reason {
-            color: #555;
-            line-height: 1.5;
-            white-space: pre-line;
-        }
-
-        .sub {
-            color: #777;
-            font-size: 12px;
+        .sub-text {
+            display: block;
             margin-top: 4px;
+            font-size: 11px;
+            color: var(--secondary);
         }
 
-        .action-link {
-            display: inline-block;
+        /* --- Buttons --- */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
             padding: 8px 12px;
             border-radius: 8px;
-            background: #3a1f44;
-            color: white;
-            text-decoration: none;
-            font-weight: 700;
-        }
-
-        .action-link:hover {
-            opacity: 0.9;
-        }
-
-        .disabled {
-            color: #999;
-            font-size: 13px;
             font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: 0.2s;
+            text-decoration: none;
+            border: none;
+            white-space: nowrap;
+            box-sizing: border-box;
+        }
+
+        .btn-secondary {
+            background: #f1f5f9;
+            color: var(--secondary);
+        }
+
+        .btn-secondary:hover {
+            background: #e2e8f0;
+            color: var(--primary);
+        }
+
+        .disabled-text {
+            font-size: 0.85rem;
+            color: #cbd5e1;
+            font-style: italic;
         }
 
         .empty-box {
-            background: white;
-            border-radius: 16px;
-            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
-            padding: 40px 24px;
+            padding: 80px 0;
             text-align: center;
-            color: #666;
+            color: var(--secondary);
+        }
+
+        .empty-box i {
+            font-size: 3rem;
+            margin-bottom: 16px;
+            opacity: 0.3;
+        }
+
+        /* --- Responsive --- */
+        @media (max-width: 1024px) {
+            aside {
+                width: 80px;
+            }
+
+            aside .sidebar-header span,
+            aside .nav-item span {
+                display: none;
+            }
+
+            main {
+                margin-left: 80px;
+            }
+
+            .sidebar-header {
+                justify-content: center;
+                padding: 20px 0;
+            }
+
+            .nav-item {
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 640px) {
+            main {
+                margin-left: 0;
+            }
+
+            aside {
+                transform: translateX(-100%);
+            }
+
+            .container {
+                padding: 20px;
+            }
+
+            header {
+                padding: 16px 20px;
+            }
+
+            .result-bar {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
         }
     </style>
 </head>
 <body>
-<header>
-    <h1>신고 관리</h1>
-    <div class="top-links">
-        <a th:href="@{/admin}">관리자 홈</a>
-        <a th:href="@{/admin/members}">회원/계정 관리</a>
-        <a th:href="@{/logout}">로그아웃</a>
-    </div>
-</header>
 
-<div class="container">
-    <div class="page-box">
-        <h2>Report 테이블 기반 신고 목록</h2>
-        <p>
-            신고 사유, 대상 글 정보, 대상 작성자의 로그인 아이디와 이름, 대륙 정보를 함께 보여줍니다.
-            PK는 화면에 노출하지 않고, 대상 작성자의 로그인 아이디로 회원 관리 페이지에 바로 이동할 수 있게 구성했습니다.
-        </p>
-        <div class="summary">
-            조회 결과: <strong th:text="${#lists.size(reports)}">0</strong>건
+<aside>
+    <div class="sidebar-header">
+        <i class="fa-solid fa-shield-halved"></i>
+        <span>ADMIN PANEL</span>
+    </div>
+    <nav class="sidebar-menu">
+        <a th:href="@{/admin}" class="nav-item">
+            <i class="fa-solid fa-house"></i>
+            <span>대시보드 홈</span>
+        </a>
+        <a th:href="@{/admin/members}" class="nav-item">
+            <i class="fa-solid fa-users"></i>
+            <span>회원/계정 관리</span>
+        </a>
+        <a th:href="@{/admin/instructors/new}" class="nav-item">
+            <i class="fa-solid fa-user-plus"></i>
+            <span>강사 계정 생성</span>
+        </a>
+        <a th:href="@{/admin/reports}" class="nav-item active">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            <span>게시판/신고 관리</span>
+        </a>
+        <a th:href="@{/admin/statistics}" class="nav-item">
+            <i class="fa-solid fa-chart-line"></i>
+            <span>통계/모니터링</span>
+        </a>
+        <a th:href="@{/admin/refunds}" class="nav-item">
+            <i class="fa-solid fa-receipt"></i>
+            <span>환불 요청 관리</span>
+        </a>
+        <a th:href="@{/admin/courses}" class="nav-item">
+            <i class="fa-solid fa-book-open"></i>
+            <span>강좌 신청 관리</span>
+        </a>
+        <a th:href="@{/admin/continent-notices/continents}" class="nav-item">
+            <i class="fa-solid fa-bullhorn"></i>
+            <span>대륙 공지 작성</span>
+        </a>
+        <a th:href="@{/logout}" class="nav-item logout">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+            <span>로그아웃</span>
+        </a>
+    </nav>
+</aside>
+
+<main>
+    <header>
+        <div class="breadcrumb">
+            Admin &gt; <span style="color: var(--text-main); font-weight: 600;">신고 관리 목록</span>
+        </div>
+        <div class="top-links">
+            <a th:href="@{/}">
+                <i class="fa-solid fa-globe"></i> 사이트 바로가기
+            </a>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="page-header">
+            <h2>커뮤니티 신고 내역</h2>
+            <div class="page-description">
+                <i class="fa-solid fa-circle-info"></i>
+                게시글 및 댓글에 대한 신고 내역을 통합 조회합니다.
+                신고 사유를 검토한 후, <strong>계정 관리</strong> 버튼을 클릭하여 해당 사용자의 계정 상태를 즉시 조정할 수 있습니다.
+            </div>
+        </div>
+
+        <div class="result-bar">
+            <div class="result-count">
+                미처리 포함 전체 신고:
+                <strong th:text="${#lists.size(reports)}" style="color: var(--primary);">0</strong>건
+            </div>
+        </div>
+
+        <div class="table-card">
+            <div class="table-wrap">
+                <table th:unless="${#lists.isEmpty(reports)}">
+                    <thead>
+                    <tr>
+                        <th>신고 일시</th>
+                        <th>유형</th>
+                        <th>대륙</th>
+                        <th>대상 사용자</th>
+                        <th>해당 컨텐츠</th>
+                        <th>신고 사유</th>
+                        <th>신고자</th>
+                        <th>컨텐츠 상태</th>
+                        <th style="text-align: center;">액션</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="report : ${reports}">
+                        <td style="white-space: nowrap; font-size: 0.85rem;"
+                            th:text="${#temporals.format(report.reportedAt, 'yyyy-MM-dd HH:mm')}">날짜</td>
+
+                        <td>
+                            <span class="badge-type" th:text="${report.targetTypeLabel}">유형</span>
+                        </td>
+
+                        <td style="white-space: nowrap;">
+                            <i class="fa-solid fa-map-pin" style="font-size: 0.8rem; color: var(--secondary);"></i>
+                            <span th:text="${report.displayContinentName}">대륙</span>
+                        </td>
+
+                        <td>
+                            <div style="font-weight: 700;" th:text="${report.displayTargetMemberName}">이름</div>
+                            <div class="sub-text" th:text="${report.displayTargetMemberLoginId}">ID</div>
+                        </td>
+
+                        <td>
+                            <div class="post-info">
+                                <span class="post-title" th:text="${report.displayTargetTitle}">제목</span>
+                                <p class="post-preview" th:text="${report.displayTargetPreview}">미리보기 내용</p>
+                            </div>
+                        </td>
+
+                        <td>
+                            <div class="reason-box" th:text="${report.reportReason}">사유 내용</div>
+                        </td>
+
+                        <td>
+                            <div th:text="${report.displayReporterLoginId}">ID</div>
+                            <div class="sub-text" th:text="${report.displayReporterName}">이름</div>
+                        </td>
+
+                        <td>
+                            <span class="status-badge"
+                                  th:classappend="${report.targetDeleted} ? ' status-deleted' : ' status-active'"
+                                  th:text="${report.targetStatusLabel}">상태</span>
+                        </td>
+
+                        <td style="text-align: center;">
+                            <a th:if="${report.hasTargetMember()}"
+                               th:href="@{/admin/members(query=${report.targetMemberLoginId})}"
+                               class="btn btn-secondary">
+                                <i class="fa-solid fa-user-gear"></i> 계정 관리
+                            </a>
+                            <span class="disabled-text" th:unless="${report.hasTargetMember()}">연결 불가</span>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div th:if="${#lists.isEmpty(reports)}" class="empty-box">
+                <i class="fa-solid fa-bell-slash"></i>
+                <p>현재 접수된 신고 내역이 없습니다.<br><small>커뮤니티가 깨끗한 상태입니다!</small></p>
+            </div>
         </div>
     </div>
-
-    <div class="empty-box" th:if="${#lists.isEmpty(reports)}">
-        <h3>조회된 신고가 없습니다.</h3>
-        <p>현재 처리할 신고 내역이 없습니다.</p>
-    </div>
-
-    <div class="table-wrap" th:unless="${#lists.isEmpty(reports)}">
-        <table>
-            <thead>
-            <tr>
-                <th>신고일</th>
-                <th>유형</th>
-                <th>대륙</th>
-                <th>대상 사용자 아이디</th>
-                <th>대상 사용자 이름</th>
-                <th>해당 글</th>
-                <th>신고 사유</th>
-                <th>신고자</th>
-                <th>대상 상태</th>
-                <th>관리 이동</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="report : ${reports}">
-                <td th:text="${#temporals.format(report.reportedAt, 'yyyy-MM-dd HH:mm')}">2026-04-16 10:30</td>
-
-                <td>
-                    <span class="badge" th:text="${report.targetTypeLabel}">게시글 신고</span>
-                </td>
-
-                <td th:text="${report.displayContinentName}">컴활 대륙</td>
-
-                <td th:text="${report.displayTargetMemberLoginId}">student01</td>
-
-                <td th:text="${report.displayTargetMemberName}">홍길동</td>
-
-                <td>
-                    <div class="title" th:text="${report.displayTargetTitle}">게시글 제목</div>
-                    <div class="preview" th:text="${report.displayTargetPreview}">내용 일부</div>
-                </td>
-
-                <td>
-                    <div class="reason" th:text="${report.reportReason}">신고 사유</div>
-                </td>
-
-                <td>
-                    <div th:text="${report.displayReporterLoginId}">reporter01</div>
-                    <div class="sub" th:text="${report.displayReporterName}">신고자 이름</div>
-                </td>
-
-                <td>
-                    <span class="status"
-                          th:classappend="${report.targetDeleted} ? ' deleted' : ' active'"
-                          th:text="${report.targetStatusLabel}">
-                        정상
-                    </span>
-                </td>
-
-                <td>
-                    <a class="action-link"
-                       th:if="${report.hasTargetMember()}"
-                       th:href="@{/admin/members(query=${report.targetMemberLoginId})}">
-                        회원 관리로 이동
-                    </a>
-                    <span class="disabled" th:unless="${report.hasTargetMember()}">연결 불가</span>
-                </td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
-</div>
+</main>
 </body>
 </html>
