@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>405 - 허용되지 않은 요청 방식</title>
+  <style>
+    body { margin: 0; font-family: Arial, sans-serif; background: #fff7ed; color: #7c2d12; }
+    .wrap { width: 760px; max-width: calc(100% - 40px); margin: 100px auto; background: white; border: 1px solid #fed7aa; border-radius: 20px; padding: 40px; text-align: center; }
+    .status { font-size: 72px; font-weight: 800; color: #ea580c; margin: 0; }
+    .title { font-size: 28px; margin: 12px 0 18px; }
+    .message { font-size: 17px; line-height: 1.7; color: #9a3412; margin-bottom: 16px; }
+    .path { font-size: 14px; color: #9a3412; margin-bottom: 28px; }
+    .actions a { display: inline-block; margin: 0 6px; padding: 12px 18px; border-radius: 10px; text-decoration: none; font-weight: 700; }
+    .home { background: #ea580c; color: white; }
+    .back { background: #ffedd5; color: #7c2d12; }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <p class="status" th:text="${status}">405</p>
+  <h1 class="title" th:text="${title}">허용되지 않은 요청 방식입니다</h1>
+  <p class="message" th:text="${message}">
+    현재 요청 방식으로는 해당 기능을 사용할 수 없습니다.
+  </p>
+  <p class="path" th:if="${path != null}" th:text="'요청 경로: ' + ${path}">요청 경로</p>
+
+  <div class="actions">
+    <a class="home" th:href="@{/}">메인으로 이동</a>
+    <a class="back" href="javascript:history.back()">이전 페이지로 이동</a>
+  </div>
+</div>
+</body>
+</html>
