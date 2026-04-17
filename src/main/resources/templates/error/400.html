@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>400 - 잘못된 요청</title>
+  <style>
+    body { margin: 0; font-family: Arial, sans-serif; background: #f8fafc; color: #1e293b; }
+    .wrap { width: 760px; max-width: calc(100% - 40px); margin: 100px auto; background: white; border-radius: 20px; padding: 40px; box-shadow: 0 10px 30px rgba(15,23,42,.08); text-align: center; }
+    .status { font-size: 64px; font-weight: 800; color: #f97316; margin: 0; }
+    .title { font-size: 28px; margin: 12px 0 18px; }
+    .message { font-size: 17px; line-height: 1.7; color: #475569; margin-bottom: 16px; }
+    .path { font-size: 14px; color: #64748b; margin-bottom: 28px; }
+    .actions a { display: inline-block; margin: 0 6px; padding: 12px 18px; border-radius: 10px; text-decoration: none; font-weight: 700; }
+    .home { background: #3b82f6; color: white; }
+    .back { background: #e2e8f0; color: #1e293b; }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <p class="status" th:text="${status}">400</p>
+  <h1 class="title" th:text="${title}">잘못된 요청입니다</h1>
+  <p class="message" th:text="${message}">요청 정보를 다시 확인해주세요.</p>
+  <p class="path" th:if="${path != null}" th:text="'요청 경로: ' + ${path}">요청 경로</p>
+
+  <div class="actions">
+    <a class="home" th:href="@{/}">메인으로 이동</a>
+    <a class="back" href="javascript:history.back()">이전 페이지로 이동</a>
+  </div>
+</div>
+</body>
+</html>
