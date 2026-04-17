@@ -40,6 +40,7 @@ public class ContinentController {
         List<CourseDetailResponseDTO> courses = courseCommandService.courseListByContinent(continentId);
 
         List<PostDTO> posts = postService.findPostsByContinent(continentId);
+
         model.addAttribute("posts", posts.stream().limit(10).toList());
 
         model.addAttribute("continent", continent);

@@ -72,4 +72,13 @@ public class EnrollmentService {
                 })
                 .collect(Collectors.toList());
     }
+
+    // 수강 여부 확인 로직
+    public boolean isStudentEnrolled(String loginId, Long courseId) {
+
+        if (loginId == null) return false;
+
+        return enrollmentRepository.existsByMember_LoginIdAndCourse_CourseId(loginId, courseId);
+
+    }
 }

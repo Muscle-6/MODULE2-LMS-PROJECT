@@ -9,6 +9,7 @@ import com.wanted.ailienlmsprogram.coursecommand.dto.CourseApplyDTO;
 import com.wanted.ailienlmsprogram.coursecommand.dto.CourseFindDTO;
 import com.wanted.ailienlmsprogram.coursecommand.entity.CourseStatus;
 import com.wanted.ailienlmsprogram.coursecommand.service.CourseCommandService;
+import com.wanted.ailienlmsprogram.enrollment.service.EnrollmentService;
 import com.wanted.ailienlmsprogram.global.security.CustomUserDetails;
 import com.wanted.ailienlmsprogram.lecture.dto.LectureResponseDTO;
 import com.wanted.ailienlmsprogram.lecture.service.LectureService;
@@ -26,6 +27,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.io.IOException;
+import java.security.Principal;
 import java.util.List;
 
 @Controller
@@ -35,6 +37,7 @@ public class CourseCommandController {
     private final ContinentService continentService;
     private final CourseCommandService courseCommandService;
     private final LectureService lectureService;
+    private final EnrollmentService enrollmentService;
 
     // 강좌 등록 페이지로 이동
     @GetMapping("/instructor/courses/apply")
@@ -62,14 +65,21 @@ public class CourseCommandController {
 
     // 강좌 세부 조회
     @GetMapping("/courses/{courseId}")
-    public String courseDetail(@PathVariable("courseId") Long courseId, Model model) {
+    public String courseDetail(@PathVariable("courseId") Long courseId, Model model, Principal principal) {
 
         CourseDetailResponseDTO course = courseCommandService.courseDetail(courseId);
 
         List<LectureResponseDTO> lectures = lectureService.lectureByCourse(courseId);
 
+        // 학생 강좌 등록 상태 조회
+        boolean isEnrolled = false;
+        if(principal != null) {
+            isEnrolled = enrollmentService.isStudentEnrolled(principal.getName(), courseId);
+        }
+
         model.addAttribute("course" ,course);
         model.addAttribute("lectures", lectures);
+        model.addAttribute("isEnrolled", isEnrolled);
 
         return "course/detail";
     }
@@ -112,5 +122,7 @@ public class CourseCommandController {
 
         return "redirect:/instructor/courses/PUBLISHED";
     }
+
+
 
 }

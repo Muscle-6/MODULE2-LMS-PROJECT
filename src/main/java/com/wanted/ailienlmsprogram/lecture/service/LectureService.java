@@ -1,7 +1,6 @@
 package com.wanted.ailienlmsprogram.lecture.service;
 
 import com.wanted.ailienlmsprogram.coursecommand.dao.CourseRepository;
-import com.wanted.ailienlmsprogram.coursecommand.dto.CourseDetailResponseDTO;
 import com.wanted.ailienlmsprogram.coursecommand.entity.Course;
 import com.wanted.ailienlmsprogram.global.gcs.GcsService;
 import com.wanted.ailienlmsprogram.lecture.dao.LectureRepository;
@@ -28,7 +27,6 @@ public class LectureService {
     private final ModelMapper modelMapper;
     private final CourseRepository courseRepository;
     private final GcsService gcsService;
-
 
     public List<LectureFindDTO> findMyLectures(Long courseId) {
 
@@ -77,6 +75,17 @@ public class LectureService {
         return foundLectures.stream()
                 .map(lecture -> modelMapper.map(lecture, LectureResponseDTO.class))
                 .collect(Collectors.toList());
+    }
+
+    // 내 강좌 조회
+    public List<LectureResponseDTO> viewMyLecture(Long courseId) {
+
+        List<Lecture> foundLectures = lectureRepository.findAllByCourse_CourseId(courseId);
+
+        return foundLectures.stream()
+                .map(lecture -> modelMapper.map(lecture, LectureResponseDTO.class))
+                .collect(Collectors.toList());
+
     }
 
     // 강의 수정 페이지
