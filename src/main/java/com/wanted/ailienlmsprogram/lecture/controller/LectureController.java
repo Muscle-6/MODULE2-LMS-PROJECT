@@ -4,10 +4,13 @@ import com.wanted.ailienlmsprogram.coursecommand.dto.CourseDetailResponseDTO;
 import com.wanted.ailienlmsprogram.coursecommand.dto.CourseFindDTO;
 import com.wanted.ailienlmsprogram.coursecommand.service.CourseCommandService;
 import com.wanted.ailienlmsprogram.enrollment.service.EnrollmentService;
+import com.wanted.ailienlmsprogram.lecture.dto.LectureAddDTO;
 import com.wanted.ailienlmsprogram.lecture.dto.LectureFindDTO;
 import com.wanted.ailienlmsprogram.lecture.dto.LectureResponseDTO;
 import com.wanted.ailienlmsprogram.lecture.service.LectureService;
+import com.wanted.ailienlmsprogram.global.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,6 +18,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.security.Principal;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.ModelAndView;
+
+import java.io.IOException;
 import java.util.List;
 
 @Controller
@@ -57,5 +65,21 @@ public class LectureController {
 
         return "course/detail";
     }
+    @GetMapping("/instructor/courses/{courseId}/lectures/add")
+    public String addMyLecturePage(@PathVariable Long courseId, Model model) {
+        model.addAttribute("courseId", courseId);
+        return "lecture/add";
+    }
 
+    @PostMapping("/instructor/courses/{courseId}/lectures/add")
+    public String applyMyLecture(@ModelAttribute LectureAddDTO request,
+                              @RequestParam(value = "lectureVideo", required = false) MultipartFile lectureVideo,
+                              @PathVariable Long courseId,
+                              @AuthenticationPrincipal CustomUserDetails userDetails) throws IOException {
+
+        Long memberId = userDetails.getMember().getMemberId();
+        lectureService.applyLecture(request, courseId, memberId, lectureVideo);
+
+        return "redirect:/instructor/courses/" + courseId + "/lectures";
+    }
 }

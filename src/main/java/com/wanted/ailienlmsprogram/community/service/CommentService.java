@@ -26,7 +26,7 @@ public class CommentService {
         CommunityPost post = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("게시글이 없습니다."));
 
-        // 공지글 체크 (제목이 [공지]로 시작하는지 확인)
+
         if (post.getPostTitle().startsWith("[공지]")) {
             throw new IllegalStateException("공지사항에는 댓글을 달 수 없습니다.");
         }
@@ -42,7 +42,7 @@ public class CommentService {
 
     // 댓글 목록 조회
     public List<CommentResponse> findComments(Long postId) {
-        // findByPost_PostId... 대신 findByPostPostId... 로 매핑 이름 맞춤
+
         return commentRepository.findByPostPostIdAndIsDeletedFalse(postId).stream()
                 .map(comment -> CommentResponse.builder()
                         .commentId(comment.getCommentId())
@@ -64,6 +64,6 @@ public class CommentService {
             throw new IllegalStateException("본인이 작성한 댓글만 삭제할 수 있습니다.");
         }
 
-        comment.setDeleted(true); // Soft Delete (DB에서 진짜 지우지 않고 숨기기)
+        comment.setDeleted(true);
     }
 }

@@ -32,6 +32,9 @@ public class Lecture {
     @Column(name = "lecture_order_index")
     private Integer lectureOrderIndex;
 
+    @Column(name = "video_url")
+    private String videoUrl;
+
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 

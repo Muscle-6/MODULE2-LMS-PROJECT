@@ -19,15 +19,15 @@ public class GcsService {
     @Value("${gcs.bucket-name}")
     private String bucketName;
 
-    public String uploadFile(MultipartFile file, String folder) throws IOException {
+    public String uploadFile(MultipartFile file, String folder, Long memberId, Long courseId) throws IOException {
 
         // 1. 원본 파일명에서 확장자 추출
         String originalFileName = file.getOriginalFilename();
         String ext = originalFileName.substring(originalFileName.lastIndexOf("."));
 
-        // 2. UUID로 중복 없는 파일명 생성
-        // folder 예시: "videos", "thumbnails"
-        String savedName = folder + "/" + UUID.randomUUID().toString().replace("-", "") + ext;
+        // 2. {memberId}/{courseId}/lecture/UUID.확장자 형태로 경로 생성
+        String savedName = memberId + "/" + courseId + "/" + folder + "/" 
+                         + UUID.randomUUID().toString().replace("-", "") + ext;
 
         // 3. GCS에 업로드할 BlobInfo 생성 (버킷명 + 파일경로 + 컨텐츠 타입)
         BlobInfo blobInfo = BlobInfo.newBuilder(bucketName, savedName)

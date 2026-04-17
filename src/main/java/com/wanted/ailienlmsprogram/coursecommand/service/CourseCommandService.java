@@ -71,9 +71,9 @@ public class CourseCommandService {
     private String saveThumbnail(MultipartFile thumbnailFile) throws IOException {
 
         // 1. 저장 경로 설정
-        Resource resource = resourceLoader.getResource("classpath:static/images/courseThumbnail");
-        // 기존 강사님의 코드에서 경로가 없으면 만드는 코드 삭제 -> 불필요한 코드 제거로 인한 최적화
-        String filePath = resource.getFile().getAbsolutePath();
+        String filePath = new File("src/main/resources/static/images/courseThumbnail").getAbsolutePath();
+
+
 
 
         // 3. 원본 파일명에서 확장자 추출
@@ -87,7 +87,7 @@ public class CourseCommandService {
         thumbnailFile.transferTo(new File(filePath + "/" + savedName));
 
         // 6. DB 에 저장할 경로 반환
-        return "/images/profile/" + savedName;
+        return "/images/courseThumbnail/" + savedName;
 
     }
 

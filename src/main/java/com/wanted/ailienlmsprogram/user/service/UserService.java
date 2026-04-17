@@ -67,17 +67,9 @@ public class UserService {
 
         // 1. 저장 경로 설정
         Resource resource = resourceLoader.getResource("classpath:static/images/profile");
-        String filePath;
+        String filePath = new File("src/main/resources/static/images/profile").getAbsolutePath();
 
-        // 2. 폴더 없으면 생성
-        if (!resource.exists()) {
-            String root = "src/main/resources/static/images/profile";
-            File dir = new File(root);
-            dir.mkdirs();
-            filePath = dir.getAbsolutePath();
-        } else {
-            filePath = resource.getFile().getAbsolutePath();
-        }
+
 
         // 3. 원본 파일명에서 확장자 추출
         String originFileName = file.getOriginalFilename();
