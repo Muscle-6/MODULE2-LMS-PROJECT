@@ -36,4 +36,15 @@ public class LectureService {
                 .map(lecture -> modelMapper.map(lecture, LectureResponseDTO.class))
                 .collect(Collectors.toList());
     }
+
+    // 내 강좌 조회
+    public List<LectureResponseDTO> viewMyLecture(Long courseId) {
+
+        List<Lecture> foundLectures = lectureRepository.findAllByCourse_CourseId(courseId);
+
+        return foundLectures.stream()
+                .map(lecture -> modelMapper.map(lecture, LectureResponseDTO.class))
+                .collect(Collectors.toList());
+
+    }
 }
