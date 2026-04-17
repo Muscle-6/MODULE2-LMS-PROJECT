@@ -20,7 +20,6 @@ import org.springframework.web.servlet.ModelAndView;
 import java.security.Principal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.ModelAndView;
 
 import java.io.IOException;
 import java.util.List;
@@ -109,4 +108,11 @@ public class LectureController {
         return "redirect:/instructor/courses/" + courseId + "/lectures";
     }
 
+    @GetMapping("/instructor/courses/{courseId}/lectures/{lectureId}/delete")
+    public String deleteLecture(@PathVariable Long courseId,
+                                @PathVariable Long lectureId) {
+        lectureService.deleteLecture(lectureId);
+
+        return "redirect:/instructor/courses/" + courseId + "/lectures";
+    }
 }
