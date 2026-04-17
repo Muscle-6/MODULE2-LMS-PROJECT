@@ -14,7 +14,12 @@
     .btn { display: inline-block; padding: 10px 20px; border-radius: 8px; background: #5f7cff; color: white; text-decoration: none; font-weight: bold; }
     .btn-write { background: #ffb648; color: #1d1d1d; }
     .empty-msg { text-align: center; padding: 50px; color: #b8c1e7; }
-    a { color: inherit; text-decoration: none; } /* 링크 밑줄 제거 */
+    a { color: inherit; text-decoration: none; }
+
+    /* 공지사항 전용 스타일 추가 */
+    .notice-row { background: rgba(255, 182, 72, 0.05); border-left: 4px solid #e9b6ec; }
+    .notice-badge { background: #ff5f5f; color: white; padding: 2px 6px; border-radius: 4px; font-size: 11px; margin-right: 8px; vertical-align: middle; font-weight: bold; }
+    .notice-text { color: #e9b6ec !important; font-weight: bold; }
   </style>
 </head>
 <body>
@@ -34,11 +39,21 @@
       </tr>
       </thead>
       <tbody>
-      <tr th:each="post : ${posts}">
-        <td th:text="${post.postId}">1</td>
+      <tr th:each="post : ${posts}"
+          th:onclick="|location.href='/posts/${post.postId}'|"
+          th:classappend="${post.postIsNotice} ? 'notice-row' : ''">
+
+        <td th:text="${post.postIsNotice} ? '공지' : ${post.postId}"
+            th:classappend="${post.postIsNotice} ? 'notice-text' : ''">1</td>
+
         <td>
-          <a th:href="@{/posts/{id}(id=${post.postId})}" th:text="${post.title}">게시글 제목</a>
+          <span th:if="${post.postIsNotice}" class="notice-badge">공지</span>
+
+          <a th:href="@{/posts/{id}(id=${post.postId})}"
+             th:text="${post.title}"
+             th:classappend="${post.postIsNotice} ? 'notice-text' : ''">게시글 제목</a>
         </td>
+
         <td th:text="${post.authorName}">작성자 이름</td>
       </tr>
 
@@ -50,7 +65,8 @@
   </div>
 
   <div style="margin-top: 20px; text-align: right;">
-    <a th:href="@{/continents/{id}/posts/new(id=${continentId})}" class="btn btn-write">새 글 쓰기</a>  </div>
+    <a th:href="@{/continents/{id}/posts/new(id=${continentId})}" class="btn btn-write">새 글 쓰기</a>
+  </div>
 </div>
 </body>
 </html>

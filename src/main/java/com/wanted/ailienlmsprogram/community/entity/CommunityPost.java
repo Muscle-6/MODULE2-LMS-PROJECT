@@ -26,11 +26,17 @@ public class CommunityPost {
     private String postTitle;
     private String postContent;
     private boolean postIsDeleted;
+    @Column(name = "post_is_notice", nullable = false)
+    private boolean postIsNotice = false;
 
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id")
     private Member member;
+
+    public void setPostIsNotice(boolean postIsNotice) {
+        this.postIsNotice = postIsNotice;
+    }
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CommunityComment> comments = new ArrayList<>();
