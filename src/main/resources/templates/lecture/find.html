@@ -221,6 +221,14 @@
                             수정
                         </a>
 
+                        <!-- 삭제 버튼 -->
+                        <button type="button"
+                                th:onclick="|openDeleteModal([[${lecture.lectureId}]], [[${course.courseId}]])|"
+                                class="flex-shrink-0 flex items-center gap-1 px-3 py-1.5 rounded-lg border border-error/30 text-error/70 hover:text-error hover:border-error/50 transition-all text-xs font-label">
+                            <span class="material-symbols-outlined text-sm">delete</span>
+                            삭제
+                        </button>
+
                     </div>
                 </div>
             </div>
@@ -249,6 +257,64 @@
     <div class="absolute top-1/4 left-1/4 w-[400px] h-[400px] bg-primary/5 rounded-full blur-[120px]"></div>
     <div class="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-secondary/5 rounded-full blur-[150px]"></div>
 </div>
+
+<!-- ===== 삭제 확인 모달 ===== -->
+<div id="deleteModal"
+     class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+    <div class="bg-surface-container border border-outline-variant/30 rounded-2xl p-8 w-full max-w-sm shadow-2xl shadow-black/50">
+
+        <!-- 아이콘 -->
+        <div class="flex justify-center mb-4">
+            <div class="w-14 h-14 rounded-2xl bg-error/10 border border-error/20 flex items-center justify-center">
+                <span class="material-symbols-outlined text-error text-3xl">delete_forever</span>
+            </div>
+        </div>
+
+        <!-- 텍스트 -->
+        <h3 class="text-lg font-headline font-bold text-on-surface text-center mb-2">
+            강의를 삭제하시겠습니까?
+        </h3>
+        <p class="text-sm text-slate-400 font-body text-center mb-6">
+            삭제된 강의와 영상은 복구할 수 없습니다.
+        </p>
+
+        <!-- 버튼 -->
+        <div class="flex gap-3">
+            <button type="button"
+                    onclick="closeDeleteModal()"
+                    class="flex-1 py-2.5 rounded-xl bg-slate-800/50 border border-slate-700/40 text-slate-400 hover:text-white hover:border-slate-600 transition-all text-sm font-label">
+                아니오
+            </button>
+            <a id="deleteConfirmBtn"
+               href="#"
+               class="flex-1 py-2.5 rounded-xl bg-error/10 border border-error/30 text-error hover:bg-error/20 hover:border-error/50 transition-all text-sm font-label text-center">
+                예, 삭제합니다
+            </a>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    function openDeleteModal(lectureId, courseId) {
+        // 삭제 확인 버튼의 href에 삭제 URL 세팅
+        document.getElementById('deleteConfirmBtn').href =
+            `/instructor/courses/${courseId}/lectures/${lectureId}/delete`;
+
+        // 모달 표시
+        document.getElementById('deleteModal').classList.remove('hidden');
+    }
+
+    function closeDeleteModal() {
+        // 모달 숨기기
+        document.getElementById('deleteModal').classList.add('hidden');
+    }
+
+    // 모달 바깥 클릭 시 닫기
+    document.getElementById('deleteModal').addEventListener('click', function(e) {
+        if (e.target === this) closeDeleteModal();
+    });
+</script>
 
 </body>
 </html>

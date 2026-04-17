@@ -126,4 +126,19 @@ public class LectureService {
                 videoUrl
         );
     }
+
+    @Transactional
+    public void deleteLecture(Long lectureId) {
+
+        // 1. 강의 조회
+        Lecture lecture = lectureRepository.findById(lectureId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 강의입니다."));
+
+        // 2. GCS 영상 삭제 (영상이 있을 때만)
+        if (lecture.getVideoUrl() != null) {
+            gcsService.deleteFile(lecture.getVideoUrl());
+        }
+
+        lectureRepository.deleteById(lectureId);
+    }
 }
