@@ -4,6 +4,8 @@ import com.wanted.ailienlmsprogram.community.entity.CommunityPost;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import java.time.format.DateTimeFormatter; // 추가
+ // 추가
 
 @Getter
 @Setter
@@ -15,17 +17,21 @@ public class PostDTO {
     private String content;
     private String authorName;
     private String memberId;
-    // 1. 공지사항 여부 필드 추가
     private boolean postIsNotice;
+    // 작성일시 필드 추가
+    private String createdAt;
 
     public PostDTO(CommunityPost post) {
         this.postId = post.getPostId();
         this.continentId = post.getContinentId();
         this.title = post.getPostTitle();
         this.content = post.getPostContent();
-
-        // 2. 엔티티에서 데이터를 꺼내와서 DTO에 저장 (매우 중요!)
         this.postIsNotice = post.isPostIsNotice();
+
+        // 엔티티의 LocalDateTime을 "yyyy-MM-dd" 형식의 문자열로 변환
+        if (post.getCreatedAt() != null) {
+            this.createdAt = post.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        }
 
         if (post.getMember() != null) {
             this.authorName = post.getMember().getName();

@@ -29,6 +29,15 @@ public class CommunityPost {
     @Column(name = "post_is_notice", nullable = false)
     private boolean postIsNotice = false;
 
+    @Column(name = "created_at", updatable = false)
+    private java.time.LocalDateTime createdAt;
+
+    // 자동 날짜??
+    @PrePersist
+    public void prePersist() {
+        this.createdAt = java.time.LocalDateTime.now();
+    }
+
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id")
