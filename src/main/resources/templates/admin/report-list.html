@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>신고 관리</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background: #f6f8fb;
+            color: #222;
+        }
+
+        header {
+            background: #3a1f44;
+            color: white;
+            padding: 20px 40px;
+        }
+
+        header h1 {
+            margin: 0 0 8px 0;
+            font-size: 28px;
+        }
+
+        .top-links a {
+            color: white;
+            text-decoration: none;
+            margin-right: 14px;
+            font-weight: 600;
+        }
+
+        .container {
+            width: 1400px;
+            max-width: calc(100% - 40px);
+            margin: 30px auto;
+        }
+
+        .page-box {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+
+        .page-box h2 {
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+
+        .summary {
+            font-size: 15px;
+            color: #555;
+        }
+
+        .summary strong {
+            color: #3a1f44;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1250px;
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+        }
+
+        thead {
+            background: #ede7f6;
+        }
+
+        th, td {
+            padding: 14px 12px;
+            border-bottom: 1px solid #ececec;
+            text-align: left;
+            vertical-align: top;
+            font-size: 14px;
+        }
+
+        th {
+            color: #3a1f44;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 6px 10px;
+            border-radius: 999px;
+            background: #efe5ff;
+            color: #5f2d82;
+            font-weight: 700;
+            font-size: 12px;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 6px 10px;
+            border-radius: 999px;
+            font-weight: 700;
+            font-size: 12px;
+        }
+
+        .status.active {
+            background: #e8f7e8;
+            color: #267326;
+        }
+
+        .status.deleted {
+            background: #fdeaea;
+            color: #b23b3b;
+        }
+
+        .title {
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: #222;
+        }
+
+        .preview, .reason {
+            color: #555;
+            line-height: 1.5;
+            white-space: pre-line;
+        }
+
+        .sub {
+            color: #777;
+            font-size: 12px;
+            margin-top: 4px;
+        }
+
+        .action-link {
+            display: inline-block;
+            padding: 8px 12px;
+            border-radius: 8px;
+            background: #3a1f44;
+            color: white;
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        .action-link:hover {
+            opacity: 0.9;
+        }
+
+        .disabled {
+            color: #999;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .empty-box {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+            padding: 40px 24px;
+            text-align: center;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <h1>신고 관리</h1>
+    <div class="top-links">
+        <a th:href="@{/admin}">관리자 홈</a>
+        <a th:href="@{/admin/members}">회원/계정 관리</a>
+        <a th:href="@{/logout}">로그아웃</a>
+    </div>
+</header>
+
+<div class="container">
+    <div class="page-box">
+        <h2>Report 테이블 기반 신고 목록</h2>
+        <p>
+            신고 사유, 대상 글 정보, 대상 작성자의 로그인 아이디와 이름, 대륙 정보를 함께 보여줍니다.
+            PK는 화면에 노출하지 않고, 대상 작성자의 로그인 아이디로 회원 관리 페이지에 바로 이동할 수 있게 구성했습니다.
+        </p>
+        <div class="summary">
+            조회 결과: <strong th:text="${#lists.size(reports)}">0</strong>건
+        </div>
+    </div>
+
+    <div class="empty-box" th:if="${#lists.isEmpty(reports)}">
+        <h3>조회된 신고가 없습니다.</h3>
+        <p>현재 처리할 신고 내역이 없습니다.</p>
+    </div>
+
+    <div class="table-wrap" th:unless="${#lists.isEmpty(reports)}">
+        <table>
+            <thead>
+            <tr>
+                <th>신고일</th>
+                <th>유형</th>
+                <th>대륙</th>
+                <th>대상 사용자 아이디</th>
+                <th>대상 사용자 이름</th>
+                <th>해당 글</th>
+                <th>신고 사유</th>
+                <th>신고자</th>
+                <th>대상 상태</th>
+                <th>관리 이동</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="report : ${reports}">
+                <td th:text="${#temporals.format(report.reportedAt, 'yyyy-MM-dd HH:mm')}">2026-04-16 10:30</td>
+
+                <td>
+                    <span class="badge" th:text="${report.targetTypeLabel}">게시글 신고</span>
+                </td>
+
+                <td th:text="${report.displayContinentName}">컴활 대륙</td>
+
+                <td th:text="${report.displayTargetMemberLoginId}">student01</td>
+
+                <td th:text="${report.displayTargetMemberName}">홍길동</td>
+
+                <td>
+                    <div class="title" th:text="${report.displayTargetTitle}">게시글 제목</div>
+                    <div class="preview" th:text="${report.displayTargetPreview}">내용 일부</div>
+                </td>
+
+                <td>
+                    <div class="reason" th:text="${report.reportReason}">신고 사유</div>
+                </td>
+
+                <td>
+                    <div th:text="${report.displayReporterLoginId}">reporter01</div>
+                    <div class="sub" th:text="${report.displayReporterName}">신고자 이름</div>
+                </td>
+
+                <td>
+                    <span class="status"
+                          th:classappend="${report.targetDeleted} ? ' deleted' : ' active'"
+                          th:text="${report.targetStatusLabel}">
+                        정상
+                    </span>
+                </td>
+
+                <td>
+                    <a class="action-link"
+                       th:if="${report.hasTargetMember()}"
+                       th:href="@{/admin/members(query=${report.targetMemberLoginId})}">
+                        회원 관리로 이동
+                    </a>
+                    <span class="disabled" th:unless="${report.hasTargetMember()}">연결 불가</span>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>

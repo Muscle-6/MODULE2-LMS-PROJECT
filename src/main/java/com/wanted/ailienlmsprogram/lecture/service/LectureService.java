@@ -37,15 +37,6 @@ public class LectureService {
                 .collect(Collectors.toList());
     }
 
-    // 강좌 상세 입장 시 뜨는 강의 목록
-    public List<LectureResponseDTO> lectureByCourse(Long courseId) {
-
-        List<Lecture> foundLectures = lectureRepository.findByCourse_CourseId(courseId);
-
-        return foundLectures.stream()
-                .map(lecture -> modelMapper.map(lecture, LectureResponseDTO.class))
-                .collect(Collectors.toList());
-    }
 
     @Transactional
     public void applyLecture(LectureAddDTO request, Long courseId, Long memberId, MultipartFile lectureVideo) throws IOException {
@@ -74,5 +65,15 @@ public class LectureService {
         );
 
         lectureRepository.save(lecture);
+    }
+  
+    // 강좌 상세 입장 시 뜨는 강의 목록
+    public List<LectureResponseDTO> lectureByCourse(Long courseId) {
+
+        List<Lecture> foundLectures = lectureRepository.findByCourse_CourseId(courseId);
+
+        return foundLectures.stream()
+                .map(lecture -> modelMapper.map(lecture, LectureResponseDTO.class))
+                .collect(Collectors.toList());
     }
 }

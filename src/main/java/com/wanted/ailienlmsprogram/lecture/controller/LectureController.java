@@ -54,8 +54,4 @@ public class LectureController {
 
         return "redirect:/instructor/courses/" + courseId + "/lectures";
     }
-
-
-
-
 }
