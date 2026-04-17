@@ -38,18 +38,17 @@ public class CartController {
     }
 
     // ── 장바구니 추가 / 삭제 ─────────────────────────────────────────────────────
-
+    // 에러 메세지 출력이 안되어서 코드 리펙토링 진행했습니다
     @PostMapping("/{courseId}")
-    public String addToCart(@PathVariable Long courseId,
-                            @AuthenticationPrincipal CustomUserDetails userDetails,
-                            RedirectAttributes ra) {
+    @ResponseBody
+    public ResponseEntity<String> addToCart(@PathVariable Long courseId,
+                                            @AuthenticationPrincipal CustomUserDetails userDetails) {
         try {
             cartService.addToCart(courseId, userDetails.getMember());
-            ra.addFlashAttribute("successMsg", "수강 바구니에 추가되었습니다.");
+            return ResponseEntity.ok("수강 바구니에 추가되었습니다.");
         } catch (IllegalArgumentException e) {
-            ra.addFlashAttribute("errorMsg", e.getMessage());
+            return ResponseEntity.badRequest().body(e.getMessage()); // 400 반환
         }
-        return "redirect:/student/cart";
     }
 
     @PostMapping("/{cartId}/delete")

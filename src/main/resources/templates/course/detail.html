@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <title th:text="${course.courseTitle} + ' - 상세 조회'">강좌 상세</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
   <style>
     body { background: #0b1020; color: #f5f7ff; font-family: Arial, sans-serif; margin: 0; }
     .container { width: 1100px; margin: 0 auto; padding: 40px 20px; }
@@ -13,20 +16,7 @@
     .curriculum-card:hover { border-color: #5f7cff; }
     .sticky-side { position: sticky; top: 20px; }
     .price-tag { font-size: 28px; color: #7ee0ff; font-weight: bold; margin-bottom: 20px; }
-    .btn-apply { display: block;                  /* 👈 인라인 요소를 블록으로 강제 전환 */
-      width: 100%;                     /* 👈 부모 너비에 꽉 채우기 */
-      box-sizing: border-box;          /* 👈 핵심! 패딩과 테두리를 너비에 포함시킴 */
-      padding: 18px;
-      background: #5f7cff;
-      color: white;
-      border: none;
-      border-radius: 12px;
-      font-size: 18px;
-      font-weight: bold;
-      cursor: pointer;
-      text-decoration: none;
-      text-align: center;
-      line-height: 1; }
+    .btn-apply { display: block; width: 100%; box-sizing: border-box; padding: 18px; background: #5f7cff; color: white; border: none; border-radius: 12px; font-size: 18px; font-weight: bold; cursor: pointer; text-decoration: none; text-align: center; line-height: 1; }
     .btn-watch { padding: 8px 16px; background: #5f7cff; color: white; border-radius: 8px; text-decoration: none; font-size: 14px; font-weight: bold; transition: 0.3s; }
     .btn-watch:hover { background: #4a63ff; transform: scale(1.05); }
     .instructor-badge { display: inline-block; padding: 4px 12px; background: rgba(126, 224, 255, 0.1); color: #7ee0ff; border-radius: 999px; font-size: 14px; margin-top: 10px; }
@@ -83,7 +73,16 @@
 
         <div th:unless="${isEnrolled}">
           <div class="price-tag" th:text="${#numbers.formatInteger(course.coursePrice, 1, 'COMMA')} + '원'">가격</div>
-          <button class="btn-apply">지금 바로 침공하기</button>
+          <a sec:authorize="isAnonymous()" th:href="@{/login}" class="btn-apply">
+            로그인 후 침공하기
+          </a>
+
+          <form sec:authorize="isAuthenticated()"
+                id="enrollForm"
+                th:action="@{/enroll/{id}(id=${course.courseId})}"
+                method="post">
+            <button type="button" class="btn-apply" onclick="confirmEnroll()">지금 바로 침공하기</button>
+          </form>
         </div>
 
         <div style="margin-top: 20px; font-size: 13px; color: #b8c1e7; line-height: 1.6;">
@@ -95,6 +94,64 @@
       </div>
     </div>
   </div>
-</div>
-</body>
-</html>
+</div> <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script th:inline="javascript">
+  function confirmEnroll() {
+    const courseId = /*[[${course.courseId}]]*/ 0;
+    const csrfHeader = /*[[${_csrf?.headerName}]]*/ 'X-CSRF-TOKEN';
+    const csrfToken = /*[[${_csrf?.token}]]*/ '';
+
+    Swal.fire({
+      title: '병력 지원 요청',
+      text: "이 강좌를 장바구니에 담으시겠습니까?",
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#5f7cff',
+      cancelButtonColor: '#ff5f5f',
+      confirmButtonText: '네, 담아주세요!',
+      cancelButtonText: '아직 고민 중입니다',
+      background: '#121a35',
+      color: '#f5f7ff'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // ... fetch 부분만 집중해서 보세요 예아~~~
+        fetch('/student/cart/' + courseId, {
+          method: 'POST',
+          headers: {
+            [csrfHeader]: csrfToken,
+            'Content-Type': 'application/json'
+          }
+        })
+                .then(async (response) => {
+                  if (response.ok) { // 200 OK가 왔을 때 (성공)
+                    Swal.fire({
+                      title: '보급 완료!',
+                      text: "장바구니에 담겼습니다. 이동할까요?",
+                      icon: 'success',
+                      showCancelButton: true,
+                      confirmButtonText: '장바구니 이동',
+                      cancelButtonText: '계속 둘러보기',
+                      background: '#121a35',
+                      color: '#f5f7ff'
+                    }).then((navResult) => {
+                      if (navResult.isConfirmed) {
+                        location.href = '/student/cart';
+                      }
+                    });
+                  } else { // 400 에러 등이 왔을 때 (이미 담김 등)
+                    const errorMsg = await response.text(); // 서버가 보낸 "이미 담긴..." 메시지 읽기
+                    Swal.fire({
+                      title: '침공 중단',
+                      text: errorMsg, // 👈 여기가 핵심! "이미 담긴 강좌입니다"가 뜹니다.
+                      icon: 'warning',
+                      background: '#121a35',
+                      color: '#f5f7ff'
+                    });
+                  }
+                });
+      }
+    });
+  }
+</script>
+</body> </html>
