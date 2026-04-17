@@ -65,6 +65,7 @@ public class LectureService {
         );
 
         lectureRepository.save(lecture);
+    }
   
     // 강좌 상세 입장 시 뜨는 강의 목록
     public List<LectureResponseDTO> lectureByCourse(Long courseId) {
