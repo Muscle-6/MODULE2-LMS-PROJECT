@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>관리자 강좌 상세</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f6f8fb;
+      color: #222;
+    }
+
+    header {
+      background: #3a1f44;
+      color: white;
+      padding: 22px 40px;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 28px;
+    }
+
+    header p {
+      margin: 8px 0 0;
+      color: #e9ddf0;
+      font-size: 14px;
+    }
+
+    .container {
+      width: 1100px;
+      max-width: calc(100% - 40px);
+      margin: 30px auto 50px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+
+    .section-title {
+      margin-top: 0;
+      margin-bottom: 18px;
+      font-size: 22px;
+    }
+
+    .top-actions,
+    .bottom-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 44px;
+      padding: 0 18px;
+      border-radius: 10px;
+      text-decoration: none;
+      border: none;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      background: #5b2c6f;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #472257;
+    }
+
+    .btn-secondary {
+      background: #eef1f6;
+      color: #333;
+    }
+
+    .btn-secondary:hover {
+      background: #dde3ec;
+    }
+
+    .btn-warning {
+      background: #f59e0b;
+      color: white;
+    }
+
+    .btn-warning:hover {
+      background: #d97706;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 180px 1fr;
+      gap: 14px 20px;
+      align-items: start;
+    }
+
+    .label {
+      font-weight: 700;
+      color: #444;
+    }
+
+    .value {
+      color: #222;
+      line-height: 1.6;
+      word-break: break-word;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 72px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .status-draft {
+      background: #fff3cd;
+      color: #8a5a00;
+    }
+
+    .status-published {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .description-box,
+    .continent-box {
+      background: #fafbfe;
+      border: 1px solid #edf0f5;
+      border-radius: 12px;
+      padding: 16px;
+      white-space: pre-wrap;
+    }
+
+    .thumbnail-box {
+      margin-top: 12px;
+    }
+
+    .thumbnail-box img {
+      max-width: 320px;
+      width: 100%;
+      border-radius: 14px;
+      border: 1px solid #eceff4;
+      display: block;
+    }
+
+    .empty-thumbnail {
+      color: #777;
+      font-size: 14px;
+    }
+
+    .inline-form {
+      margin: 0;
+    }
+
+    @media (max-width: 768px) {
+      header {
+        padding: 18px 20px;
+      }
+
+      .container {
+        max-width: calc(100% - 24px);
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .top-actions,
+      .bottom-actions {
+        flex-direction: column;
+      }
+
+      .btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+<header>
+  <h1>관리자 강좌 상세</h1>
+  <p>강좌 세부 내용을 확인한 뒤 공개 상태를 결정합니다.</p>
+</header>
+
+<div class="container">
+  <div class="card">
+    <div class="top-actions">
+      <a th:href="@{/admin/courses(query=${query}, status=${status})}" class="btn btn-secondary">목록으로</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2 class="section-title">강좌 기본 정보</h2>
+
+    <div class="grid">
+      <div class="label">강좌 제목</div>
+      <div class="value" th:text="${course.courseTitle}">강좌 제목</div>
+
+      <div class="label">현재 상태</div>
+      <div class="value">
+                <span class="status-badge"
+                      th:classappend="${course.draft} ? ' status-draft' : ' status-published'"
+                      th:text="${course.statusLabel}">
+                    비공개
+                </span>
+      </div>
+
+      <div class="label">가격</div>
+      <div class="value"
+           th:text="${#numbers.formatInteger(course.coursePrice, 3, 'COMMA') + '원'}">
+        0원
+      </div>
+
+      <div class="label">신청일</div>
+      <div class="value"
+           th:text="${#temporals.format(course.createdAt, 'yyyy-MM-dd HH:mm')}">
+        2026-04-16 10:00
+      </div>
+
+      <div class="label">강사 아이디</div>
+      <div class="value" th:text="${course.instructorLoginId}">instructor01</div>
+
+      <div class="label">강사 이름</div>
+      <div class="value" th:text="${course.instructorName}">김강사</div>
+
+      <div class="label">대륙명</div>
+      <div class="value" th:text="${course.continentName}">대륙명</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2 class="section-title">강좌 설명</h2>
+    <div class="description-box"
+         th:text="${course.courseDescription != null and !#strings.isEmpty(course.courseDescription) ? course.courseDescription : '등록된 강좌 설명이 없습니다.'}">
+      강좌 설명
+    </div>
+  </div>
+
+  <div class="card">
+    <h2 class="section-title">대륙 정보</h2>
+    <div class="continent-box"
+         th:text="${course.continentDescription != null and !#strings.isEmpty(course.continentDescription) ? course.continentDescription : '등록된 대륙 설명이 없습니다.'}">
+      대륙 설명
+    </div>
+  </div>
+
+  <div class="card">
+    <h2 class="section-title">썸네일</h2>
+    <div class="thumbnail-box"
+         th:if="${course.courseThumbnailUrl != null and !#strings.isEmpty(course.courseThumbnailUrl)}">
+      <img th:src="${course.courseThumbnailUrl}" alt="강좌 썸네일">
+    </div>
+
+    <div class="empty-thumbnail"
+         th:if="${course.courseThumbnailUrl == null or #strings.isEmpty(course.courseThumbnailUrl)}">
+      등록된 썸네일이 없습니다.
+    </div>
+  </div>
+
+  <div class="card">
+    <h2 class="section-title">공개 상태 결정</h2>
+    <div class="bottom-actions">
+      <form class="inline-form"
+            th:action="@{|/admin/courses/${course.courseId}/status|}"
+            method="post"
+            onsubmit="return confirm('강좌 공개 상태를 변경하시겠습니까?');">
+        <input type="hidden" name="targetStatus" th:value="${course.nextStatus}">
+        <input type="hidden" name="query" th:value="${query}">
+        <input type="hidden" name="status" th:if="${status != null}" th:value="${status}">
+        <button type="submit"
+                class="btn"
+                th:classappend="${course.draft} ? ' btn-primary' : ' btn-warning'"
+                th:text="${course.actionLabel}">
+          공개 전환
+        </button>
+      </form>
+
+      <a th:href="@{/admin/courses(query=${query}, status=${status})}" class="btn btn-secondary">목록으로</a>
+    </div>
+  </div>
+</div>
+</body>
+</html>

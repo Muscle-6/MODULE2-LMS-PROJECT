@@ -33,7 +33,6 @@ public class PostService {
         return new PostDTO(post);
     }
 
-    // 1. 저장 로직 추가 (수정/삭제가 가능하도록 별도의 @Transactional 추가)
     @Transactional
     public void savePost(PostCreateRequest request, Member member) {
         // DTO를 엔티티로 변환 (Builder 패턴 사용)
@@ -54,7 +53,6 @@ public class PostService {
         CommunityPost post = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다. ID: " + postId));
 
-        // 엔티티의 필드를 직접 수정 (Dirty Checking으로 자동 반영됨)
         post.setPostTitle(request.getPostTitle());
         post.setPostContent(request.getPostContent());
     }

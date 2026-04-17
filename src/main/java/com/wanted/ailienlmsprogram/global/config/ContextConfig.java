@@ -1,5 +1,7 @@
 package com.wanted.ailienlmsprogram.global.config;
 
+import com.wanted.ailienlmsprogram.enrollment.dto.EnrollmentResponseDTO;
+import com.wanted.ailienlmsprogram.enrollment.entity.Enrollment;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;

@@ -6,6 +6,7 @@ import com.wanted.ailienlmsprogram.global.gcs.GcsService;
 import com.wanted.ailienlmsprogram.lecture.dao.LectureRepository;
 import com.wanted.ailienlmsprogram.lecture.dto.LectureAddDTO;
 import com.wanted.ailienlmsprogram.lecture.dto.LectureFindDTO;
+import com.wanted.ailienlmsprogram.lecture.dto.LectureResponseDTO;
 import com.wanted.ailienlmsprogram.lecture.entity.Lecture;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -33,6 +34,16 @@ public class LectureService {
 
         return lectures.stream()
                 .map(lecture -> modelMapper.map(lecture, LectureFindDTO.class))
+                .collect(Collectors.toList());
+    }
+
+    // 강좌 상세 입장 시 뜨는 강의 목록
+    public List<LectureResponseDTO> lectureByCourse(Long courseId) {
+
+        List<Lecture> foundLectures = lectureRepository.findByCourse_CourseId(courseId);
+
+        return foundLectures.stream()
+                .map(lecture -> modelMapper.map(lecture, LectureResponseDTO.class))
                 .collect(Collectors.toList());
     }
 

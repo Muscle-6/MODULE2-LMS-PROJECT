@@ -27,6 +27,7 @@ public class CommunityPost {
     private String postContent;
     private boolean postIsDeleted;
 
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id")
     private Member member;
@@ -34,7 +35,6 @@ public class CommunityPost {
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CommunityComment> comments = new ArrayList<>();
 
-    // CommunityPost.java 엔티티 파일 안의 적당한 곳(필드 아래쪽)에 붙여넣으세요.
 
     public void setPostTitle(String postTitle) {
         this.postTitle = postTitle;

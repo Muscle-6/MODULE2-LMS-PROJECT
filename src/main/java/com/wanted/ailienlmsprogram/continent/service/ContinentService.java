@@ -36,6 +36,7 @@ public class ContinentService {
                 .collect(Collectors.toList());
     }
 
+    // 대륙 상세 조회
     public ContinentAllResponseDTO getContinentDetail(Long continentId) {
 
         Continent continent = continentRepository.findById(continentId)

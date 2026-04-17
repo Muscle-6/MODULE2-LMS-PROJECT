@@ -22,7 +22,7 @@ public class MemberController {
 
     @GetMapping("/signup")
     public String signupPage(Model model) {
-        model.addAttribute("request", new SignupRequest());
+        model.addAttribute("request",new SignupRequest());
         return "member/signup";
     }
 
