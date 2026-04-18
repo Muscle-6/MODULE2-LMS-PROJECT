@@ -22,12 +22,71 @@
     .instructor-badge { display: inline-block; padding: 4px 12px; background: rgba(126, 224, 255, 0.1); color: #7ee0ff; border-radius: 999px; font-size: 14px; margin-top: 10px; }
     .rounded-back-btn { display: inline-block; padding: 12px 24px; background: rgba(95, 124, 255, 0.1); color: #7ee0ff; text-decoration: none; border-radius: 999px; font-size: 14px; font-weight: 500; border: 1px solid rgba(126, 224, 255, 0.2); transition: 0.3s; }
     .rounded-back-btn:hover { background: rgba(95, 124, 255, 0.2); border-color: #5f7cff; transform: translateY(-2px); }
+
+    /* QnA 섹션 */
+    .qna-banner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #1a2447;
+      border: 1px solid rgba(126, 224, 255, 0.15);
+      border-radius: 14px;
+      padding: 20px 24px;
+    }
+    .qna-banner-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .qna-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      background: rgba(126, 224, 255, 0.1);
+      border: 1px solid rgba(126, 224, 255, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+    .qna-banner-text h4 {
+      margin: 0 0 4px;
+      font-size: 15px;
+      color: #f5f7ff;
+      font-weight: bold;
+    }
+    .qna-banner-text p {
+      margin: 0;
+      font-size: 12px;
+      color: #7a8ab8;
+    }
+    .btn-qna {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 20px;
+      background: rgba(126, 224, 255, 0.08);
+      color: #7ee0ff;
+      border: 1px solid rgba(126, 224, 255, 0.3);
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: bold;
+      letter-spacing: 0.5px;
+      transition: 0.2s;
+      white-space: nowrap;
+    }
+    .btn-qna:hover {
+      background: rgba(126, 224, 255, 0.15);
+      border-color: #7ee0ff;
+      transform: translateY(-1px);
+    }
   </style>
 </head>
 <body>
 <div class="container">
   <div style="margin-bottom: 25px;">
-    <a href="javascript:history.back();" class="rounded-back-btn">← 목록으로 돌아가기</a>
+    <a th:href="@{/student/enrollments}" class="rounded-back-btn">← 목록으로 돌아가기</a>
   </div>
 
   <section class="course-header">
@@ -40,6 +99,8 @@
 
   <div class="grid-container">
     <div class="main-content">
+
+      <!-- 강의 커리큘럼 -->
       <section class="section">
         <h2>강의 커리큘럼</h2>
         <div class="curriculum-list" th:if="${!#lists.isEmpty(lectures)}">
@@ -48,7 +109,6 @@
               <span style="color: #7ee0ff; margin-right: 10px;" th:text="${lecture.lectureOrderIndex} + '.'">1.</span>
               <span th:text="${lecture.lectureTitle}">강의 제목</span>
             </div>
-
             <div th:if="${isEnrolled}">
               <a th:href="@{/lectures/{id}(id=${lecture.lectureId})}" class="btn-watch">강의 시청 →</a>
             </div>
@@ -57,6 +117,24 @@
         </div>
         <p class="empty" th:if="${#lists.isEmpty(lectures)}">등록된 강의가 없습니다.</p>
       </section>
+
+      <!-- QnA 게시판 이동 (수강생만 노출) -->
+      <section class="section" th:if="${isEnrolled}">
+        <h2 style="margin-top: 0; margin-bottom: 16px;">COMMUNICATION LOGS</h2>
+        <div class="qna-banner">
+          <div class="qna-banner-left">
+            <div class="qna-icon">📡</div>
+            <div class="qna-banner-text">
+              <h4>QnA 게시판</h4>
+              <p>강의에 대한 질문을 남기고 답변을 받아보세요.</p>
+            </div>
+          </div>
+          <a th:href="@{/student/course/{id}/qna(id=${course.courseId})}" class="btn-qna">
+            Q&A LOGS →
+          </a>
+        </div>
+      </section>
+
     </div>
 
     <div class="sticky-side">
@@ -76,7 +154,6 @@
           <a sec:authorize="isAnonymous()" th:href="@{/login}" class="btn-apply">
             로그인 후 침공하기
           </a>
-
           <form sec:authorize="isAuthenticated()"
                 id="enrollForm"
                 th:action="@{/enroll/{id}(id=${course.courseId})}"
@@ -94,8 +171,9 @@
       </div>
     </div>
   </div>
-</div> <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</div>
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script th:inline="javascript">
   function confirmEnroll() {
     const courseId = /*[[${course.courseId}]]*/ 0;
@@ -115,7 +193,6 @@
       color: '#f5f7ff'
     }).then((result) => {
       if (result.isConfirmed) {
-        // ... fetch 부분만 집중해서 보세요 예아~~~
         fetch('/student/cart/' + courseId, {
           method: 'POST',
           headers: {
@@ -124,7 +201,7 @@
           }
         })
                 .then(async (response) => {
-                  if (response.ok) { // 200 OK가 왔을 때 (성공)
+                  if (response.ok) {
                     Swal.fire({
                       title: '보급 완료!',
                       text: "장바구니에 담겼습니다. 이동할까요?",
@@ -139,11 +216,11 @@
                         location.href = '/student/cart';
                       }
                     });
-                  } else { // 400 에러 등이 왔을 때 (이미 담김 등)
-                    const errorMsg = await response.text(); // 서버가 보낸 "이미 담긴..." 메시지 읽기
+                  } else {
+                    const errorMsg = await response.text();
                     Swal.fire({
                       title: '침공 중단',
-                      text: errorMsg, // 👈 여기가 핵심! "이미 담긴 강좌입니다"가 뜹니다.
+                      text: errorMsg,
                       icon: 'warning',
                       background: '#121a35',
                       color: '#f5f7ff'
@@ -154,4 +231,5 @@
     });
   }
 </script>
-</body> </html>
+</body>
+</html>

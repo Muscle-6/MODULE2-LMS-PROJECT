@@ -50,17 +50,24 @@ public class LectureController {
     public String viewMyLecture(@PathVariable("courseId") Long courseId, Model model, Principal principal) {
 
         CourseDetailResponseDTO course = courseCommandService.courseDetail(courseId);
-
         List<LectureResponseDTO> lectureList = lectureService.viewMyLecture(courseId);
 
         boolean isEnrolled = false;
-        if(principal != null) {
+        Long enrollmentId = null;  // 추가
+
+        if (principal != null) {
             isEnrolled = enrollmentService.isStudentEnrolled(principal.getName(), courseId);
+
+            if (isEnrolled) {
+                // enrollmentId 가져오기 — EnrollmentService에 메서드 추가 필요
+                enrollmentId = enrollmentService.findEnrollmentId(principal.getName(), courseId);
+            }
         }
 
         model.addAttribute("course", course);
         model.addAttribute("lectures", lectureList);
         model.addAttribute("isEnrolled", isEnrolled);
+        model.addAttribute("enrollmentId", enrollmentId);  // 추가
 
         return "course/detail";
     }

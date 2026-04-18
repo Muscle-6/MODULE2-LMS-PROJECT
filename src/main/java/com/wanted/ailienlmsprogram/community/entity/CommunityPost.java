@@ -43,6 +43,7 @@ public class CommunityPost {
     @JoinColumn(name = "author_id")
     private Member member;
 
+    @Builder.Default
     public void setPostIsNotice(boolean postIsNotice) {
         this.postIsNotice = postIsNotice;
     }
