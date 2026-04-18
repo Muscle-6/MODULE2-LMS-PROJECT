@@ -32,8 +32,8 @@ public class AdminCourseController {
     }
 
     // 특정 강좌의 상세 정보를 조회한다.
-    @PostMapping("/admin/course/detail")
-    public String courseDetail(@RequestParam Long courseId,
+    @GetMapping("/admin/courses/{courseId}")
+    public String courseDetail(@PathVariable Long courseId,
                                @RequestParam(required = false) String query,
                                @RequestParam(required = false) CourseStatus status,
                                Model model) {
@@ -41,7 +41,6 @@ public class AdminCourseController {
         model.addAttribute("course", adminCourseService.getCourseDetail(courseId));
         model.addAttribute("query", query);
         model.addAttribute("status", status);
-
         return "admin/course-detail";
     }
 

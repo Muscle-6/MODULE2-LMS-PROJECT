@@ -472,7 +472,7 @@
             <i class="fa-solid fa-circle-exclamation"></i>
             <span>게시판/신고 관리</span>
         </a>
-        <a th:href="@{/admin/statistics}" class="nav-item">
+        <a th:href="@{/admin/statics}" class="nav-item">
             <i class="fa-solid fa-chart-line"></i>
             <span>통계/모니터링</span>
         </a>
@@ -484,7 +484,7 @@
             <i class="fa-solid fa-book-open"></i>
             <span>강좌 신청 관리</span>
         </a>
-        <a th:href="@{/admin/continent-notices/continents}" class="nav-item">
+        <a th:href="@{/admin/continent-notices}" class="nav-item">
             <i class="fa-solid fa-bullhorn"></i>
             <span>대륙 공지 작성</span>
         </a>
@@ -601,16 +601,10 @@
                                   th:text="${course.statusLabel}">상태</span>
                         </td>
                         <td style="text-align: center;">
-                            <form th:action="@{/admin/course/detail}" method="post" style="margin: 0;">
-                                <input type="hidden" name="courseId" th:value="${course.courseId}">
-                                <input type="hidden" name="query" th:value="${condition.query}">
-                                <input type="hidden" name="status"
-                                       th:if="${condition.status != null}"
-                                       th:value="${condition.status}">
-                                <button type="submit" class="btn btn-secondary btn-sm">
-                                    <i class="fa-solid fa-arrow-up-right-from-square"></i> 상세보기
-                                </button>
-                            </form>
+                            <a th:href="@{|/admin/courses/${course.courseId}?query=${condition.query}&status=${condition.status}|}"
+                               class="btn btn-secondary btn-sm">
+                                <i class="fa-solid fa-arrow-up-right-from-square"></i> 상세보기
+                            </a>
                         </td>
                     </tr>
                     </tbody>
