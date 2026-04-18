@@ -601,16 +601,10 @@
                                   th:text="${course.statusLabel}">상태</span>
                         </td>
                         <td style="text-align: center;">
-                            <form th:action="@{/admin/course/detail}" method="post" style="margin: 0;">
-                                <input type="hidden" name="courseId" th:value="${course.courseId}">
-                                <input type="hidden" name="query" th:value="${condition.query}">
-                                <input type="hidden" name="status"
-                                       th:if="${condition.status != null}"
-                                       th:value="${condition.status}">
-                                <button type="submit" class="btn btn-secondary btn-sm">
-                                    <i class="fa-solid fa-arrow-up-right-from-square"></i> 상세보기
-                                </button>
-                            </form>
+                            <a th:href="@{|/admin/courses/${course.courseId}?query=${condition.query}&status=${condition.status}|}"
+                               class="btn btn-secondary btn-sm">
+                                <i class="fa-solid fa-arrow-up-right-from-square"></i> 상세보기
+                            </a>
                         </td>
                     </tr>
                     </tbody>
