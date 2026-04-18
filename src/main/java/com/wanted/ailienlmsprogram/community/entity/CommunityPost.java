@@ -16,7 +16,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-
 public class CommunityPost {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,7 +42,7 @@ public class CommunityPost {
     @JoinColumn(name = "author_id")
     private Member member;
 
-    @Builder.Default
+    @Builder
     public void setPostIsNotice(boolean postIsNotice) {
         this.postIsNotice = postIsNotice;
     }
