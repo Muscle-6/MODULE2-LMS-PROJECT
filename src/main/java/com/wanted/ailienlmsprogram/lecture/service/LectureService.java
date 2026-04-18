@@ -87,4 +87,58 @@ public class LectureService {
                 .collect(Collectors.toList());
 
     }
+
+    // 강의 수정 페이지
+    public LectureFindDTO findLectureById(Long lectureId) {
+
+        Lecture lecture = lectureRepository.findById(lectureId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 강의입니다."));
+
+        return  modelMapper.map(lecture, LectureFindDTO.class);
+
+    }
+
+    @Transactional
+    public void editLecture(LectureAddDTO request, Long lectureId, Long memberId, MultipartFile lectureVideo) throws IOException {
+
+        // 1. 강의 조회
+        Lecture lecture = lectureRepository.findById(lectureId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 강의입니다."));
+
+        // 2. 새 영상이 있을 때만 GCS 처리
+        String videoUrl = null;
+        if (lectureVideo != null && !lectureVideo.isEmpty()) {
+
+            // 기존 영상이 GCS에 있으면 먼저 삭제
+            if (lecture.getVideoUrl() != null) {
+                gcsService.deleteFile(lecture.getVideoUrl());
+            }
+
+            // 새 영상 업로드
+            videoUrl = gcsService.uploadFile(lectureVideo, "lecture", memberId, lectureId);
+        }
+
+        // 3. 엔티티 수정 메서드 호출
+        //    → @Transactional + 더티체킹으로 save() 없이 자동 UPDATE
+        lecture.editLectureInfo(
+                request.getLectureTitle(),
+                request.getLectureDescription(),
+                videoUrl
+        );
+    }
+
+    @Transactional
+    public void deleteLecture(Long lectureId) {
+
+        // 1. 강의 조회
+        Lecture lecture = lectureRepository.findById(lectureId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 강의입니다."));
+
+        // 2. GCS 영상 삭제 (영상이 있을 때만)
+        if (lecture.getVideoUrl() != null) {
+            gcsService.deleteFile(lecture.getVideoUrl());
+        }
+
+        lectureRepository.deleteById(lectureId);
+    }
 }

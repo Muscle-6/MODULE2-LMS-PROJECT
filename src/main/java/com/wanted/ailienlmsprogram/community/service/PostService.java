@@ -6,12 +6,12 @@ import com.wanted.ailienlmsprogram.community.repository.PostRepository;
 import com.wanted.ailienlmsprogram.community.entity.CommunityPost;
 import com.wanted.ailienlmsprogram.member.entity.Member;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -20,7 +20,8 @@ public class PostService {
     private final PostRepository postRepository;
 
     public List<PostDTO> findPostsByContinent(Long continentId) {
-        return postRepository.findByContinentIdAndPostIsDeletedFalse(continentId)
+        // 리포지토리의 @Query 메서드 호출 (공지 상단 정렬 적용됨)
+        return postRepository.findActivePostsByContinent(continentId)
                 .stream()
                 .map(PostDTO::new)
                 .collect(Collectors.toList());
@@ -29,25 +30,24 @@ public class PostService {
     public PostDTO findPostById(Long postId) {
         CommunityPost post = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다. ID: " + postId));
-
         return new PostDTO(post);
     }
 
     @Transactional
     public void savePost(PostCreateRequest request, Member member) {
-        // DTO를 엔티티로 변환 (Builder 패턴 사용)
+        // 학생용 서비스이므로 postIsNotice는 무조건 false(0)로 고정!
         CommunityPost post = CommunityPost.builder()
                 .postTitle(request.getPostTitle())
                 .postContent(request.getPostContent())
                 .continentId(request.getContinentId())
-                .member(member) // 작성자(Member) 객체 연결
-                .postIsDeleted(false) // 기본값 설정
+                .member(member)
+                .postIsDeleted(false)
+                .postIsNotice(false)
                 .build();
 
         postRepository.save(post);
     }
 
-    // 2. 수정 로직 추가
     @Transactional
     public void updatePost(Long postId, PostCreateRequest request) {
         CommunityPost post = postRepository.findById(postId)
@@ -57,12 +57,11 @@ public class PostService {
         post.setPostContent(request.getPostContent());
     }
 
-    // 3. 삭제 로직 추가 (소프트 딜리트)
     @Transactional
     public void deletePost(Long postId) {
         CommunityPost post = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다. ID: " + postId));
 
-        post.setPostIsDeleted(true); // 삭제 여부만 true로 변경
+        post.setPostIsDeleted(true);
     }
 }

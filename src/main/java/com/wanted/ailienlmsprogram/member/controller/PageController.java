@@ -15,10 +15,7 @@ public class PageController {
         this.continentService = continentService;
     }
 
-    @GetMapping("/access-denied")
-    public String accessDeniedPage() {
-        return "common/access-denied";
-    }
+
 
     @GetMapping("/main")
     public String mainPage(@RequestParam(required = false) String query, Model model){

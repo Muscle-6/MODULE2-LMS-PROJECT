@@ -20,7 +20,6 @@ import org.springframework.web.servlet.ModelAndView;
 import java.security.Principal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.ModelAndView;
 
 import java.io.IOException;
 import java.util.List;
@@ -86,6 +85,40 @@ public class LectureController {
 
         Long memberId = userDetails.getMember().getMemberId();
         lectureService.applyLecture(request, courseId, memberId, lectureVideo);
+
+        return "redirect:/instructor/courses/" + courseId + "/lectures";
+    }
+
+    @GetMapping("/instructor/courses/{courseId}/lectures/{lectureId}/edit")
+    public ModelAndView editMyCoursePage(ModelAndView mv,
+                                         @PathVariable Long courseId,
+                                         @PathVariable Long lectureId) {
+
+        LectureFindDTO lecture = lectureService.findLectureById(lectureId);
+        mv.addObject("lecture", lecture);
+        mv.addObject("courseId", courseId);
+        mv.setViewName("lecture/edit");
+
+        return mv;
+    }
+
+    @PostMapping("/instructor/courses/{courseId}/lectures/{lectureId}/edit")
+    public String editMyLecture(@ModelAttribute LectureAddDTO request,
+                                 @RequestParam(value = "lectureVideo", required = false) MultipartFile lectureVideo,
+                                 @PathVariable Long courseId,
+                                 @PathVariable Long lectureId,
+                                 @AuthenticationPrincipal CustomUserDetails userDetails) throws IOException {
+
+        Long memberId = userDetails.getMember().getMemberId();
+        lectureService.editLecture(request, lectureId, memberId, lectureVideo);
+
+        return "redirect:/instructor/courses/" + courseId + "/lectures";
+    }
+
+    @GetMapping("/instructor/courses/{courseId}/lectures/{lectureId}/delete")
+    public String deleteLecture(@PathVariable Long courseId,
+                                @PathVariable Long lectureId) {
+        lectureService.deleteLecture(lectureId);
 
         return "redirect:/instructor/courses/" + courseId + "/lectures";
     }

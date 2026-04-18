@@ -38,4 +38,13 @@ public class Lecture {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+
+    public void editLectureInfo(String lectureTitle, String lectureDescription, String videoUrl) {
+        this.lectureTitle = lectureTitle;
+        this.lectureDescription = lectureDescription;
+        if (videoUrl != null) {          // 새 영상 업로드 했을 때만 교체
+            this.videoUrl = videoUrl;
+        }
+    }
+
 }
