@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Q&A 삭제 확인</title>
+    <style>
+        .delete-container { margin: 50px auto; width: 400px; text-align: center; border: 1px solid #ddd; padding: 20px; }
+        .btn-delete { background-color: #ff4d4d; color: white; border: none; padding: 10px 20px; cursor: pointer; }
+        .btn-cancel { background-color: #ccc; color: black; text-decoration: none; padding: 10px 20px; display: inline-block; margin-left: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="delete-container">
+    <h2>게시글 삭제</h2>
+    <p>정말로 이 게시글을 삭제하시겠습니까?</p>
+    <p style="color: gray; font-size: 0.9em;">(삭제된 데이터는 복구할 수 없습니다.)</p>
+
+    <hr>
+
+    <form th:action="@{/student/course/{cId}/qna/{qId}/delete(cId=${courseId}, qId=${qnaId})}" method="post">
+
+        <button type="submit" class="btn-delete">삭제하기</button>
+
+        <a th:href="@{/student/course/{cId}/qna(cId=${courseId})}" class="btn-cancel">취소</a>
+
+    </form>
+</div>
+
+</body>
+</html>

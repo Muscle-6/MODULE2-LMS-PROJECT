@@ -47,4 +47,8 @@ public class Qna {
 
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
+
+    public void delete() {
+        this .qnaIsDeleted = true;
+    }
 }
