@@ -3,6 +3,8 @@ package com.wanted.ailienlmsprogram.payment.service;
 
 import com.wanted.ailienlmsprogram.coursecommand.dao.CourseRepository;
 import com.wanted.ailienlmsprogram.coursecommand.entity.Course;
+import com.wanted.ailienlmsprogram.enrollment.entity.Enrollment;
+import com.wanted.ailienlmsprogram.enrollment.repository.EnrollmentRepository;
 import com.wanted.ailienlmsprogram.member.entity.Member;
 import com.wanted.ailienlmsprogram.payment.dto.CartItemResponse;
 import com.wanted.ailienlmsprogram.payment.entity.Cart;
@@ -25,6 +27,7 @@ public class CartService {
 
     private final CartRepository cartRepository;
     private final CourseRepository courseRepository;
+    private final EnrollmentRepository enrollmentRepository;
 
     public List<CartItemResponse> getCartItems(Member member) {
         return cartRepository.findCartItemsByMemberId(member.getMemberId());
@@ -32,6 +35,7 @@ public class CartService {
 
     @Transactional
     public void addToCart(Long courseId, Member member) {
+
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 강좌입니다."));
 
@@ -39,7 +43,11 @@ public class CartService {
             throw new IllegalArgumentException("이미 장바구니에 담긴 강좌입니다.");
         }
 
-        if (cartRepository.countEnrollmentByMemberAndCourse(member.getMemberId(), courseId) > 0) {
+        // '수강 중(COMPLETED)'인 상태의 데이터가 있을 때만 막아야 합니다 예아~~~
+        if (enrollmentRepository.existsByMember_LoginIdAndCourse_CourseIdAndStatus(
+                member.getLoginId(),
+                courseId,
+                Enrollment.EnrollmentStatus.ACTIVE)) {
             throw new IllegalArgumentException("이미 수강 중인 강좌입니다.");
         }
 

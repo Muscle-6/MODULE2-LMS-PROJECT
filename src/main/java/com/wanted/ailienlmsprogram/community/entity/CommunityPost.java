@@ -32,6 +32,7 @@ public class CommunityPost {
     @JoinColumn(name = "author_id")
     private Member member;
 
+    @Builder.Default
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CommunityComment> comments = new ArrayList<>();
 

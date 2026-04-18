@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>COMMUNICATION LOGS | ILLUMINATI LMS</title>
+    <style>
+        body {
+            background-color: #0f172a;
+            color: #e2e8f0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 40px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .header-section {
+            background: linear-gradient(90deg, #1e293b 0%, #334155 100%);
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .header-section h1 {
+            margin: 0 0 8px;
+            font-size: 2rem;
+            letter-spacing: 2px;
+            color: #f8fafc;
+        }
+
+        .header-section p {
+            margin: 0;
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+
+        /* 상단 액션 바 */
+        .action-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .back-link {
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover { color: #e2e8f0; }
+
+        /* 질문 작성 버튼 */
+        .btn-write {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background-color: #3b82f6;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 0.9rem;
+            letter-spacing: 0.5px;
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        .btn-write:hover {
+            background-color: #2563eb;
+            transform: translateY(-1px);
+        }
+
+        .btn-write:active { transform: translateY(0); }
+
+        /* 필터 탭 */
+        .filter-bar {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .filter-tab {
+            padding: 6px 16px;
+            border-radius: 20px;
+            border: 1px solid #334155;
+            background: transparent;
+            color: #94a3b8;
+            font-size: 0.8rem;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .filter-tab:hover, .filter-tab.active {
+            background: #1e293b;
+            border-color: #3b82f6;
+            color: #7ee0ff;
+        }
+
+        /* QnA 테이블 */
+        .qna-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 8px;
+        }
+
+        .qna-table th {
+            padding: 12px 15px;
+            text-align: left;
+            color: #64748b;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .qna-row {
+            background-color: #1e293b;
+            transition: transform 0.15s, background-color 0.15s;
+            cursor: pointer;
+        }
+
+        .qna-row:hover {
+            background-color: #273549;
+            transform: scale(1.005);
+        }
+
+        .qna-row td {
+            padding: 18px 15px;
+        }
+
+        .qna-row td:first-child { border-radius: 8px 0 0 8px; }
+        .qna-row td:last-child  { border-radius: 0 8px 8px 0; }
+
+        .status-badge {
+            padding: 3px 10px;
+            border-radius: 4px;
+            font-size: 0.72rem;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .status-waiting  { background-color: #1e3a5f; color: #93c5fd; }
+        .status-complete { background-color: #065f46; color: #34d399; }
+
+        .title-cell {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .title-text { font-weight: 500; }
+
+        .reply-count {
+            color: #63b3ed;
+            font-size: 0.85em;
+        }
+
+        .empty-msg {
+            text-align: center;
+            padding: 60px;
+            color: #64748b;
+            font-style: italic;
+        }
+
+        /* 내 글 표시 */
+        .mine-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #3b82f6;
+            display: inline-block;
+            margin-right: 4px;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <div class="header-section">
+        <h1>COMMUNICATION LOGS</h1>
+        <p th:text="'PROTOCOL ID: ' + ${courseId}">PROTOCOL ID: 001</p>
+    </div>
+
+    <!-- 액션 바: 뒤로가기 + 질문 작성 버튼 -->
+    <div class="action-bar">
+        <a th:href="@{/student/course/{id}(id=${courseId})}" class="back-link">
+            ← BACK TO TERMINAL
+        </a>
+        <a th:href="@{/student/course/{id}/qna/write(id=${courseId})}" class="btn-write">
+            + NEW TRANSMISSION
+        </a>
+    </div>
+
+    <!-- 필터 탭 -->
+    <div class="filter-bar">
+        <a th:href="@{/student/course/{id}/qna(id=${courseId})}"
+           th:classappend="${status == null} ? 'active'" class="filter-tab">전체</a>
+        <a th:href="@{/student/course/{id}/qna(id=${courseId}, status='OPEN')}"
+           th:classappend="${status == 'OPEN'} ? 'active'" class="filter-tab">미답변</a>
+        <a th:href="@{/student/course/{id}/qna(id=${courseId}, status='ANSWERED')}"
+           th:classappend="${status == 'ANSWERED'} ? 'active'" class="filter-tab">답변완료</a>
+    </div>
+
+    <!-- QnA 목록 테이블 -->
+    <table class="qna-table">
+        <thead>
+        <tr>
+            <th width="10%">STATUS</th>
+            <th width="50%">SUBJECT</th>
+            <th width="20%">AGENT</th>
+            <th width="20%">TIMESTAMP</th>
+        </tr>
+        </thead>
+        <tbody>
+
+        <tr th:each="qna : ${qnaList}"
+            class="qna-row"
+            th:onclick="|location.href='@{/student/course/{courseId}/qna/{qnaId}(courseId=${courseId},qnaId=${qna.qnaId})}'|">
+            <td>
+                <span th:if="${qna.isAnswered}"  class="status-badge status-complete">RESOLVED</span>
+                <span th:unless="${qna.isAnswered}" class="status-badge status-waiting">PENDING</span>
+            </td>
+            <td>
+                <div class="title-cell">
+                    <!-- 본인 글이면 파란 점 표시 (세션 memberId와 비교) -->
+                    <span th:if="${qna.memberId == currentMemberId}" class="mine-dot" title="내가 쓴 글"></span>
+                    <span class="title-text" th:text="${qna.title}">질문 제목</span>
+                    <span th:if="${qna.replyCount > 0}"
+                          class="reply-count"
+                          th:text="'[' + ${qna.replyCount} + ']'"></span>
+                </div>
+            </td>
+            <td style="color: #94a3b8;" th:text="${qna.authorName}">요원명</td>
+            <td style="color: #64748b; font-size: 0.88em;" th:text="${qna.createdAt}">2026-04-18</td>
+        </tr>
+
+        <tr th:if="${qnaList.isEmpty()}">
+            <td colspan="4" class="empty-msg">기록된 통신 데이터가 존재하지 않습니다.</td>
+        </tr>
+
+        </tbody>
+    </table>
+
+</div>
+
+</body>
+</html>
