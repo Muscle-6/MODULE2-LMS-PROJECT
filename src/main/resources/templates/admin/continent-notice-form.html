@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>대륙 공지 작성 | ADMIN</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f6f8fb;
+      margin: 0;
+      color: #222;
+    }
+
+    header {
+      background: #2f3241;
+      color: white;
+      padding: 20px 32px;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 24px;
+    }
+
+    nav {
+      margin-top: 10px;
+    }
+
+    nav a {
+      color: #ffffff;
+      text-decoration: none;
+      margin-right: 14px;
+      font-size: 14px;
+    }
+
+    .container {
+      width: 900px;
+      max-width: calc(100% - 40px);
+      margin: 30px auto;
+    }
+
+    .panel {
+      background: white;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+      margin-bottom: 20px;
+    }
+
+    .panel h2 {
+      margin-top: 0;
+    }
+
+    .field {
+      margin-bottom: 18px;
+    }
+
+    label {
+      display: block;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    input[type="text"], textarea {
+      width: 100%;
+      box-sizing: border-box;
+      border: 1px solid #d0d7e2;
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 14px;
+    }
+
+    textarea {
+      min-height: 280px;
+      resize: vertical;
+    }
+
+    .error-text {
+      color: #b42318;
+      font-size: 13px;
+      margin-top: 6px;
+    }
+
+    .message {
+      padding: 12px 16px;
+      border-radius: 10px;
+      margin-bottom: 16px;
+      font-size: 14px;
+      background: #fdecec;
+      color: #b42318;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 10px 16px;
+      border: none;
+      border-radius: 10px;
+      background: #3a1f44;
+      color: white;
+      cursor: pointer;
+      font-size: 14px;
+      text-decoration: none;
+    }
+
+    .btn-secondary {
+      background: #6b7280;
+    }
+
+    .hint {
+      color: #555;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+<header>
+  <h1>ADMIN PANEL</h1>
+  <nav>
+    <a th:href="@{/admin}">대시보드 홈</a>
+    <a th:href="@{/admin/members}">회원/계정 관리</a>
+    <a th:href="@{/admin/reports}">게시판/신고 관리</a>
+    <a th:href="@{/admin/refunds}">환불 요청 관리</a>
+    <a th:href="@{/admin/courses}">강좌 신청 관리</a>
+    <a th:href="@{/admin/continent-notices}">대륙 공지 작성</a>
+    <a th:href="@{/logout}">로그아웃</a>
+  </nav>
+</header>
+
+<div class="container">
+  <div class="panel">
+    <h2 th:text="${mode == 'create'} ? '대륙 공지 등록' : '대륙 공지 수정'">대륙 공지 폼</h2>
+    <p class="hint">
+      선택한 대륙:
+      <strong th:text="${continent.continentName}">대륙명</strong>
+    </p>
+  </div>
+
+  <div class="panel">
+    <div th:if="${errorMessage}" class="message" th:text="${errorMessage}">에러 메시지</div>
+
+    <form th:if="${mode == 'create'}"
+          th:action="@{/admin/continent-notices}"
+          th:object="${form}"
+          method="post">
+
+      <input type="hidden" th:field="*{postId}">
+      <input type="hidden" th:field="*{continentId}">
+
+      <div class="field">
+        <label for="postTitleCreate">공지 제목</label>
+        <input type="text" id="postTitleCreate" th:field="*{postTitle}" placeholder="공지 제목을 입력하세요.">
+        <div class="error-text" th:if="${#fields.hasErrors('postTitle')}" th:errors="*{postTitle}">제목 오류</div>
+      </div>
+
+      <div class="field">
+        <label for="postContentCreate">공지 내용</label>
+        <textarea id="postContentCreate" th:field="*{postContent}" placeholder="공지 내용을 입력하세요."></textarea>
+        <div class="error-text" th:if="${#fields.hasErrors('postContent')}" th:errors="*{postContent}">내용 오류</div>
+      </div>
+
+      <div class="actions">
+        <button type="submit" class="btn">공지 등록</button>
+      </div>
+    </form>
+
+    <form th:if="${mode == 'edit'}"
+          th:action="@{/admin/continent-notices/{postId}(postId=${form.postId})}"
+          th:object="${form}"
+          method="post">
+
+      <input type="hidden" th:field="*{postId}">
+      <input type="hidden" th:field="*{continentId}">
+
+      <div class="field">
+        <label for="postTitleEdit">공지 제목</label>
+        <input type="text" id="postTitleEdit" th:field="*{postTitle}" placeholder="공지 제목을 입력하세요.">
+        <div class="error-text" th:if="${#fields.hasErrors('postTitle')}" th:errors="*{postTitle}">제목 오류</div>
+      </div>
+
+      <div class="field">
+        <label for="postContentEdit">공지 내용</label>
+        <textarea id="postContentEdit" th:field="*{postContent}" placeholder="공지 내용을 입력하세요."></textarea>
+        <div class="error-text" th:if="${#fields.hasErrors('postContent')}" th:errors="*{postContent}">내용 오류</div>
+      </div>
+
+      <div class="actions">
+        <button type="submit" class="btn">공지 수정 저장</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="panel">
+    <a th:href="@{/admin/continent-notices(continentId=${continent.continentId})}"
+       class="btn btn-secondary">
+      뒤로가기
+    </a>
+  </div>
+</div>
+</body>
+</html>

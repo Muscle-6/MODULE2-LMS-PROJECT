@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>대륙 공지 목록 | ADMIN</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f6f8fb;
+      margin: 0;
+      color: #222;
+    }
+
+    header {
+      background: #2f3241;
+      color: white;
+      padding: 20px 32px;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 24px;
+    }
+
+    nav {
+      margin-top: 10px;
+    }
+
+    nav a {
+      color: #ffffff;
+      text-decoration: none;
+      margin-right: 14px;
+      font-size: 14px;
+    }
+
+    .container {
+      width: 1100px;
+      max-width: calc(100% - 40px);
+      margin: 30px auto;
+    }
+
+    .panel {
+      background: white;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+      margin-bottom: 20px;
+    }
+
+    .panel h2 {
+      margin-top: 0;
+    }
+
+    .notice-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 10px 16px;
+      border: none;
+      border-radius: 10px;
+      background: #3a1f44;
+      color: white;
+      cursor: pointer;
+      font-size: 14px;
+      text-decoration: none;
+    }
+
+    .btn-secondary {
+      background: #6b7280;
+    }
+
+    .btn-danger {
+      background: #c0392b;
+    }
+
+    .message {
+      padding: 12px 16px;
+      border-radius: 10px;
+      margin-bottom: 16px;
+      font-size: 14px;
+    }
+
+    .success {
+      background: #e8f7ec;
+      color: #1e7a34;
+    }
+
+    .error {
+      background: #fdecec;
+      color: #b42318;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+    }
+
+    th, td {
+      padding: 14px 12px;
+      border-bottom: 1px solid #eceff3;
+      text-align: left;
+      vertical-align: middle;
+    }
+
+    th {
+      background: #fafbfd;
+    }
+
+    .inline-form {
+      display: inline-block;
+      margin-right: 6px;
+    }
+
+    .empty {
+      color: #666;
+      padding: 20px 0;
+    }
+  </style>
+</head>
+<body>
+<header>
+  <h1>ADMIN PANEL</h1>
+  <nav>
+    <a th:href="@{/admin}">대시보드 홈</a>
+    <a th:href="@{/admin/members}">회원/계정 관리</a>
+    <a th:href="@{/admin/reports}">게시판/신고 관리</a>
+    <a th:href="@{/admin/refunds}">환불 요청 관리</a>
+    <a th:href="@{/admin/courses}">강좌 신청 관리</a>
+    <a th:href="@{/admin/continent-notices}">대륙 공지 작성</a>
+    <a th:href="@{/logout}">로그아웃</a>
+  </nav>
+</header>
+
+<div class="container">
+  <div class="panel">
+    <div th:if="${successMessage}" class="message success" th:text="${successMessage}">성공 메시지</div>
+    <div th:if="${errorMessage}" class="message error" th:text="${errorMessage}">에러 메시지</div>
+
+    <h2>
+      <span th:text="${continent.continentName}">대륙명</span>
+      대륙 공지 관리
+    </h2>
+    <p th:text="${continent.description != null and !#strings.isEmpty(continent.description)} ? ${continent.description} : '대륙 설명이 없습니다.'">
+      대륙 설명
+    </p>
+
+    <div class="notice-actions">
+      <a th:href="@{/admin/continent-notices/new(continentId=${continent.continentId})}" class="btn">
+        공지 추가
+      </a>
+
+      <a th:href="@{/admin/continent-notices}" class="btn btn-secondary">대륙 선택으로 돌아가기</a>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>기존 공지글</h2>
+
+    <div th:if="${#lists.isEmpty(notices)}" class="empty">
+      아직 등록된 공지글이 없습니다.
+    </div>
+
+    <table th:if="${!#lists.isEmpty(notices)}">
+      <thead>
+      <tr>
+        <th>제목</th>
+        <th>작성자</th>
+        <th>작성일</th>
+        <th>관리</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="notice : ${notices}">
+        <td th:text="${notice.postTitle}">공지 제목</td>
+        <td th:text="${notice.authorName}">관리자명</td>
+        <td th:text="${#temporals.format(notice.createdAt, 'yyyy-MM-dd HH:mm')}">날짜</td>
+        <td>
+          <a th:href="@{/admin/continent-notices/{postId}/edit(postId=${notice.postId}, continentId=${continent.continentId})}"
+             class="btn btn-secondary">
+            수정
+          </a>
+
+          <form th:action="@{/admin/continent-notices/delete}" method="post" class="inline-form"
+                onsubmit="return confirm('해당 공지글을 삭제하시겠습니까?');">
+            <input type="hidden" name="continentId" th:value="${continent.continentId}">
+            <input type="hidden" name="postId" th:value="${notice.postId}">
+            <button type="submit" class="btn btn-danger">삭제</button>
+          </form>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+</body>
+</html>
