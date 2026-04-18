@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html class="dark" lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module02 LMS - 공지사항 수정</title>
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#99f7ff",
+                        "on-primary-container": "#00555a",
+                        "secondary": "#c97cff",
+                        "on-secondary-container": "#fff5ff",
+                        "error": "#ff716c",
+                        "on-surface": "#ecedf6",
+                        "surface-container": "#161a21",
+                        "surface-container-highest": "#22262f",
+                        "outline-variant": "#45484f",
+                    },
+                    fontFamily: {
+                        "headline": ["Space Grotesk"],
+                        "body": ["Inter"],
+                        "label": ["Space Grotesk"]
+                    }
+                },
+            },
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0b0e14;
+            color: #ecedf6;
+            background-image:
+                radial-gradient(circle at 50% 50%, rgba(153, 247, 255, 0.05) 0%, transparent 50%),
+                url("data:image/svg+xml,%3Csvg width='400' height='400' viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M10 10L50 50M350 350L390 390' stroke='rgba(153, 247, 255, 0.1)' stroke-width='0.5'/%3E%3Ccircle cx='100' cy='100' r='1' fill='rgba(255,255,255,0.2)'/%3E%3Ccircle cx='300' cy='200' r='1' fill='rgba(255,255,255,0.3)'/%3E%3C/svg%3E");
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .cy-input {
+            background: #0d1117 !important;
+            border: 1px solid rgba(153, 247, 255, 0.2) !important;
+            border-radius: 8px !important;
+            color: #ecedf6 !important;
+            transition: all 0.2s;
+            width: 100%;
+            padding: 10px 14px;
+            font-size: 0.95rem;
+            font-family: 'Inter', sans-serif;
+        }
+        .cy-input:focus {
+            outline: none !important;
+            border-color: #99f7ff !important;
+            box-shadow: 0 0 0 2px rgba(153, 247, 255, 0.15) !important;
+        }
+        .cy-input::placeholder {
+            color: rgba(236, 237, 246, 0.3) !important;
+        }
+        .required-dot::after {
+            content: " *";
+            color: #99f7ff;
+            font-size: 0.75rem;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen">
+
+<!-- ===== HEADER ===== -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-6 h-16 bg-slate-950/40 backdrop-blur-xl shadow-[0_0_20px_rgba(153,247,255,0.1)] border-b border-cyan-400/10">
+    <div class="flex items-center gap-8">
+        <span class="text-2xl font-bold tracking-tighter text-cyan-400 drop-shadow-[0_0_8px_rgba(153,247,255,0.6)] font-headline">
+            MODULE02 LMS
+        </span>
+    </div>
+    <div class="flex items-center gap-4" th:if="${loginMember != null}">
+        <span class="text-xs font-label tracking-widest text-cyan-400"
+              th:text="|${loginMember.name} 님|"></span>
+        <a th:href="@{/logout}"
+           class="flex items-center gap-1 text-slate-400 hover:text-error transition-colors text-xs font-label">
+            <span class="material-symbols-outlined text-sm">power_settings_new</span>
+            로그아웃
+        </a>
+    </div>
+</header>
+
+<!-- ===== MAIN ===== -->
+<main class="pt-24 px-6 md:px-12 pb-12">
+    <div class="max-w-3xl mx-auto">
+
+        <!-- 뒤로가기 + 타이틀 -->
+        <div class="mb-8">
+            <div class="flex items-center gap-3 mb-3">
+                <a th:href="@{/instructor/courses/{courseId}/notices(courseId=${courseId})}"
+                   class="flex items-center gap-1 text-slate-500 hover:text-cyan-400 transition-colors text-xs font-label">
+                    <span class="material-symbols-outlined text-sm">arrow_back</span>
+                    공지사항 목록으로
+                </a>
+            </div>
+            <h1 class="text-3xl md:text-4xl font-headline font-bold text-on-surface tracking-tight mb-2">
+                공지사항 수정
+            </h1>
+            <p class="text-slate-400 text-sm font-body">공지사항 내용을 수정하세요.</p>
+        </div>
+
+        <!-- 수정 폼 -->
+        <form th:action="@{/instructor/courses/{courseId}/notices/{noticeId}/edit(courseId=${courseId}, noticeId=${notice.noticeId})}"
+              method="post">
+
+            <div class="bg-surface-container/60 backdrop-blur-xl rounded-2xl border border-outline-variant/20 p-6 md:p-8 shadow-lg shadow-cyan-500/5 relative overflow-hidden">
+                <div class="absolute -top-10 -right-10 w-40 h-40 bg-primary/10 rounded-full blur-3xl"></div>
+                <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-secondary/10 rounded-full blur-3xl"></div>
+
+                <div class="relative z-10 flex flex-col gap-6">
+
+                    <!-- 공지 제목 -->
+                    <div class="flex flex-col gap-2">
+                        <label class="text-[11px] font-label tracking-widest text-cyan-400 required-dot">
+                            공지 제목
+                        </label>
+                        <input type="text"
+                               name="courseNoticeTitle"
+                               class="cy-input"
+                               th:value="${notice.noticeTitle}"
+                               placeholder="공지사항 제목을 입력하세요"
+                               required/>
+                    </div>
+
+                    <!-- 공지 내용 -->
+                    <div class="flex flex-col gap-2">
+                        <label class="text-[11px] font-label tracking-widest text-cyan-400 required-dot">
+                            공지 내용
+                        </label>
+                        <textarea name="courseNoticeContent"
+                                  rows="12"
+                                  class="cy-input"
+                                  placeholder="공지사항 내용을 입력하세요"
+                                  th:text="${notice.noticeContent}"
+                                  required></textarea>
+                    </div>
+
+                    <!-- 등록일 / 수정일 정보 -->
+                    <div class="flex items-center gap-4 text-xs text-slate-500 font-label border-t border-outline-variant/10 pt-4">
+                        <span th:text="|등록일 : ${#temporals.format(notice.createdAt, 'yyyy-MM-dd HH:mm')}|"></span>
+                        <span th:if="${notice.updatedAt != null and notice.updatedAt != notice.createdAt}"
+                              class="text-secondary/70"
+                              th:text="|마지막 수정 : ${#temporals.format(notice.updatedAt, 'yyyy-MM-dd HH:mm')}|"></span>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- 버튼 -->
+            <div class="flex justify-end gap-3 mt-6">
+                <a th:href="@{/instructor/courses/{courseId}/notices(courseId=${courseId})}"
+                   class="flex items-center gap-2 px-6 py-3 rounded-xl bg-slate-800/50 border border-slate-700/40 text-slate-400 hover:text-white hover:border-slate-600 transition-all text-sm font-label tracking-wide">
+                    <span class="material-symbols-outlined text-base">close</span>
+                    취소
+                </a>
+                <button type="submit"
+                        class="flex items-center gap-2 px-6 py-3 rounded-xl bg-cyan-400/10 border border-cyan-400/30 text-cyan-400 hover:bg-cyan-400/20 hover:border-cyan-400/50 transition-all text-sm font-label tracking-wide shadow-[0_0_15px_rgba(153,247,255,0.1)]">
+                    <span class="material-symbols-outlined text-base">save</span>
+                    수정하기
+                </button>
+            </div>
+
+        </form>
+    </div>
+</main>
+
+<!-- 배경 그라디언트 -->
+<div class="fixed inset-0 pointer-events-none -z-10">
+    <div class="absolute top-1/4 left-1/4 w-[400px] h-[400px] bg-primary/5 rounded-full blur-[120px]"></div>
+    <div class="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-secondary/5 rounded-full blur-[150px]"></div>
+</div>
+
+</body>
+</html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+</body>
+</html>

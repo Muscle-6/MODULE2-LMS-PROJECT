@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html class="dark" lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module02 LMS - 공지사항 삭제</title>
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#99f7ff",
+                        "on-primary-container": "#00555a",
+                        "secondary": "#c97cff",
+                        "on-secondary-container": "#fff5ff",
+                        "error": "#ff716c",
+                        "on-surface": "#ecedf6",
+                        "surface-container": "#161a21",
+                        "surface-container-highest": "#22262f",
+                        "outline-variant": "#45484f",
+                    },
+                    fontFamily: {
+                        "headline": ["Space Grotesk"],
+                        "body": ["Inter"],
+                        "label": ["Space Grotesk"]
+                    }
+                },
+            },
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0b0e14;
+            color: #ecedf6;
+            background-image:
+                radial-gradient(circle at 50% 50%, rgba(153, 247, 255, 0.05) 0%, transparent 50%),
+                url("data:image/svg+xml,%3Csvg width='400' height='400' viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M10 10L50 50M350 350L390 390' stroke='rgba(153, 247, 255, 0.1)' stroke-width='0.5'/%3E%3Ccircle cx='100' cy='100' r='1' fill='rgba(255,255,255,0.2)'/%3E%3Ccircle cx='300' cy='200' r='1' fill='rgba(255,255,255,0.3)'/%3E%3C/svg%3E");
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen">
+
+<!-- ===== HEADER ===== -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-6 h-16 bg-slate-950/40 backdrop-blur-xl shadow-[0_0_20px_rgba(153,247,255,0.1)] border-b border-cyan-400/10">
+    <div class="flex items-center gap-8">
+        <span class="text-2xl font-bold tracking-tighter text-cyan-400 drop-shadow-[0_0_8px_rgba(153,247,255,0.6)] font-headline">
+            MODULE02 LMS
+        </span>
+    </div>
+    <div class="flex items-center gap-4" th:if="${loginMember != null}">
+        <span class="text-xs font-label tracking-widest text-cyan-400"
+              th:text="|${loginMember.name} 님|"></span>
+        <a th:href="@{/logout}"
+           class="flex items-center gap-1 text-slate-400 hover:text-error transition-colors text-xs font-label">
+            <span class="material-symbols-outlined text-sm">power_settings_new</span>
+            로그아웃
+        </a>
+    </div>
+</header>
+
+<!-- ===== MAIN ===== -->
+<main class="pt-24 px-6 md:px-12 pb-12">
+    <div class="max-w-2xl mx-auto">
+
+        <!-- 뒤로가기 -->
+        <div class="mb-8">
+            <a th:href="@{/instructor/courses/{courseId}/notices(courseId=${courseId})}"
+               class="flex items-center gap-1 text-slate-500 hover:text-cyan-400 transition-colors text-xs font-label">
+                <span class="material-symbols-outlined text-sm">arrow_back</span>
+                공지사항 목록으로
+            </a>
+        </div>
+
+        <!-- 삭제 확인 카드 -->
+        <div class="bg-surface-container/60 backdrop-blur-xl rounded-2xl border border-error/20 p-8 shadow-lg shadow-error/5 relative overflow-hidden">
+            <div class="absolute -top-10 -right-10 w-40 h-40 bg-error/5 rounded-full blur-3xl"></div>
+
+            <div class="relative z-10 flex flex-col items-center text-center gap-4">
+
+                <!-- 경고 아이콘 -->
+                <div class="w-16 h-16 rounded-2xl bg-error/10 border border-error/20 flex items-center justify-center">
+                    <span class="material-symbols-outlined text-error text-4xl">delete_forever</span>
+                </div>
+
+                <h1 class="text-2xl font-headline font-bold text-on-surface">
+                    공지사항을 삭제하시겠습니까?
+                </h1>
+
+                <!-- 삭제할 공지사항 정보 -->
+                <div class="w-full bg-surface-container-highest/60 rounded-xl border border-outline-variant/20 p-4 text-left mt-2">
+                    <p class="text-xs font-label text-slate-500 mb-1">삭제할 공지사항</p>
+                    <p class="text-base font-headline font-bold text-on-surface mb-2"
+                       th:text="${notice.noticeTitle}">공지 제목</p>
+                    <p class="text-sm text-slate-400 font-body line-clamp-2"
+                       th:text="${notice.noticeContent}">공지 내용</p>
+                    <div class="flex items-center gap-3 mt-3 text-xs text-slate-500 font-label border-t border-outline-variant/10 pt-3">
+                        <span th:text="|작성자 : ${notice.authorName}|"></span>
+                        <span th:text="|등록일 : ${#temporals.format(notice.createdAt, 'yyyy-MM-dd HH:mm')}|"></span>
+                    </div>
+                </div>
+
+                <p class="text-sm text-slate-400 font-body">
+                    삭제된 공지사항은 <span class="text-error font-bold">복구할 수 없습니다.</span>
+                </p>
+
+            </div>
+        </div>
+
+        <!-- 버튼 -->
+        <div class="flex justify-center gap-4 mt-6">
+
+            <!-- 아니오 → 목록으로 이동 -->
+            <a th:href="@{/instructor/courses/{courseId}/notices(courseId=${courseId})}"
+               class="flex items-center gap-2 px-8 py-3 rounded-xl bg-slate-800/50 border border-slate-700/40 text-slate-400 hover:text-white hover:border-slate-600 transition-all text-sm font-label tracking-wide">
+                <span class="material-symbols-outlined text-base">close</span>
+                아니오
+            </a>
+
+            <!-- 예 → POST 방식으로 삭제 처리 -->
+            <button id="deleteBtn"
+                    type="button"
+                    th:data-action="@{/instructor/courses/{courseId}/notices/{noticeId}/delete(courseId=${courseId}, noticeId=${notice.noticeId})}"
+                    class="flex items-center gap-2 px-8 py-3 rounded-xl bg-error/10 border border-error/30 text-error hover:bg-error/20 hover:border-error/50 transition-all text-sm font-label tracking-wide">
+                <span class="material-symbols-outlined text-base">delete_forever</span>
+                예, 삭제합니다
+            </button>
+
+            <!-- POST 폼 (JS에서 submit) -->
+            <form id="deleteForm" method="post" style="display: none;">
+            </form>
+
+        </div>
+    </div>
+</main>
+
+<!-- 배경 그라디언트 -->
+<div class="fixed inset-0 pointer-events-none -z-10">
+    <div class="absolute top-1/4 left-1/4 w-[400px] h-[400px] bg-primary/5 rounded-full blur-[120px]"></div>
+    <div class="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-error/5 rounded-full blur-[150px]"></div>
+</div>
+
+<script>
+    // 삭제 버튼 클릭 시 POST 폼 submit
+    document.getElementById('deleteBtn').addEventListener('click', function () {
+        const action = this.dataset.action;
+        const form = document.getElementById('deleteForm');
+        form.action = action;
+        form.submit();
+    });
+</script>
+
+</body>
+</html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+</body>
+</html>
