@@ -197,6 +197,7 @@ public class PaymentService {
         refund.setPayment(payment);
         refund.setMember(member);
         refund.setRefundReason(refundReason);
+        refund.setRefundStatus(Refund.RefundStatus.REQUESTED);
         refund.setRefundRequestedAt(LocalDateTime.now());
 
         String tossPaymentKey = payment.getTossPaymentKey();

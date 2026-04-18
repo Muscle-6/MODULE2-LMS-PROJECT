@@ -23,6 +23,7 @@ public class CommunityComment {
     @Column(name = "comment_content", columnDefinition = "TEXT", nullable = false) // 2. 컬럼 이름 연결
     private String content;
 
+    @Builder.Default
     @Column(name = "comment_is_deleted")
     private boolean isDeleted = false;
 

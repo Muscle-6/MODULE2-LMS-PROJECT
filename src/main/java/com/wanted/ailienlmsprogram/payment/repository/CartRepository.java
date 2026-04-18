@@ -1,5 +1,6 @@
 package com.wanted.ailienlmsprogram.payment.repository;
 
+import com.wanted.ailienlmsprogram.enrollment.entity.Enrollment;
 import com.wanted.ailienlmsprogram.payment.dto.CartItemResponse;
 import com.wanted.ailienlmsprogram.payment.entity.Cart;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -30,13 +31,14 @@ public interface CartRepository extends JpaRepository<Cart, Long> {
             """)
     List<CartItemResponse> findCartItemsByMemberId(@Param("memberId") Long memberId);
 
-    @Query(value = """
-            SELECT COUNT(*)
-            FROM ENROLLMENT
-            WHERE member_id        = :memberId
-              AND course_id        = :courseId
-              AND enrollment_status = 'ACTIVE'
-            """, nativeQuery = true)
-    long countEnrollmentByMemberAndCourse(@Param("memberId") Long memberId,
-                                          @Param("courseId") Long courseId);
+//    @Query(value = """
+//            SELECT COUNT(*)
+//            FROM ENROLLMENT
+//            WHERE member_id        = :memberId
+//              AND course_id        = :courseId
+//              AND enrollment_status = 'ACTIVE'
+//            """, nativeQuery = true)
+//    long countEnrollmentByMemberAndCourse(@Param("memberId") Long memberId,
+//                                          @Param("courseId") Long courseId);
+
 }
