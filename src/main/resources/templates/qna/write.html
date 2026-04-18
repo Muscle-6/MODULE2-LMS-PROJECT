@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>NEW Q&A TRANSMISSION</title>
+  <style>
+    body { background: #0b1020; color: #f5f7ff; font-family: 'Segoe UI', sans-serif; margin: 0; }
+    .container { width: 800px; margin: 50px auto; padding: 40px; background: #121a35; border-radius: 20px; border: 1px solid rgba(126, 224, 255, 0.1); }
+    .header { margin-bottom: 30px; border-bottom: 2px solid #5f7cff; padding-bottom: 10px; }
+    .header h2 { color: #7ee0ff; margin: 0; letter-spacing: 2px; }
+
+    .form-group { margin-bottom: 25px; }
+    .form-group label { display: block; margin-bottom: 10px; color: #a9b6ec; font-size: 14px; }
+
+    /* 입력창 스타일 */
+    input[type="text"], textarea {
+      width: 100%;
+      padding: 15px;
+      box-sizing: border-box;
+      background: #1a2447;
+      border: 1px solid rgba(126, 224, 255, 0.2);
+      border-radius: 10px;
+      color: #fff;
+      font-size: 16px;
+      transition: 0.3s;
+    }
+    input[type="text"]:focus, textarea:focus {
+      outline: none;
+      border-color: #5f7cff;
+      box-shadow: 0 0 10px rgba(95, 124, 255, 0.3);
+    }
+
+    /* 버튼 스타일 */
+    .btn-group { display: flex; gap: 15px; justify-content: flex-end; margin-top: 30px; }
+    .btn { padding: 12px 30px; border-radius: 8px; font-weight: bold; cursor: pointer; text-decoration: none; border: none; transition: 0.2s; }
+    .btn-submit { background: #5f7cff; color: white; }
+    .btn-submit:hover { background: #4a63ff; transform: translateY(-2px); }
+    .btn-cancel { background: rgba(255, 95, 95, 0.1); color: #ff5f5f; border: 1px solid rgba(255, 95, 95, 0.3); }
+    .btn-cancel:hover { background: rgba(255, 95, 95, 0.2); }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <h2>📡 NEW Q&A LOG</h2>
+    <p style="font-size: 13px; color: #7a8ab8;">프로토콜 기반 질문을 전송합니다.</p>
+  </div>
+
+  <form th:action="@{/student/course/{id}/qna/write(id=${courseId})}" method="post">
+
+    <div class="form-group">
+      <label for="qnaTitle">질문 제목 (SUBJECT)</label>
+      <input type="text" id="qnaTitle" name="qnaTitle" placeholder="제목을 입력하세요..." required>
+    </div>
+
+    <div class="form-group">
+      <label for="qnaContent">질문 내용 (ENCRYPTED CONTENT)</label>
+      <textarea id="qnaContent" name="qnaContent" rows="10" placeholder="상세 내용을 입력하세요..." required></textarea>
+    </div>
+
+    <div class="btn-group">
+      <a th:href="@{/student/course/{id}/qna(id=${courseId})}" class="btn btn-cancel">취소</a>
+      <button type="submit" class="btn btn-submit">기록 전송 (SEND LOGS)</button>
+    </div>
+  </form>
+</div>
+
+</body>
+</html>

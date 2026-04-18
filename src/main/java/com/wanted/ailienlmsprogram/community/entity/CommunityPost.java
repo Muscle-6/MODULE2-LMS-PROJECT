@@ -43,8 +43,8 @@ public class CommunityPost {
     @JoinColumn(name = "author_id")
     private Member member;
 
+    @Builder
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Builder.Default
     private List<CommunityComment> comments = new ArrayList<>();
 
     public void setPostIsNotice(boolean postIsNotice) {
