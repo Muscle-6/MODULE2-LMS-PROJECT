@@ -11,6 +11,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -96,5 +97,12 @@ public class EnrollmentService {
                 .findByMember_LoginIdAndCourse_CourseId(loginId, courseId)
                 .map(Enrollment::getEnrollmentId)
                 .orElse(null);
+    }
+
+    public BigDecimal getProgressRate(String loginId, Long courseId) {
+        return enrollmentRepository
+                .findByMember_LoginIdAndCourse_CourseId(loginId, courseId)
+                .map(Enrollment::getEnrollmentProgressRate)
+                .orElse(BigDecimal.ZERO);
     }
 }

@@ -159,6 +159,17 @@
         <h3 style="margin-top: 0;">프로토콜 상태</h3>
 
         <div th:if="${isEnrolled}">
+          <!-- 진척도 바 -->
+          <div style="margin-bottom: 20px;">
+            <div style="display: flex; justify-content: space-between; font-size: 13px; color: #a9b6ec; margin-bottom: 8px;">
+              <span>수강 진척도</span>
+              <span th:text="${progressRate != null ? progressRate : 0} + '%'">0%</span>
+            </div>
+            <div style="background: #1e293b; border-radius: 999px; height: 8px; overflow: hidden;">
+              <div th:style="|width: ${progressRate != null ? progressRate : 0}%; background: linear-gradient(90deg, #5f7cff, #7ee0ff); height: 100%; border-radius: 999px; transition: width 0.5s;|"></div>
+            </div>
+          </div>
+
           <div class="price-tag" style="font-size: 24px;">침공 진행 중 🛸</div>
           <p style="color: #a9b6ec; font-size: 14px; line-height: 1.6; margin-bottom: 20px;">
             이미 승인된 프로토콜입니다.<br>커리큘럼을 통해 학습을 이어가세요.

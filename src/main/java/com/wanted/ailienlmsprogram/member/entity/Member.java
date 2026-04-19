@@ -76,4 +76,12 @@ public class Member {
 
     @Column(name = "last_login_at")
     private LocalDateTime lastLoginAt;
+
+    public void upgradeRank() {
+        if (this.rank == MemberRank.NOVICE) {  // ← 서비스에 rank 필드 없음
+            this.rank = MemberRank.MINERVAL;
+        } else if (this.rank == MemberRank.MINERVAL) {
+            this.rank = MemberRank.REPTILIAN;
+        }
+    }
 }
