@@ -91,7 +91,7 @@
 
         <div th:if="${#lists.isEmpty(enrollments)}" style="grid-column: span 2; text-align: center; padding: 100px 0; color: #626e9f;">
             <p th:text="'[침공 실패] ' + ${studentName} + ' 요원의 활성화된 프로토콜이 없습니다.'"></p>
-            <a th:href="@{/courses}" style="color: #5f7cff; text-decoration: underline;">신규 프로토콜 탐색하기</a>
+            <a th:href="@{/}" style="color: #5f7cff; text-decoration: underline;">신규 프로토콜 탐색하기</a>
         </div>
     </div>
 </div>
