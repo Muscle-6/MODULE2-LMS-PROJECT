@@ -118,6 +118,23 @@
         <p class="empty" th:if="${#lists.isEmpty(lectures)}">등록된 강의가 없습니다.</p>
       </section>
 
+      <section class="section">
+        <h2 style="margin-top: 0; margin-bottom: 16px;">TACTICAL NOTICES</h2>
+        <div class="qna-banner" style="border-color: rgba(201, 124, 255, 0.2); background: #1e1b3a;"> <div class="qna-banner-left">
+          <div class="qna-icon" style="background: rgba(201, 124, 255, 0.1); border-color: rgba(201, 124, 255, 0.3);">📢</div>
+          <div class="qna-banner-text">
+            <h4>강좌 공지사항</h4>
+            <p>사령부에서 하달된 최신 전술 지침을 확인하세요.</p>
+          </div>
+        </div>
+          <a th:href="@{/student/courses/{id}/notices(id=${course.courseId})}"
+             class="btn-qna"
+             style="color: #c97cff; border-color: rgba(201, 124, 255, 0.4);">
+            VIEW NOTICES →
+          </a>
+        </div>
+      </section>
+
       <!-- QnA 게시판 이동 (수강생만 노출) -->
       <section class="section" th:if="${isEnrolled}">
         <h2 style="margin-top: 0; margin-bottom: 16px;">COMMUNICATION LOGS</h2>

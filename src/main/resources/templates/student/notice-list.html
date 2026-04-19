@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html class="dark" lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>MISSION BRIEFING | MODULE02 LMS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=Inter:wght@400;500&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #0b0e14; color: #ecedf6; }
+        .font-headline { font-family: 'Space Grotesk', sans-serif; }
+    </style>
+</head>
+<body class="min-h-screen pt-24 px-6 md:px-12 pb-12 max-w-4xl mx-auto">
+
+<div class="mb-10">
+    <a th:href="@{/student/course/{id}(id=${courseId})}"
+       class="flex items-center gap-1 text-slate-500 hover:text-cyan-400 transition-colors text-xs font-headline mb-4">
+        <span class="material-symbols-outlined text-sm">arrow_back</span> RETURN TO MISSION DETAIL
+    </a>
+    <h1 class="text-4xl font-headline font-bold text-on-surface tracking-tighter mb-2">MISSION BRIEFING</h1>
+    <p class="text-slate-400 text-sm font-body">사령부에서 하달된 실시간 공지사항입니다.</p>
+</div>
+
+<div class="space-y-4">
+    <div th:each="notice : ${notices}"
+         class="bg-slate-900/40 backdrop-blur-xl rounded-3xl border border-slate-800 p-8 hover:border-cyan-400/20 transition-all shadow-2xl">
+
+        <div class="flex justify-between items-start mb-6">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-cyan-400/10 border border-cyan-400/20 flex items-center justify-center">
+                    <span class="material-symbols-outlined text-cyan-400 text-xl">campaign</span>
+                </div>
+                <div>
+                    <h3 class="text-xl font-headline font-bold text-on-surface" th:text="${notice.noticeTitle}">공지 제목</h3>
+                    <p class="text-xs text-slate-500 font-label uppercase tracking-widest"
+                       th:text="|AGENT: ${notice.authorName} · ${#temporals.format(notice.createdAt, 'yyyy.MM.dd')}|">요원명 · 날짜</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-slate-300 leading-relaxed font-body text-sm whitespace-pre-wrap"
+             th:text="${notice.noticeContent}">공지 본문 내용이 여기에 출력됩니다.</div>
+
+        <div th:if="${notice.updatedAt != null and notice.updatedAt != notice.createdAt}"
+             class="mt-6 pt-4 border-t border-slate-800/50 text-[10px] text-slate-600 font-label italic text-right">
+            LAST UPDATED: <span th:text="${#temporals.format(notice.updatedAt, 'yyyy-MM-dd HH:mm')}"></span>
+        </div>
+    </div>
+
+    <div th:if="${#lists.isEmpty(notices)}" class="py-32 text-center">
+        <div class="text-6xl mb-6 opacity-20">📡</div>
+        <p class="text-slate-500 font-headline tracking-widest uppercase">No briefings found for this sector.</p>
+    </div>
+</div>
+
+</body>
+</html>

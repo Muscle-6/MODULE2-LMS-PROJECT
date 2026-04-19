@@ -270,11 +270,13 @@
 
     <div class="filter-bar">
         <a th:href="@{/student/course/{id}/qna(id=${courseId})}"
-           th:classappend="${status == null} ? 'active'" class="filter-tab">전체</a>
-        <a th:href="@{/student/course/{id}/qna(id=${courseId}, status='OPEN')}"
-           th:classappend="${status == 'OPEN'} ? 'active'" class="filter-tab">미답변</a>
-        <a th:href="@{/student/course/{id}/qna(id=${courseId}, status='ANSWERED')}"
-           th:classappend="${status == 'ANSWERED'} ? 'active'" class="filter-tab">답변완료</a>
+           th:classappend="${currentStatus == null or currentStatus == 'ALL'} ? 'active'" class="filter-tab">전체</a>
+
+        <a th:href="@{/student/course/{id}/qna(id=${courseId}, status='PENDING')}"
+           th:classappend="${currentStatus == 'PENDING'} ? 'active'" class="filter-tab">미답변</a>
+
+        <a th:href="@{/student/course/{id}/qna(id=${courseId}, status='RESOLVED')}"
+           th:classappend="${currentStatus == 'RESOLVED'} ? 'active'" class="filter-tab">답변완료</a>
     </div>
 
     <table class="qna-table">
