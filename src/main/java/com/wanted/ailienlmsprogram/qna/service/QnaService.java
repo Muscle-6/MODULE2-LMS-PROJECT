@@ -26,7 +26,7 @@ public class QnaService {
     private final CourseRepository courseRepository;
     private  final MemberRepository memberRepository;
 
-    public List<QnaResponseDTO> questionByCourse(Long courseId) {
+    public List<QnaResponseDTO> questionByCourse(Long courseId, String status) {
 
         List<Qna> qnaList = qnaRepository.findAllByCourse_CourseIdAndParentIsNullAndQnaIsDeletedFalse(courseId);
 
@@ -36,6 +36,11 @@ public class QnaService {
                     dto.setAuthorName(qna.getAuthor().getName());
                     dto.setAnswered(qnaRepository.existsReplyByParentId(qna.getQnaId()));
                     return dto;
+                })
+                .filter(dto -> {
+                    if("PENDING".equals(status)) return !dto.isAnswered();
+                    if("RESOLVED".equals(status)) return dto.isAnswered();
+                    return true;
                 })
                 .collect(Collectors.toList());
     }

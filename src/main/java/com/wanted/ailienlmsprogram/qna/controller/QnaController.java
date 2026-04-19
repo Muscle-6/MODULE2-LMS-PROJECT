@@ -20,15 +20,19 @@ public class QnaController {
 
     // qna 게시판
     @GetMapping
-    public String qnaList(@PathVariable Long courseId, Model model) {
+    public String qnaList(@PathVariable Long courseId,
+                          @RequestParam(value = "status", required = false, defaultValue = "ALL") String status,
+                          Model model) {
 
-        List<QnaResponseDTO> qnaList = qnaService.questionByCourse(courseId);
+        // 1. 서비스에서 필터링된 리스트를 가져옵니다.
+        List<QnaResponseDTO> qnaList = qnaService.questionByCourse(courseId, status);
 
+        // 2. 뷰에서 버튼 활성화 상태를 제어하기 위해 status를 넘겨줍니다.
         model.addAttribute("qnaList", qnaList);
         model.addAttribute("courseId", courseId);
+        model.addAttribute("currentStatus", status); // 💡 HTML의 th:classappend에서 사용!
 
         return "qna/list";
-
     }
 
     // qna 작성화면으로 이동

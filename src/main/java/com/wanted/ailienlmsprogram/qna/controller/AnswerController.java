@@ -20,11 +20,12 @@ public class AnswerController {
 
     // 답변 목록 조회
     @GetMapping("/instructor/courses/{courseId}/qna")
-    public String answerList(@PathVariable Long courseId, Model model) {
+    public String answerList(@PathVariable Long courseId,  @RequestParam(value = "status", required = false, defaultValue = "ALL") String status,Model model) {
 
-        List<QnaResponseDTO> qnaList = qnaService.questionByCourse(courseId);
+        // 1. 일단 해당 코스의 전체 질문을 가져옵니다.
+        List<QnaResponseDTO> qnaList = qnaService.questionByCourse(courseId, status);
 
-        // 답변 여부로 분리
+        // 2. 💡 [중요] HTML이 기대하는 이름으로 리스트를 분리합니다.
         List<QnaResponseDTO> answered = qnaList.stream()
                 .filter(QnaResponseDTO::isAnswered)
                 .collect(Collectors.toList());
@@ -33,6 +34,7 @@ public class AnswerController {
                 .filter(qna -> !qna.isAnswered())
                 .collect(Collectors.toList());
 
+        // 3. 💡 [핵심] HTML에 있는 변수명과 똑같이 모델에 담습니다!
         model.addAttribute("answered", answered);
         model.addAttribute("unanswered", unanswered);
         model.addAttribute("courseId", courseId);
