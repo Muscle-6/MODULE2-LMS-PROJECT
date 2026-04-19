@@ -42,7 +42,7 @@ public class ContinentController {
 
         List<PostDTO> posts = postService.findPostsByContinent(continentId);
 
-        model.addAttribute("posts", posts.stream().limit(10).toList());
+        model.addAttribute("posts", posts.stream().limit(3).toList());
 
         model.addAttribute("continent", continent);
         model.addAttribute("courses" , courses);

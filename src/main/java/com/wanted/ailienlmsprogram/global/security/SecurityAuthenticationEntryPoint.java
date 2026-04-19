@@ -11,9 +11,14 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
+/*인증되지 않은 사용자가 보호된 URL에 접근했을 때 처리하는 EntityPoint*/
 @Component
 public class SecurityAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
+    /*미인증 접근 시 호출되는 메서드.
+    *
+    * - AJAX 요청: 401 + JSON 메시지
+    * - 일반 요청: /login?required=true&redirect = 현재주소로 이동*/
     @Override
     public void commence(HttpServletRequest request,
                          HttpServletResponse response,

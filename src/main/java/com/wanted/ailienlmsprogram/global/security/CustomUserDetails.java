@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.List;
 
+/*Member 엔티티를 Spring Security 인증 객체 형식으로 변환하는 클래스*/
 @Getter
 @RequiredArgsConstructor
 public class CustomUserDetails implements UserDetails {
