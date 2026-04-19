@@ -110,7 +110,7 @@
               <span th:text="${lecture.lectureTitle}">강의 제목</span>
             </div>
             <div th:if="${isEnrolled}">
-              <a th:href="@{/lectures/{id}(id=${lecture.lectureId})}" class="btn-watch">강의 시청 →</a>
+              <a th:href="@{/student/lectures/{id}(id=${lecture.lectureId})}" class="btn-watch">강의 시청 →</a>
             </div>
             <span th:unless="${isEnrolled}" style="font-size: 12px; color: #a9b6ec;">침공 시 공개</span>
           </div>
