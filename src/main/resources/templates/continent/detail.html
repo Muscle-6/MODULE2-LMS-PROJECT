@@ -162,7 +162,6 @@
                 </div>
                 <div>
                     <a class="btn" th:href="@{/courses/{courseId}(courseId=${course.courseId})}">강좌 세부</a>
-
                 </div>
             </div>
         </div>
@@ -171,7 +170,7 @@
 
     <section class="section">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h2 style="margin: 0;">대륙 게시판 TOP 10</h2>
+            <h2 style="margin: 0;">대륙 게시판 최신 TOP 3</h2>
             <a th:href="@{/continents/{id}/posts(id=${continent.continentId})}" class="btn" style="background: #1d295f; border: 1px solid #5f7cff;">
                 전체 게시판 이동 →
             </a>
@@ -184,10 +183,7 @@
                         <span class="notice-badge" th:if="${post.title.contains('[공지]')}">공지</span>
                         <a th:href="@{/posts/{id}(id=${post.postId})}" style="color: #7ee0ff; text-decoration: none;" th:text="${post.title}">게시글 제목</a>
                     </h3>
-                    <p>작성자 : <span th:text="${post.memberId}">작성자명</span></p>
-                </div>
-                <div>
-                    <a th:href="@{/posts/{id}(id=${post.postId})}" class="btn secondary">상세보기</a>
+                    <p>작성자 : <span th:text="${post.authorName}">작성자명</span></p>
                 </div>
             </div>
         </div>
