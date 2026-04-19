@@ -18,7 +18,10 @@ public class QnaDetailResponseDTO {
     private String qnaContent;
     private boolean isAnswered;
     private int replyCount;
-    private String authorName;      // 추가
-    private LocalDateTime createdAt; // 추가
+    private String authorName;
+    private LocalDateTime createdAt;
     private Long memberId;
+
+    private String answerContent;    // 답변 본문
+    private LocalDateTime answeredAt; // 답변 시간 (선택사항)
 }

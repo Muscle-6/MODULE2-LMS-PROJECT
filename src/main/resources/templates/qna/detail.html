@@ -122,16 +122,31 @@
         </div>
 
         <div class="card-body" th:text="${qna.qnaContent}">
-            전송된 기밀 데이터 내용이 여기에 표시됩니다.
+            질문 내용...
         </div>
 
-        <div th:if="${qna.isAnswered}" class="answer-section">
-            <div class="answer-header">
-                <span>[▲] INSTRUCTOR RESPONSE</span>
+        <div th:if="${qna.isAnswered}"
+             style="margin: 0 30px 30px 30px; padding: 25px; background-color: #0f172a; border-left: 4px solid #99f7ff; border-radius: 8px; border: 1px solid rgba(153, 247, 255, 0.1);">
+
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <div style="display: flex; align-items: center; gap: 8px; color: #99f7ff; font-weight: bold; font-size: 0.9rem;">
+                    <span>[▲] COMMANDER'S BRIEFING</span>
+                </div>
+                <span style="font-size: 0.75rem; color: #64748b;"
+                      th:text="${#temporals.format(qna.answeredAt, 'yyyy.MM.dd HH:mm')}">2026.04.19</span>
             </div>
-            <div style="color: #e2e8f0;" th:text="${qna.answerContent}">
+
+            <div style="color: #e2e8f0; line-height: 1.8; font-size: 0.95rem; white-space: pre-wrap;"
+                 th:text="${qna.answerContent}">
                 여기는 강사님의 답변 내용이 들어갈 자리입니다 오호이야~!
             </div>
+        </div>
+
+        <div th:unless="${qna.isAnswered}"
+             style="margin: 0 30px 30px 30px; padding: 20px; text-align: center; border: 1px dashed #334155; border-radius: 8px;">
+            <p style="color: #64748b; font-size: 0.85rem; font-style: italic; margin: 0;">
+                사령부의 응답을 기다리는 중입니다. 교신을 유지하세요... 오호이야~!
+            </p>
         </div>
 
         <div class="card-footer">
