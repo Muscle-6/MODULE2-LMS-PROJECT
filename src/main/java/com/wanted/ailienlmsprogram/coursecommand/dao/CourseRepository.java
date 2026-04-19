@@ -18,4 +18,6 @@ public interface CourseRepository extends JpaRepository<Course,Long> {
 
     // 상태별 조회 (공개/비공개 필터용)
     List<Course> findByInstructor_MemberIdAndCourseStatus(Long memberId, CourseStatus courseStatus);
+
+    boolean existsByCourseIdAndInstructor_MemberId(Long courseId, Long instructorMemberId);
 }

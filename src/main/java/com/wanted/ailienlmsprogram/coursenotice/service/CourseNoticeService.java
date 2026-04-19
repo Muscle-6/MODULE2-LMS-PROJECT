@@ -6,9 +6,12 @@ import com.wanted.ailienlmsprogram.coursenotice.dao.CourseNoticeRepository;
 import com.wanted.ailienlmsprogram.coursenotice.dto.CourseNoticeApplyDTO;
 import com.wanted.ailienlmsprogram.coursenotice.dto.CourseNoticeFindDTO;
 import com.wanted.ailienlmsprogram.coursenotice.entity.CourseNotice;
+import com.wanted.ailienlmsprogram.enrollment.entity.Enrollment;
+import com.wanted.ailienlmsprogram.enrollment.repository.EnrollmentRepository;
 import com.wanted.ailienlmsprogram.member.entity.Member;
 import com.wanted.ailienlmsprogram.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,11 +26,26 @@ public class CourseNoticeService {
     private final CourseNoticeRepository courseNoticeRepository;
     private final CourseRepository courseRepository;
     private final MemberRepository memberRepository;
+    private final EnrollmentRepository enrollmentRepository;
 
     // ===== 조회 =====
 
     // 특정 강좌의 공지사항 전체 조회
-    public List<CourseNoticeFindDTO> findNotices(Long courseId) {
+    public List<CourseNoticeFindDTO> findNotices(Long courseId, Long memberId) {
+
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new RuntimeException("Member not found"));
+
+        boolean isEnrolled = enrollmentRepository.existsByMember_LoginIdAndCourse_CourseIdAndStatus(
+                member.getLoginId(),
+                courseId,
+                Enrollment.EnrollmentStatus.ACTIVE
+        );
+        boolean isInstructor = courseRepository.existsByCourseIdAndInstructor_MemberId(courseId, memberId);
+
+        if (!isEnrolled && !isInstructor) {
+            throw new AccessDeniedException("비인가 요원 감지! 수강생만 접근 가능한 구역입니다. 오호이야~!");
+        }
 
         List<CourseNotice> notices = courseNoticeRepository
                 .findByCourse_CourseIdOrderByCreatedAtDesc(courseId);
