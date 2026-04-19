@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
+/*인증은 되었지만 접근 권한이 부족한 경우 처리하는 Handler.*/
 @Component
 public class SecurityAccessDeniedHandler implements AccessDeniedHandler {
 

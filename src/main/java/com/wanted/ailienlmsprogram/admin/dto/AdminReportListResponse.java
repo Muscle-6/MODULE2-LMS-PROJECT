@@ -33,6 +33,13 @@ public class AdminReportListResponse {
     private boolean targetDeleted;
 
     // 신고 대상 회원 정보가 존재하는지 여부를 반환한다.
+    /*포함 정보:
+    * - 신고 기본 정보
+    * - 신고자 정보
+    * - 신고 대상 회원 정보
+    * - 대륙명
+    * - 대상 제목/미리보기
+    * - 대상 삭제 여부*/
     public boolean hasTargetMember() {
         return targetMemberId != null;
     }

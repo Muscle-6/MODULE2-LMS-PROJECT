@@ -12,10 +12,18 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
+/*로그인 성공 후 후처리와 역할별 이동 경로를 담당하는 Handler.
+*
+* 전체 흐름:
+* 1. 인증 성공
+* 2. 세션 생성/유지 시간 설정
+* 3. MemberService에 로그인 성공 후처리 위임
+* 4. 역할(Admin/Insstructor/Student)에 따라 각 홈으로 redirect*/
 @Component
 @RequiredArgsConstructor
 public class SecurityLoginSuccessHandler implements AuthenticationSuccessHandler {
 
+    //로그인 성공 후 회원 lastLoginAt, rank 정책을 처리하는 서비스
     private final MemberService memberService;
 
     @Override
