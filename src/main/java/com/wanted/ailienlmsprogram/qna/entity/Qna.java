@@ -51,4 +51,10 @@ public class Qna {
     public void delete() {
         this .qnaIsDeleted = true;
     }
+
+
+    public void changeTitleAndContent(String title, String content) {
+        this.qnaTitle = title;
+        this.qnaContent = content;
+    }
 }
