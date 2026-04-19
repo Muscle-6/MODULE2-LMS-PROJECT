@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${lecture.lectureTitle} + ' - 강의 시청'">강의 시청</title>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: #0b1020;
+            color: #f5f7ff;
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            min-height: 100vh;
+        }
+
+        /* ===== 헤더 ===== */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 32px;
+            background: #0d1117;
+            border-bottom: 1px solid rgba(95, 124, 255, 0.15);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #a9b6ec;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+
+        .back-btn:hover { color: #7ee0ff; }
+
+        .lecture-title-header {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #f5f7ff;
+            max-width: 600px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* ===== 메인 레이아웃 ===== */
+        .main-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 32px 24px;
+        }
+
+        /* ===== 영상 플레이어 ===== */
+        .video-container {
+            background: #000;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid rgba(95, 124, 255, 0.15);
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        .video-container video {
+            width: 100%;
+            display: block;
+            max-height: 600px;
+        }
+
+        /* 영상 없을 때 */
+        .no-video {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 400px;
+            background: #121a35;
+            color: #626e9f;
+            gap: 12px;
+        }
+
+        /* ===== 강의 정보 카드 ===== */
+        .info-card {
+            background: #121a35;
+            border-radius: 16px;
+            padding: 28px;
+            border: 1px solid rgba(95, 124, 255, 0.1);
+            margin-bottom: 24px;
+        }
+
+        .info-card h1 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #f5f7ff;
+            margin-bottom: 20px;
+        }
+
+        /* ===== 완료 버튼 영역 ===== */
+        .action-area {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 28px;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .btn-complete {
+            background: linear-gradient(135deg, #5f7cff, #7ee0ff);
+            color: #0b1020;
+        }
+
+        .btn-complete:hover { opacity: 0.85; transform: translateY(-1px); }
+
+        .btn-complete:disabled {
+            background: #2a3a5c;
+            color: #626e9f;
+            cursor: not-allowed;
+            transform: none;
+            opacity: 1;
+        }
+
+        .btn-back {
+            background: rgba(95, 124, 255, 0.1);
+            color: #a9b6ec;
+            border: 1px solid rgba(95, 124, 255, 0.2);
+        }
+
+        .btn-back:hover { background: rgba(95, 124, 255, 0.2); color: #f5f7ff; }
+
+        /* ===== 완료 상태 배지 ===== */
+        .badge-completed {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 20px;
+            background: rgba(52, 211, 153, 0.1);
+            border: 1px solid rgba(52, 211, 153, 0.3);
+            border-radius: 10px;
+            color: #34d399;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        /* ===== 건너뛰기 경고 ===== */
+        .skip-warning {
+            display: none;
+            position: absolute;
+            top: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(239, 68, 68, 0.9);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            z-index: 10;
+            white-space: nowrap;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- ===== 헤더 ===== -->
+<header class="header">
+    <div class="header-left">
+        <a href="javascript:history.back();" class="back-btn">
+            ← 돌아가기
+        </a>
+        <span class="lecture-title-header" th:text="${lecture.lectureTitle}">강의 제목</span>
+    </div>
+</header>
+
+<!-- ===== MAIN ===== -->
+<div class="main-container">
+
+    <!-- 영상 플레이어 -->
+    <div class="video-container">
+
+        <!-- 건너뛰기 경고 -->
+        <div class="skip-warning" id="skipWarning">⚠ 건너뛰기는 허용되지 않습니다</div>
+
+        <!-- 영상 있을 때 -->
+        <video th:if="${lecture.videoUrl != null}"
+               id="lectureVideo"
+               controls
+               controlsList="nodownload"
+               oncontextmenu="return false;">
+            <source th:src="${lecture.videoUrl}" type="video/mp4"/>
+            브라우저가 video 태그를 지원하지 않습니다.
+        </video>
+
+        <!-- 영상 없을 때 -->
+        <div th:if="${lecture.videoUrl == null}" class="no-video">
+            <p>등록된 영상이 없습니다.</p>
+        </div>
+
+    </div>
+
+    <!-- 강의 정보 + 완료 버튼 -->
+    <div class="info-card">
+        <h1 th:text="${lecture.lectureTitle}">강의 제목</h1>
+        <div class="action-area">
+
+            <!-- 완료 버튼 (영상 끝까지 봐야 활성화, 진척도 기능 구현 후 연결 예정) -->
+            <button id="completeBtn"
+                    class="btn btn-complete"
+                    disabled
+                    onclick="completeLecture()">
+                수강 완료
+            </button>
+
+            <a href="javascript:history.back();" class="btn btn-back">
+                목록으로
+            </a>
+        </div>
+    </div>
+
+</div>
+
+<script th:inline="javascript">
+    const lectureId = /*[[${lecture.lectureId}]]*/ 0;
+    const csrfHeader = /*[[${_csrf?.headerName}]]*/ 'X-CSRF-TOKEN';
+    const csrfToken = /*[[${_csrf?.token}]]*/ '';
+
+    const video = document.getElementById('lectureVideo');
+    const completeBtn = document.getElementById('completeBtn');
+    const skipWarning = document.getElementById('skipWarning');
+
+    if (video) {
+        let maxWatchedTime = 0;
+
+        // 건너뛰기 방지 — 최대 시청 위치보다 3초 이상 앞으로 가면 되돌림
+        video.addEventListener('timeupdate', function () {
+            if (video.currentTime > maxWatchedTime + 3) {
+                video.currentTime = maxWatchedTime;
+                skipWarning.style.display = 'block';
+                setTimeout(() => { skipWarning.style.display = 'none'; }, 2000);
+            } else {
+                maxWatchedTime = Math.max(maxWatchedTime, video.currentTime);
+            }
+        });
+
+        // 영상 끝까지 재생 완료 시 수강 완료 버튼 활성화
+        video.addEventListener('ended', function () {
+            if (completeBtn) {
+                completeBtn.disabled = false;
+            }
+        });
+    }
+
+    // 수강 완료 처리 — POST /student/lectures/{lectureId}/complete
+    function completeLecture() {
+        if (completeBtn) completeBtn.disabled = true;
+
+        fetch('/student/lectures/' + lectureId + '/complete', {
+            method: 'POST',
+            headers: {
+                [csrfHeader]: csrfToken,
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                location.reload();  // 완료 처리 후 페이지 새로고침 → 수강 완료 배지 표시
+            } else {
+                alert('수강 완료 처리 중 오류가 발생했습니다.');
+                if (completeBtn) completeBtn.disabled = false;
+            }
+        })
+        .catch(() => {
+            alert('서버와 통신 중 오류가 발생했습니다.');
+            if (completeBtn) completeBtn.disabled = false;
+        });
+    }
+</script>
+
+</body>
+</html>

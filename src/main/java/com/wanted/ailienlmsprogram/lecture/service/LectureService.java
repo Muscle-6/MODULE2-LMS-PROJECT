@@ -7,6 +7,7 @@ import com.wanted.ailienlmsprogram.lecture.dao.LectureRepository;
 import com.wanted.ailienlmsprogram.lecture.dto.LectureAddDTO;
 import com.wanted.ailienlmsprogram.lecture.dto.LectureFindDTO;
 import com.wanted.ailienlmsprogram.lecture.dto.LectureResponseDTO;
+import com.wanted.ailienlmsprogram.lecture.dto.LectureWatchDTO;
 import com.wanted.ailienlmsprogram.lecture.entity.Lecture;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -140,5 +141,13 @@ public class LectureService {
         }
 
         lectureRepository.deleteById(lectureId);
+    }
+
+    public LectureWatchDTO findWatchLecture(Long lectureId) {
+
+        Lecture lecture = lectureRepository.findById(lectureId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 강의입니다."));
+
+        return modelMapper.map(lecture, LectureWatchDTO.class);
     }
 }
