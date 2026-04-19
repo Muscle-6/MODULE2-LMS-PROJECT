@@ -83,6 +83,7 @@ public class QnaService {
 
     // 질문 상세 조회
     public QnaDetailResponseDTO QnaDetail(Long qnaId) {
+       // 질문 가져옴
         Qna qna = qnaRepository.findById(qnaId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글입니다. id=" + qnaId));
 
@@ -90,7 +91,19 @@ public class QnaService {
             throw new IllegalArgumentException("삭제된 게시글입니다.");
         }
 
-        return modelMapper.map(qna, QnaDetailResponseDTO.class);
+        QnaDetailResponseDTO responseDTO = modelMapper.map(qna, QnaDetailResponseDTO.class);
+        responseDTO.setAuthorName(qna.getAuthor().getName());
+
+        // 답변 찾기
+        qnaRepository.findAllByParent_QnaIdAndQnaIsDeletedFalse(qnaId).stream()
+                .findFirst()
+                .ifPresent(reply -> {
+                    responseDTO.setAnswerContent(reply.getQnaContent());
+                    responseDTO.setAnsweredAt(reply.getCreatedAt());
+                    responseDTO.setAnswered(true);
+                });
+
+        return responseDTO;
     }
 
     // 답변 로직
