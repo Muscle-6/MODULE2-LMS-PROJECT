@@ -601,7 +601,7 @@
                                   th:text="${course.statusLabel}">상태</span>
                         </td>
                         <td style="text-align: center;">
-                            <a th:href="@{|/admin/courses/${course.courseId}?query=${condition.query}&status=${condition.status}|}"
+                            <a th:href="@{/admin/courses/{courseId}(courseId=${course.courseId}, query=${condition.query}, status=${condition.status})}"
                                class="btn btn-secondary btn-sm">
                                 <i class="fa-solid fa-arrow-up-right-from-square"></i> 상세보기
                             </a>
