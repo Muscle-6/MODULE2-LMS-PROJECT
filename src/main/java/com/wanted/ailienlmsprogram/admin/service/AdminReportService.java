@@ -1,6 +1,8 @@
 package com.wanted.ailienlmsprogram.admin.service;
 
+import com.wanted.ailienlmsprogram.admin.dto.AdminReportDetailResponse;
 import com.wanted.ailienlmsprogram.admin.dto.AdminReportListResponse;
+import com.wanted.ailienlmsprogram.admin.repository.AdminReportCommandRepository;
 import com.wanted.ailienlmsprogram.admin.repository.AdminReportQueryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,8 +18,19 @@ import java.util.List;
 public class AdminReportService {
 
     private final AdminReportQueryRepository adminReportQueryRepository;
+    private final AdminReportCommandRepository adminReportCommandRepository;
+
 
     public List<AdminReportListResponse> getReports() {
         return adminReportQueryRepository.findReports();
+    }
+
+
+    public AdminReportDetailResponse getReportDetail(long reportId){
+        return adminReportQueryRepository.findReportDetail(reportId);}
+
+    @Transactional
+    public void deleteReportedTarget(Long reportId){
+        adminReportCommandRepository.deleteReportedTarget(reportId);
     }
 }
