@@ -2,9 +2,15 @@ package com.wanted.ailienlmsprogram.qna.repository;
 
 import com.wanted.ailienlmsprogram.qna.entity.Qna;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
-public interface QnaRepository extends JpaRepository<Qna, Integer> {
-    List<Qna> findAllByCourse_CourseId(Long courseId);
+public interface QnaRepository extends JpaRepository<Qna, Long> {
+
+    List<Qna> findAllByCourse_CourseIdAndQnaIsDeletedFalse(Long courseId);
+
+    List<Qna> findAllByParent_QnaIdAndQnaIsDeletedFalse(Long qnaId);
 }

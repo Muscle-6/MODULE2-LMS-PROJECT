@@ -1,6 +1,7 @@
 package com.wanted.ailienlmsprogram.qna.controller;
 
 import com.wanted.ailienlmsprogram.global.security.CustomUserDetails;
+import com.wanted.ailienlmsprogram.qna.dto.QnaDetailResponseDTO;
 import com.wanted.ailienlmsprogram.qna.dto.QnaResponseDTO;
 import com.wanted.ailienlmsprogram.qna.dto.QnawriteRequestDTO;
 import com.wanted.ailienlmsprogram.qna.service.QnaService;
@@ -56,5 +57,33 @@ public class QnaController {
         return "redirect:/student/course/" + courseId + "/qna";
     }
 
+    @PostMapping("/{qnaId}/delete")
+    public String qnaDelete(@PathVariable Long qnaId,
+                            @PathVariable Long courseId,
+                            @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        qnaService.deleteQna(qnaId, userDetails.getMember().getMemberId());
+
+        return "redirect:/student/course/" + courseId + "/qna";
+    }
+
+
+    // qna 상세조회
+    @GetMapping("/{qnaId}")
+    public String qnaDetail(@PathVariable Long courseId,
+                            @PathVariable Long qnaId,
+                            @AuthenticationPrincipal CustomUserDetails userDetails,
+                            Model model) {
+
+        QnaDetailResponseDTO qna = qnaService.QnaDetail(qnaId);
+        List<QnaDetailResponseDTO> replies = qnaService.Replies(qnaId);
+
+        model.addAttribute("qna", qna);
+        model.addAttribute("replies", replies);
+        model.addAttribute("courseId", courseId);
+        model.addAttribute("currentMemberId", userDetails.getMember().getMemberId());
+
+        return "qna/detail";
+    }
 
 }

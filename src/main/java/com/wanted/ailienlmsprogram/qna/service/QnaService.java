@@ -4,12 +4,14 @@ import com.wanted.ailienlmsprogram.coursecommand.dao.CourseRepository;
 import com.wanted.ailienlmsprogram.coursecommand.entity.Course;
 import com.wanted.ailienlmsprogram.member.entity.Member;
 import com.wanted.ailienlmsprogram.member.repository.MemberRepository;
+import com.wanted.ailienlmsprogram.qna.dto.QnaDetailResponseDTO;
 import com.wanted.ailienlmsprogram.qna.dto.QnaResponseDTO;
 import com.wanted.ailienlmsprogram.qna.dto.QnawriteRequestDTO;
 import com.wanted.ailienlmsprogram.qna.entity.Qna;
 import com.wanted.ailienlmsprogram.qna.repository.QnaRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,7 +30,7 @@ public class QnaService {
 
     public List<QnaResponseDTO> questionByCourse(Long courseId) {
 
-        List<Qna> qnaList = qnaRepository.findAllByCourse_CourseId(courseId);
+        List<Qna> qnaList = qnaRepository.findAllByCourse_CourseIdAndQnaIsDeletedFalse(courseId);
 
         return qnaList.stream()
                 .map(qna -> modelMapper.map(qna, QnaResponseDTO.class))
@@ -49,10 +51,46 @@ public class QnaService {
                 .qnaTitle(dto.getQnaTitle())
                 .qnaContent(dto.getQnaContent())
                 .createdAt(LocalDateTime.now())
-                .course(course) // courseId(Long)가 아니라 course 객체!
-                .author(member) // memberId(Long)가 아니라 member(author) 객체!
+                .course(course)
+                .author(member)
                 .build();
         qnaRepository.save(qna);
 
+    }
+
+    @Transactional
+    public void deleteQna(Long qnaId, Long memberId) {
+
+        Qna qna = qnaRepository.findById(qnaId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글입니다. id=" + qnaId));
+
+        // 작성자 존재하는지
+        if (!qna.getAuthor().getMemberId().equals(memberId)) {
+            throw new AccessDeniedException("본인이 작성한 글만 삭제할 수 있습니다");
+        }
+
+        qna.delete();
+        qnaRepository.save(qna);
+    }
+
+    // 질문 상세 조회
+    public QnaDetailResponseDTO QnaDetail(Long qnaId) {
+        Qna qna = qnaRepository.findById(qnaId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글입니다. id=" + qnaId));
+
+        if (qna.isQnaIsDeleted()) {
+            throw new IllegalArgumentException("삭제된 게시글입니다.");
+        }
+
+        return modelMapper.map(qna, QnaDetailResponseDTO.class);
+    }
+
+    // 답변 로직
+    public List<QnaDetailResponseDTO> Replies(Long qnaId) {
+        List<Qna> replies = qnaRepository.findAllByParent_QnaIdAndQnaIsDeletedFalse(qnaId);
+
+        return replies.stream()
+                .map(qna -> modelMapper.map(qna, QnaDetailResponseDTO.class))
+                .collect(Collectors.toList());
     }
 }
