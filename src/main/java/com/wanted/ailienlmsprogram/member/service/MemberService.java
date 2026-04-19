@@ -97,4 +97,6 @@ public class MemberService {
             member.setRank(Member.MemberRank.MINERVAL);
         }
     }
+
+
 }

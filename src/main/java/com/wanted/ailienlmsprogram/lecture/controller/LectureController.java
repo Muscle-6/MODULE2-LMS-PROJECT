@@ -7,7 +7,6 @@ import com.wanted.ailienlmsprogram.enrollment.service.EnrollmentService;
 import com.wanted.ailienlmsprogram.lecture.dto.LectureAddDTO;
 import com.wanted.ailienlmsprogram.lecture.dto.LectureFindDTO;
 import com.wanted.ailienlmsprogram.lecture.dto.LectureResponseDTO;
-import com.wanted.ailienlmsprogram.lecture.dto.LectureWatchDTO;
 import com.wanted.ailienlmsprogram.lecture.service.LectureService;
 import com.wanted.ailienlmsprogram.global.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +17,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.math.BigDecimal;
 import java.security.Principal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -62,6 +62,10 @@ public class LectureController {
             if (isEnrolled) {
                 // enrollmentId 가져오기 — EnrollmentService에 메서드 추가 필요
                 enrollmentId = enrollmentService.findEnrollmentId(principal.getName(), courseId);
+
+                // 진척도 가져오기
+                BigDecimal progressRate = enrollmentService.getProgressRate(principal.getName(), courseId);
+                model.addAttribute("progressRate", progressRate);
             }
         }
 
@@ -124,14 +128,4 @@ public class LectureController {
         return "redirect:/instructor/courses/" + courseId + "/lectures";
     }
 
-    @GetMapping("/student/lectures/{lectureId}")
-    public ModelAndView lectureWatch(ModelAndView mv, @PathVariable Long lectureId) {
-
-        LectureWatchDTO lecture = lectureService.findWatchLecture(lectureId);
-
-        mv.addObject("lecture" ,lecture);
-        mv.setViewName("lecture/watch");
-
-        return mv;
-    }
 }

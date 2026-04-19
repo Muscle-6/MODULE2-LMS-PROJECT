@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -39,4 +40,11 @@ public class Enrollment {
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime enrolledAt;
+
+    @Column(name = "enrollment_progress_rate")
+    private BigDecimal enrollmentProgressRate;
+
+    public void updateProgressRate(BigDecimal rate) {
+        this.enrollmentProgressRate = rate;
+    }
 }

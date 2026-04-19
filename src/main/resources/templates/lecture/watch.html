@@ -19,32 +19,14 @@
         .header {
             display: flex;
             align-items: center;
-            justify-content: space-between;
             padding: 16px 32px;
             background: #0d1117;
             border-bottom: 1px solid rgba(95, 124, 255, 0.15);
             position: sticky;
             top: 0;
             z-index: 100;
-        }
-
-        .header-left {
-            display: flex;
-            align-items: center;
             gap: 16px;
         }
-
-        .back-btn {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            color: #a9b6ec;
-            text-decoration: none;
-            font-size: 0.9rem;
-            transition: color 0.2s;
-        }
-
-        .back-btn:hover { color: #7ee0ff; }
 
         .lecture-title-header {
             font-size: 1rem;
@@ -79,7 +61,6 @@
             max-height: 600px;
         }
 
-        /* 영상 없을 때 */
         .no-video {
             display: flex;
             flex-direction: column;
@@ -107,7 +88,7 @@
             margin-bottom: 20px;
         }
 
-        /* ===== 완료 버튼 영역 ===== */
+        /* ===== 버튼 영역 ===== */
         .action-area {
             display: flex;
             justify-content: flex-end;
@@ -143,13 +124,13 @@
             opacity: 1;
         }
 
-        .btn-back {
-            background: rgba(95, 124, 255, 0.1);
-            color: #a9b6ec;
-            border: 1px solid rgba(95, 124, 255, 0.2);
+        .btn-exit {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.2);
         }
 
-        .btn-back:hover { background: rgba(95, 124, 255, 0.2); color: #f5f7ff; }
+        .btn-exit:hover { background: rgba(239, 68, 68, 0.2); }
 
         /* ===== 완료 상태 배지 ===== */
         .badge-completed {
@@ -181,6 +162,53 @@
             z-index: 10;
             white-space: nowrap;
         }
+
+        /* ===== 종료 확인 모달 ===== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 200;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-overlay.active { display: flex; }
+
+        .modal-card {
+            background: #121a35;
+            border-radius: 16px;
+            padding: 40px;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-icon { font-size: 2.5rem; margin-bottom: 16px; }
+
+        .modal-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #f5f7ff;
+            margin-bottom: 8px;
+        }
+
+        .modal-desc {
+            font-size: 0.9rem;
+            color: #a9b6ec;
+            margin-bottom: 28px;
+            line-height: 1.6;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
     </style>
 </head>
 
@@ -188,12 +216,7 @@
 
 <!-- ===== 헤더 ===== -->
 <header class="header">
-    <div class="header-left">
-        <a href="javascript:history.back();" class="back-btn">
-            ← 돌아가기
-        </a>
-        <span class="lecture-title-header" th:text="${lecture.lectureTitle}">강의 제목</span>
-    </div>
+    <span class="lecture-title-header" th:text="${lecture.lectureTitle}">강의 제목</span>
 </header>
 
 <!-- ===== MAIN ===== -->
@@ -201,11 +224,8 @@
 
     <!-- 영상 플레이어 -->
     <div class="video-container">
-
-        <!-- 건너뛰기 경고 -->
         <div class="skip-warning" id="skipWarning">⚠ 건너뛰기는 허용되지 않습니다</div>
 
-        <!-- 영상 있을 때 -->
         <video th:if="${lecture.videoUrl != null}"
                id="lectureVideo"
                controls
@@ -215,38 +235,70 @@
             브라우저가 video 태그를 지원하지 않습니다.
         </video>
 
-        <!-- 영상 없을 때 -->
         <div th:if="${lecture.videoUrl == null}" class="no-video">
             <p>등록된 영상이 없습니다.</p>
         </div>
-
     </div>
 
-    <!-- 강의 정보 + 완료 버튼 -->
+    <!-- 강의 정보 + 버튼 -->
     <div class="info-card">
         <h1 th:text="${lecture.lectureTitle}">강의 제목</h1>
         <div class="action-area">
 
-            <!-- 완료 버튼 (영상 끝까지 봐야 활성화, 진척도 기능 구현 후 연결 예정) -->
-            <button id="completeBtn"
-                    class="btn btn-complete"
-                    disabled
-                    onclick="completeLecture()">
-                수강 완료
-            </button>
+            <!-- 이미 완료된 경우 -->
+            <span th:if="${isCompleted}" class="badge-completed">✔ 수강 완료</span>
 
-            <a href="javascript:history.back();" class="btn btn-back">
-                목록으로
-            </a>
+            <!-- 수강 완료 버튼 — form POST 방식 (진척도 기능 연결 예정) -->
+            <form th:unless="${isCompleted}"
+                  th:action="@{/student/lectures/{lectureId}/complete(lectureId=${lecture.lectureId})}"
+                  method="post"
+                  id="completeForm">
+                <button type="submit"
+                        id="completeBtn"
+                        class="btn btn-complete"
+                        disabled>
+                    수강 완료
+                </button>
+            </form>
+
+            <!-- 종료 버튼 -->
+            <button type="button"
+                    class="btn btn-exit"
+                    onclick="openExitModal()">
+                종료
+            </button>
         </div>
     </div>
 
 </div>
 
+<!-- ===== 종료 확인 모달 ===== -->
+<div class="modal-overlay" id="exitModal">
+    <div class="modal-card">
+        <div class="modal-icon">🚀</div>
+        <p class="modal-title">강의를 종료하시겠습니까?</p>
+        <p class="modal-desc">
+            현재까지의 시청 위치가 저장됩니다.<br>
+            다음에 이어서 시청할 수 있습니다.
+        </p>
+        <div class="modal-actions">
+            <button type="button"
+                    class="btn btn-exit"
+                    onclick="confirmExit()">
+                예, 종료합니다
+            </button>
+            <button type="button"
+                    class="btn"
+                    style="background: rgba(95,124,255,0.1); color: #a9b6ec; border: 1px solid rgba(95,124,255,0.2);"
+                    onclick="closeExitModal()">
+                계속 시청
+            </button>
+        </div>
+    </div>
+</div>
+
 <script th:inline="javascript">
     const lectureId = /*[[${lecture.lectureId}]]*/ 0;
-    const csrfHeader = /*[[${_csrf?.headerName}]]*/ 'X-CSRF-TOKEN';
-    const csrfToken = /*[[${_csrf?.token}]]*/ '';
 
     const video = document.getElementById('lectureVideo');
     const completeBtn = document.getElementById('completeBtn');
@@ -255,7 +307,14 @@
     if (video) {
         let maxWatchedTime = 0;
 
-        // 건너뛰기 방지 — 최대 시청 위치보다 3초 이상 앞으로 가면 되돌림
+        // 이어보기 — 페이지 로드 시 저장된 위치로 이동
+        const savedPosition = localStorage.getItem('lecture_pos_' + lectureId);
+        if (savedPosition) {
+            video.currentTime = parseInt(savedPosition);
+            maxWatchedTime = parseInt(savedPosition);
+        }
+
+        // 건너뛰기 방지
         video.addEventListener('timeupdate', function () {
             if (video.currentTime > maxWatchedTime + 3) {
                 video.currentTime = maxWatchedTime;
@@ -266,38 +325,41 @@
             }
         });
 
+        // 30초마다 현재 위치 저장
+        setInterval(() => {
+            localStorage.setItem('lecture_pos_' + lectureId, Math.floor(video.currentTime));
+        }, 30000);
+
         // 영상 끝까지 재생 완료 시 수강 완료 버튼 활성화
         video.addEventListener('ended', function () {
             if (completeBtn) {
                 completeBtn.disabled = false;
+                localStorage.removeItem('lecture_pos_' + lectureId);
             }
         });
     }
 
-    // 수강 완료 처리 — POST /student/lectures/{lectureId}/complete
-    function completeLecture() {
-        if (completeBtn) completeBtn.disabled = true;
-
-        fetch('/student/lectures/' + lectureId + '/complete', {
-            method: 'POST',
-            headers: {
-                [csrfHeader]: csrfToken,
-                'Content-Type': 'application/json'
-            }
-        })
-        .then(response => {
-            if (response.ok) {
-                location.reload();  // 완료 처리 후 페이지 새로고침 → 수강 완료 배지 표시
-            } else {
-                alert('수강 완료 처리 중 오류가 발생했습니다.');
-                if (completeBtn) completeBtn.disabled = false;
-            }
-        })
-        .catch(() => {
-            alert('서버와 통신 중 오류가 발생했습니다.');
-            if (completeBtn) completeBtn.disabled = false;
-        });
+    // ===== 종료 모달 =====
+    function openExitModal() {
+        // 모달 열기 전 현재 위치 저장
+        if (video) {
+            localStorage.setItem('lecture_pos_' + lectureId, Math.floor(video.currentTime));
+        }
+        document.getElementById('exitModal').classList.add('active');
     }
+
+    function closeExitModal() {
+        document.getElementById('exitModal').classList.remove('active');
+    }
+
+    function confirmExit() {
+        history.back();
+    }
+
+    // 모달 바깥 클릭 시 닫기
+    document.getElementById('exitModal').addEventListener('click', function (e) {
+        if (e.target === this) closeExitModal();
+    });
 </script>
 
 </body>
