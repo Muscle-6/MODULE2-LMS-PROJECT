@@ -5,6 +5,7 @@ import com.wanted.ailienlmsprogram.coursenotice.dto.CourseNoticeFindDTO;
 import com.wanted.ailienlmsprogram.coursenotice.service.CourseNoticeService;
 import com.wanted.ailienlmsprogram.global.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -21,9 +22,12 @@ public class CourseNoticeController {
     // ===== 조회 =====
     @GetMapping("/instructor/courses/{courseId}/notices")
     public ModelAndView findNotices(ModelAndView mv,
-                                    @PathVariable Long courseId) {
+                                    @PathVariable Long courseId,
+                                    @AuthenticationPrincipal CustomUserDetails userDetails) {
 
-        List<CourseNoticeFindDTO> notices = courseNoticeService.findNotices(courseId);
+        Long memberId = userDetails.getMember().getMemberId();
+
+        List<CourseNoticeFindDTO> notices = courseNoticeService.findNotices(courseId, memberId);
         mv.addObject("notices", notices);
         mv.addObject("courseId", courseId);
         mv.setViewName("lecturenotice/find");
@@ -105,14 +109,20 @@ public class CourseNoticeController {
 
     // 학생이 공지사항 조회
     @GetMapping("/student/courses/{courseId}/notices")
-    public ModelAndView findStudentNotices(ModelAndView mv, @PathVariable Long courseId) {
+    public ModelAndView findStudentNotices(ModelAndView mv, @PathVariable Long courseId, @AuthenticationPrincipal CustomUserDetails userDetails) {
 
-        List<CourseNoticeFindDTO> notices = courseNoticeService.findNotices(courseId);
+        Long memberId = userDetails.getMember().getMemberId();
 
-        mv.addObject("notices", notices);
+        try {
+            List<CourseNoticeFindDTO> notices = courseNoticeService.findNotices(courseId, memberId);
+            mv.addObject("notices", notices);
+            mv.addObject("accessDenied", false);
+        } catch (AccessDeniedException e) {
+            mv.addObject("notices", List.of());
+            mv.addObject("accessDenied", true);
+        }
+
         mv.addObject("courseId", courseId);
-
-        // 💡 학생 전용 뷰로 연결!
         mv.setViewName("student/notice-list");
 
         return mv;

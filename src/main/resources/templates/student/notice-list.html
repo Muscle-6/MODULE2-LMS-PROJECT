@@ -54,5 +54,18 @@
     </div>
 </div>
 
+<div th:if="${accessDenied}"
+     class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
+    <div class="bg-slate-900 border border-slate-700 rounded-3xl p-10 text-center max-w-sm mx-4">
+        <div class="text-5xl mb-4">🚫</div>
+        <h2 class="font-headline text-xl font-bold mb-2">ACCESS DENIED</h2>
+        <p class="text-slate-400 text-sm mb-6">수강생만 접근 가능한 구역입니다.</p>
+        <a th:href="@{/student/course/{id}(id=${courseId})}"
+           class="inline-block bg-cyan-400 text-black font-headline font-bold px-6 py-3 rounded-xl hover:bg-cyan-300 transition-colors">
+            확인
+        </a>
+    </div>
+</div>
+
 </body>
 </html>
