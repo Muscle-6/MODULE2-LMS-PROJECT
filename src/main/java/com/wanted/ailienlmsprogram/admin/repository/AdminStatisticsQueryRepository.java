@@ -23,6 +23,7 @@ public class AdminStatisticsQueryRepository {
     @PersistenceContext
     private EntityManager em;
 
+    /*통계 화면의 대륙 선택 박스에 쓸 옵션 목록을 조회한다.*/
     public List<AdminContinentOptionResponse> findContinentOptions() {
         return em.createQuery("""
                 select new com.wanted.ailienlmsprogram.admin.dto.AdminContinentOptionResponse(
@@ -35,6 +36,12 @@ public class AdminStatisticsQueryRepository {
                 .getResultList();
     }
 
+    /*대륙 랭킹을 metric 기준에 따라 분기 조회한다.
+    *
+    * course_count -> 공개 강좌 수
+    * student_count -> 활성 수강생 수
+    * post_count -> 삭제되지 않은 게시글 수
+    * report_count -> 해당 대륙 관련 신고를 남긴 신고자 수(중복 제거)*/
     public List<AdminContinentRankingResponse> findContinentRankings(AdminContinentStatisticMetric metric) {
         if (metric == null) {
             metric = AdminContinentStatisticMetric.COURSE_COUNT;
@@ -48,6 +55,10 @@ public class AdminStatisticsQueryRepository {
         };
     }
 
+    /*선택된 대륙 안에서 강좌 랭킹을 metric 기준에 따라 분기 조회한다.
+    *
+    * Student_count -> 강좌별 수강생 수
+    * QNA_count -> 강좌별 Q&A 수*/
     public List<AdminCourseRankingResponse> findCourseRankings(Long continentId, AdminCourseStatisticMetric metric) {
         if (continentId == null) {
             return Collections.emptyList();
@@ -63,6 +74,7 @@ public class AdminStatisticsQueryRepository {
         };
     }
 
+    /*공개 상태 강좌 수 기준으로 대륙 랭킹을 조회한다.*/
     private List<AdminContinentRankingResponse> findContinentCourseCountRankings() {
         return em.createQuery("""
                 select new com.wanted.ailienlmsprogram.admin.dto.AdminContinentRankingResponse(
@@ -81,6 +93,7 @@ public class AdminStatisticsQueryRepository {
                 .getResultList();
     }
 
+    /*활성 수강생 수 기준으로 대륙 랭킹을 조회한다.*/
     private List<AdminContinentRankingResponse> findContinentStudentCountRankings() {
         return em.createQuery("""
                 select new com.wanted.ailienlmsprogram.admin.dto.AdminContinentRankingResponse(
@@ -101,6 +114,7 @@ public class AdminStatisticsQueryRepository {
                 .getResultList();
     }
 
+    /*삭제되지 않은 게시글 수 기준으로 대륙 랭킹을 조회한다.*/
     private List<AdminContinentRankingResponse> findContinentPostCountRankings() {
         return em.createQuery("""
                 select new com.wanted.ailienlmsprogram.admin.dto.AdminContinentRankingResponse(
@@ -118,6 +132,11 @@ public class AdminStatisticsQueryRepository {
                 .getResultList();
     }
 
+    /*신고자 수 기준 대륙 랭킹을 만든다.
+    *
+    * report 테이블에는 continentId가 직접 없으므로
+    * 게시글/댓글/Q&A 대상에서 대륙 ID를 역추적한 뒤
+    * 신고자 ID를 Set으로 모아 중복 제거해야한다.*/
     private List<AdminContinentRankingResponse> findContinentReporterCountRankings() {
         List<AdminContinentOptionResponse> continents = findContinentOptions();
         Map<Long, Set<Long>> reporterSetByContinent = buildReporterSetByContinent();
@@ -143,6 +162,7 @@ public class AdminStatisticsQueryRepository {
         return result;
     }
 
+    /*대륙별 신고자 집합을 만든다. 한 신고자가 여러 번 신고해도 1명으로 센다.*/
     private Map<Long, Set<Long>> buildReporterSetByContinent() {
         List<Report> reports = em.createQuery("""
                 select r
@@ -194,6 +214,7 @@ public class AdminStatisticsQueryRepository {
         return result;
     }
 
+    /*게시글 ID -> 대륙 ID 맵을 만든다.*/
     private Map<Long, Long> findPostContinentMap(Set<Long> postIds) {
         if (postIds.isEmpty()) {
             return Collections.emptyMap();
@@ -214,6 +235,7 @@ public class AdminStatisticsQueryRepository {
         return result;
     }
 
+    /*댓글 ID -> 대륙 ID 맵을 만든다.*/
     private Map<Long, Long> findCommentContinentMap(Set<Long> commentIds) {
         if (commentIds.isEmpty()) {
             return Collections.emptyMap();
@@ -239,6 +261,7 @@ public class AdminStatisticsQueryRepository {
         return result;
     }
 
+    /*Q&A ID -> 대륙 ID 맵을 만든다.*/
     private Map<Long, Long> findQnaContinentMap(Set<Long> qnaIds) {
         if (qnaIds.isEmpty()) {
             return Collections.emptyMap();
@@ -262,6 +285,7 @@ public class AdminStatisticsQueryRepository {
         return result;
     }
 
+    /*Report 1건이 어느 대륙에 속하는지 targetType에 따라 판별한다.*/
     private Long resolveContinentId(
             Report report,
             Map<Long, Long> postContinentMap,
@@ -283,6 +307,7 @@ public class AdminStatisticsQueryRepository {
         return null;
     }
 
+    /*선택 대륙 안의 강좌를 수강생 수 기준으로 정렬해 조회한다.*/
     private List<AdminCourseRankingResponse> findCourseStudentCountRankings(Long continentId) {
         return em.createQuery("""
                 select new com.wanted.ailienlmsprogram.admin.dto.AdminCourseRankingResponse(
@@ -303,6 +328,7 @@ public class AdminStatisticsQueryRepository {
                 .getResultList();
     }
 
+    /*선택 대륙 안의 강좌를 Q&A 수 기준으로 정렬해 조회한다.*/
     private List<AdminCourseRankingResponse> findCourseQnaCountRankings(Long continentId) {
         return em.createQuery("""
                 select new com.wanted.ailienlmsprogram.admin.dto.AdminCourseRankingResponse(

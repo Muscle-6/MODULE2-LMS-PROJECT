@@ -7,6 +7,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+/*관리자 신고 목록 페이지 요청을 처리한다.
+* -> AdminReportService*/
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/admin/reports")

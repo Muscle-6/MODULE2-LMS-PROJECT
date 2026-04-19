@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
+/*로그인 실패 시 실패 사유를 분류해서 로그인 페이지로 다시 보내느 Handler*/
 @Component
 public class SecurityAuthenticationFailureHandler implements AuthenticationFailureHandler {
 
