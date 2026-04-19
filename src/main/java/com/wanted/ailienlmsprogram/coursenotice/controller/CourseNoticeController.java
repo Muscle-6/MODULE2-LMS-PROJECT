@@ -102,5 +102,20 @@ public class CourseNoticeController {
 
         return "redirect:/instructor/courses/" + courseId + "/notices";
     }
+
+    // 학생이 공지사항 조회
+    @GetMapping("/student/courses/{courseId}/notices")
+    public ModelAndView findStudentNotices(ModelAndView mv, @PathVariable Long courseId) {
+
+        List<CourseNoticeFindDTO> notices = courseNoticeService.findNotices(courseId);
+
+        mv.addObject("notices", notices);
+        mv.addObject("courseId", courseId);
+
+        // 💡 학생 전용 뷰로 연결!
+        mv.setViewName("student/notice-list");
+
+        return mv;
+    }
 }
 
