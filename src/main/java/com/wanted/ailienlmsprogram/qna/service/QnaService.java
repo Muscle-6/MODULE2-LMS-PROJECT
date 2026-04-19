@@ -4,9 +4,7 @@ import com.wanted.ailienlmsprogram.coursecommand.dao.CourseRepository;
 import com.wanted.ailienlmsprogram.coursecommand.entity.Course;
 import com.wanted.ailienlmsprogram.member.entity.Member;
 import com.wanted.ailienlmsprogram.member.repository.MemberRepository;
-import com.wanted.ailienlmsprogram.qna.dto.QnaDetailResponseDTO;
-import com.wanted.ailienlmsprogram.qna.dto.QnaResponseDTO;
-import com.wanted.ailienlmsprogram.qna.dto.QnawriteRequestDTO;
+import com.wanted.ailienlmsprogram.qna.dto.*;
 import com.wanted.ailienlmsprogram.qna.entity.Qna;
 import com.wanted.ailienlmsprogram.qna.repository.QnaRepository;
 import lombok.RequiredArgsConstructor;
@@ -92,5 +90,35 @@ public class QnaService {
         return replies.stream()
                 .map(qna -> modelMapper.map(qna, QnaDetailResponseDTO.class))
                 .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true) // 단순 조회이기에 readOnly 붙임
+    public QnaModifyResponseDTO modifyPage(Long qnaId, Long memberId) {
+
+        Qna qna = qnaRepository.findById(qnaId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글입니다"));
+
+        if(!qna.getAuthor().getMemberId().equals(memberId)) {
+            throw new RuntimeException("수정 권한이 없습니다");
+        }
+
+        QnaModifyResponseDTO responseDTO = modelMapper.map(qna, QnaModifyResponseDTO.class);
+
+        return responseDTO;
+
+    }
+
+    @Transactional
+    public void modifyQna(Long qnaId, QnaModifyRequestDTO requsetDTO, Long memberId) {
+
+        Qna qna = qnaRepository.findById(qnaId)
+                .orElseThrow(()-> new IllegalArgumentException("존재하지 않는 게시물입니다"));
+
+        if(!qna.getAuthor().getMemberId().equals(memberId)) {
+            throw new RuntimeException("수정 권한이 없습니다!");
+        }
+
+        qna.changeTitleAndContent(requsetDTO.getQnaTitle(), requsetDTO.getQnaContent());
+
     }
 }

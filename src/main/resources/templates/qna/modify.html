@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>MODIFY TRANSMISSION | ILLUMINATI LMS</title>
+    <style>
+        body {
+            background-color: #0f172a;
+            color: #e2e8f0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 40px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .header-section {
+            background: linear-gradient(90deg, #1e293b 0%, #334155 100%);
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+
+        .header-section h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            letter-spacing: 2px;
+            color: #3b82f6; /* 수정은 파란색 강조! */
+        }
+
+        /* 폼 스타일 */
+        .modify-form {
+            background-color: #1e293b;
+            padding: 40px;
+            border-radius: 12px;
+            border: 1px solid #334155;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: #94a3b8;
+            letter-spacing: 1px;
+        }
+
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 12px;
+            background-color: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 6px;
+            color: #f8fafc;
+            font-size: 1rem;
+            box-sizing: border-box;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input[type="text"]:focus, textarea:focus {
+            border-color: #3b82f6;
+        }
+
+        textarea {
+            height: 300px;
+            resize: vertical;
+        }
+
+        /* 버튼 영역 */
+        .btn-group {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border-radius: 6px;
+            font-weight: bold;
+            text-decoration: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+            border: none;
+            transition: all 0.2s;
+        }
+
+        .btn-cancel { background-color: transparent; color: #94a3b8; border: 1px solid #334155; }
+        .btn-cancel:hover { background-color: #334155; color: #f8fafc; }
+
+        .btn-submit { background-color: #3b82f6; color: white; }
+        .btn-submit:hover { background-color: #2563eb; transform: translateY(-1px); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header-section">
+        <h1>RE-ENCRYPTING TRANSMISSION</h1>
+        <p style="color: #64748b; font-size: 0.8rem; margin: 5px 0 0 0;">기존 데이터를 수정하여 재전송합니다.</p>
+    </div>
+
+    <form class="modify-form"
+          th:action="@{/student/course/{cId}/qna/{qId}/modify(cId=${courseId}, qId=${qna.qnaId})}"
+          method="post">
+
+        <div class="form-group">
+            <label>SUBJECT</label>
+            <input type="text" name="qnaTitle" th:value="${qna.qnaTitle}" required placeholder="데이터 제목을 입력하십시오.">
+        </div>
+
+        <div class="form-group">
+            <label>ENCRYPTED CONTENT</label>
+            <textarea name="qnaContent" th:text="${qna.qnaContent}" required placeholder="수정할 내용을 입력하십시오."></textarea>
+        </div>
+
+        <div class="btn-group">
+            <a th:href="@{/student/course/{cId}/qna(cId=${courseId})}" class="btn btn-cancel">
+                ABORT
+            </a>
+            <button type="submit" class="btn btn-submit">
+                RE-TRANSMIT
+            </button>
+        </div>
+    </form>
+</div>
+
+</body>
+</html>

@@ -175,26 +175,79 @@
             vertical-align: middle;
         }
 
-        /* 💡 삭제 버튼 스타일 추가 */
-        .btn-purge {
+        /* 💡 액션 버튼 공통 스타일 */
+        .btn-action {
             display: inline-block;
-            background-color: #ef4444;
-            color: white;
-            padding: 4px 10px;
+            padding: 4px 8px;
             border-radius: 4px;
             font-size: 0.7rem;
             font-weight: bold;
             text-decoration: none;
-            margin-left: 10px;
-            transition: background 0.2s;
+            transition: all 0.2s;
             border: none;
             cursor: pointer;
+            color: white;
         }
 
+        /* 수정 버튼 스타일 */
+        .btn-modify {
+            background-color: #3b82f6;
+            margin-left: 10px;
+        }
+        .btn-modify:hover {
+            background-color: #2563eb;
+            box-shadow: 0 0 8px rgba(59, 130, 246, 0.5);
+        }
+
+        /* 삭제 버튼 스타일 */
+        .btn-purge {
+            background-color: #ef4444;
+            margin-left: 5px;
+        }
         .btn-purge:hover {
             background-color: #b91c1c;
             box-shadow: 0 0 8px rgba(239, 68, 68, 0.5);
         }
+
+        /* 숙청 확인 레이어 스타일 */
+        #purgeOverlay {
+            display: none; /* 평소엔 숨김 */
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.9); /* 어두운 배경 */
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .purge-card {
+            background-color: #1e293b;
+            padding: 40px;
+            border-radius: 12px;
+            border: 1px solid #ef4444;
+            text-align: center;
+            max-width: 400px;
+            box-shadow: 0 0 30px rgba(239, 68, 68, 0.3);
+        }
+
+        .action-btn-wrapper {
+            display: flex;
+            align-items: center;      /* 💡 이게 세로 중앙 정렬의 핵심! */
+            justify-content: center;  /* 💡 가로 중앙 정렬 (필요시) */
+            gap: 10px;
+            height: 100%;             /* 부모 높이를 꽉 채워야 중앙이 잡힙니다 */
+        }
+
+        /* form 태그가 마진을 가질 수 있으니 제거 */
+        .action-btn-wrapper form {
+            margin: 0;
+            display: flex;
+            align-items: center;
+        }
+
+
     </style>
 </head>
 <body>
@@ -228,8 +281,7 @@
         <thead>
         <tr>
             <th width="12%">STATUS</th>
-            <th width="48%">SUBJECT</th>
-            <th width="20%">AGENT</th>
+            <th width="40%">SUBJECT</th> <th width="28%">AGENT & ACTIONS</th>
             <th width="20%">TIMESTAMP</th>
         </tr>
         </thead>
@@ -245,20 +297,35 @@
             <td>
                 <div class="title-cell">
                     <span th:if="${qna.memberId == currentMemberId}" class="mine-dot" title="내가 쓴 글"></span>
-                    <span class="title-text" th:text="${qna.title}">질문 제목</span>
+                    <span class="title-text" th:text="${qna.qnaTitle}">질문 제목</span>
                     <span th:if="${qna.replyCount > 0}"
                           class="reply-count"
                           th:text="'[' + ${qna.replyCount} + ']'"></span>
                 </div>
             </td>
-            <td style="color: #94a3b8; white-space: nowrap;">
-                <span th:text="${qna.authorName}">요원명</span>
-                <form th:action="@{/student/course/{cId}/qna/{qId}/delete(cId=${courseId}, qId=${qna.qnaId})}"
-                      method="post"
-                      style="display: inline;"
-                      onclick="event.stopPropagation();">
-                    <button type="submit" class="btn-purge">PURGE</button>
-                </form>
+            <td style="color: #94a3b8; white-space: nowrap; vertical-align: middle;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+
+                    <span th:text="${qna.authorName}" style="flex-shrink: 0;">요원명</span>
+
+                    <th:block th:if="${qna.memberId == currentMemberId}">
+                        <div class="action-btn-wrapper" style="display: flex; align-items: center; gap: 8px; margin-left: auto;">
+                            <a th:href="@{/student/course/{cId}/qna/{qId}/modify(cId=${courseId}, qId=${qna.qnaId})}"
+                               class="btn-action btn-modify"
+                               style="margin: 0;"
+                               onclick="event.stopPropagation();">MODIFY</a>
+
+                            <form th:action="@{/student/course/{cId}/qna/{qId}/delete(cId=${courseId}, qId=${qna.qnaId})}"
+                                  method="post"
+                                  style="margin: 0; display: flex; align-items: center;">
+                                <button type="submit" class="btn-action btn-purge"
+                                        style="margin: 0;"
+                                        onclick="openPurge(event, this)">PURGE</button>
+                            </form>
+                        </div>
+                    </th:block>
+
+                </div>
             </td>
             <td style="color: #64748b; font-size: 0.88em;" th:text="${qna.createdAt}">2026-04-18</td>
         </tr>
@@ -271,6 +338,43 @@
     </table>
 
 </div>
+
+<div id="purgeOverlay">
+    <div class="purge-card">
+        <div style="font-size: 3rem; margin-bottom: 20px;">⚠️</div>
+        <h2 style="color: #f8fafc; margin-bottom: 10px; letter-spacing: 1px;">TERMINATE DATA</h2>
+        <p style="color: #94a3b8; margin-bottom: 30px; line-height: 1.6;">
+            이 통신 기록을 시스템에서 영구히 제거하시겠습니까?<br>
+            <strong>숙청된 데이터는 복구할 수 없습니다.</strong>
+        </p>
+        <div style="display: flex; gap: 15px; justify-content: center;">
+            <button onclick="closePurge()" style="padding: 12px 25px; background: #334155; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">ABORT</button>
+            <button onclick="executePurge()" style="padding: 12px 25px; background: #ef4444; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">CONFIRM PURGE</button>
+        </div>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    let currentForm = null;
+
+    function openPurge(event, btn) {
+        event.preventDefault(); // 폼 전송 일단 정지
+        event.stopPropagation(); // 행 클릭 방지
+
+        currentForm = btn.closest('form'); // 클릭한 버튼의 부모 폼 기억
+        document.getElementById('purgeOverlay').style.display = 'flex';
+    }
+
+    function closePurge() {
+        document.getElementById('purgeOverlay').style.display = 'none';
+    }
+
+    function executePurge() {
+        if(currentForm) {
+            currentForm.submit(); // 저장해둔 폼을 진짜로 전송!
+        }
+    }
+</script>
 
 </body>
 </html>

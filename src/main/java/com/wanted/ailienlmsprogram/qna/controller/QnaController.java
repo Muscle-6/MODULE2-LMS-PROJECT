@@ -1,9 +1,7 @@
 package com.wanted.ailienlmsprogram.qna.controller;
 
 import com.wanted.ailienlmsprogram.global.security.CustomUserDetails;
-import com.wanted.ailienlmsprogram.qna.dto.QnaDetailResponseDTO;
-import com.wanted.ailienlmsprogram.qna.dto.QnaResponseDTO;
-import com.wanted.ailienlmsprogram.qna.dto.QnawriteRequestDTO;
+import com.wanted.ailienlmsprogram.qna.dto.*;
 import com.wanted.ailienlmsprogram.qna.service.QnaService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -84,6 +82,31 @@ public class QnaController {
         model.addAttribute("currentMemberId", userDetails.getMember().getMemberId());
 
         return "qna/detail";
+    }
+
+    // 페이지로 이동
+    @GetMapping("/{qnaId}/modify")
+    public String modifyPage(@PathVariable Long courseId,
+                           @PathVariable Long qnaId,
+                           @AuthenticationPrincipal CustomUserDetails userDetails,
+                           Model model) {
+
+        QnaModifyResponseDTO responseDTO = qnaService.modifyPage(qnaId, userDetails.getMember().getMemberId());
+
+        model.addAttribute("qna", responseDTO);
+        model.addAttribute("courseId", courseId);
+
+        return "qna/modify";
+    }
+
+    @PostMapping("/{qnaId}/modify")
+    public String modifyQna(@PathVariable Long courseId,
+                            @PathVariable Long qnaId,
+                            QnaModifyRequestDTO requsetDTO,
+                            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        qnaService.modifyQna(qnaId, requsetDTO, userDetails.getMember().getMemberId());
+
+        return "redirect:/student/course/" + courseId + "/qna/" + qnaId;
     }
 
 }
