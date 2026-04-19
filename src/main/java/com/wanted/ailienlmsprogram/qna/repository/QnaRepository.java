@@ -10,7 +10,10 @@ import java.util.List;
 
 public interface QnaRepository extends JpaRepository<Qna, Long> {
 
-    List<Qna> findAllByCourse_CourseIdAndQnaIsDeletedFalse(Long courseId);
+    List<Qna> findAllByCourse_CourseIdAndParentIsNullAndQnaIsDeletedFalse(Long courseId);
 
     List<Qna> findAllByParent_QnaIdAndQnaIsDeletedFalse(Long qnaId);
+
+    @Query("SELECT COUNT(q) > 0 FROM Qna q WHERE q.parent.qnaId = :qnaId AND q.qnaIsDeleted = false")
+    boolean existsReplyByParentId(@Param("qnaId") Long qnaId);
 }

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html class="dark" lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module02 LMS - 답변 수정</title>
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#99f7ff",
+                        "secondary": "#c97cff",
+                        "error": "#ff716c",
+                        "on-surface": "#ecedf6",
+                        "surface-container": "#161a21",
+                        "outline-variant": "#45484f",
+                    },
+                    fontFamily: {
+                        "headline": ["Space Grotesk"],
+                        "body": ["Inter"],
+                        "label": ["Space Grotesk"]
+                    }
+                },
+            },
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0b0e14;
+            color: #ecedf6;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen">
+
+<!-- ===== HEADER ===== -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-6 h-16 bg-slate-950/40 backdrop-blur-xl border-b border-cyan-400/10">
+    <span class="text-2xl font-bold tracking-tighter text-cyan-400 font-headline">MODULE02 LMS</span>
+</header>
+
+<!-- ===== MAIN ===== -->
+<main class="pt-24 px-6 md:px-12 pb-12 max-w-4xl mx-auto">
+
+    <!-- 뒤로가기 -->
+    <div class="mb-6">
+        <a th:href="@{/instructor/courses/{courseId}/qna/{qnaId}(courseId=${courseId}, qnaId=${qnaId})}"
+           class="flex items-center gap-1 text-slate-500 hover:text-cyan-400 transition-colors text-xs font-label">
+            <span class="material-symbols-outlined text-sm">arrow_back</span>
+            질문으로 돌아가기
+        </a>
+    </div>
+
+    <!-- 수정 폼 -->
+    <div class="bg-surface-container/60 backdrop-blur-xl rounded-2xl border border-outline-variant/20 p-8">
+
+        <h1 class="text-2xl font-headline font-bold text-on-surface mb-6">답변 수정</h1>
+
+        <form th:action="@{/instructor/courses/{courseId}/qna/{qnaId}/reply/{replyId}/modify(courseId=${courseId}, qnaId=${qnaId}, replyId=${qna.qnaId})}"
+              method="post">
+
+            <div class="mb-8">
+                <label class="block text-xs font-label text-slate-400 mb-2">내용</label>
+                <textarea name="qnaContent"
+                          rows="8"
+                          th:text="${qna.qnaContent}"
+                          class="w-full bg-slate-800/50 border border-outline-variant/30 rounded-xl px-4 py-3 text-sm text-on-surface focus:outline-none focus:border-primary/50 transition-all resize-none"></textarea>
+            </div>
+
+            <div class="flex gap-3 justify-end">
+                <a th:href="@{/instructor/courses/{courseId}/qna/{qnaId}(courseId=${courseId}, qnaId=${qnaId})}"
+                   class="px-5 py-2.5 rounded-xl bg-slate-800/50 border border-slate-700/40 text-slate-400 hover:text-white transition-all text-sm font-label">
+                    취소
+                </a>
+                <button type="submit"
+                        class="px-5 py-2.5 rounded-xl border border-primary/30 bg-primary/10 text-primary hover:bg-primary/20 hover:border-primary/50 transition-all text-sm font-label">
+                    수정 완료
+                </button>
+            </div>
+        </form>
+    </div>
+
+</main>
+
+<!-- 배경 그라디언트 -->
+<div class="fixed inset-0 pointer-events-none -z-10">
+    <div class="absolute top-1/4 left-1/4 w-[400px] h-[400px] bg-primary/5 rounded-full blur-[120px]"></div>
+    <div class="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-secondary/5 rounded-full blur-[150px]"></div>
+</div>
+
+</body>
+</html>

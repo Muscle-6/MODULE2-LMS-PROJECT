@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html class="dark" lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module02 LMS - 질의응답</title>
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#99f7ff",
+                        "secondary": "#c97cff",
+                        "error": "#ff716c",
+                        "on-surface": "#ecedf6",
+                        "surface-container": "#161a21",
+                        "surface-container-highest": "#22262f",
+                        "outline-variant": "#45484f",
+                    },
+                    fontFamily: {
+                        "headline": ["Space Grotesk"],
+                        "body": ["Inter"],
+                        "label": ["Space Grotesk"]
+                    }
+                },
+            },
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0b0e14;
+            color: #ecedf6;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen">
+
+<!-- ===== HEADER ===== -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-6 h-16 bg-slate-950/40 backdrop-blur-xl border-b border-cyan-400/10">
+    <span class="text-2xl font-bold tracking-tighter text-cyan-400 font-headline">MODULE02 LMS</span>
+</header>
+
+<!-- ===== MAIN ===== -->
+<main class="pt-24 px-6 md:px-12 pb-12 max-w-6xl mx-auto">
+
+    <!-- 뒤로가기 + 타이틀 -->
+    <div class="mb-8">
+        <a th:href="@{/instructor/courses/{courseId}/lectures(courseId=${courseId})}"
+           class="flex items-center gap-1 text-slate-500 hover:text-cyan-400 transition-colors text-xs font-label mb-3">
+            <span class="material-symbols-outlined text-sm">arrow_back</span>
+            강의 목록으로
+        </a>
+        <h1 class="text-3xl font-headline font-bold text-on-surface tracking-tight mb-1">Q&A</h1>
+        <p class="text-slate-400 text-sm font-body">질의응답 관리</p>
+    </div>
+
+    <!-- ===== 탭 버튼 ===== -->
+    <div class="flex items-center gap-3 mb-6">
+        <button onclick="switchTab('all')" id="tab-all"
+                class="tab-btn flex items-center gap-2 px-5 py-2.5 rounded-xl border text-sm font-label tracking-wide transition-all border-primary/50 bg-primary/10 text-primary">
+            <span class="material-symbols-outlined text-base">list</span>
+            전체
+            <span class="px-2 py-0.5 rounded-full bg-primary/20 text-primary text-xs font-label"
+                  th:text="${#lists.size(answered) + #lists.size(unanswered)}">0</span>
+        </button>
+        <button onclick="switchTab('unanswered')" id="tab-unanswered"
+                class="tab-btn flex items-center gap-2 px-5 py-2.5 rounded-xl border text-sm font-label tracking-wide transition-all border-outline-variant/30 bg-slate-800/50 text-slate-400">
+            <span class="material-symbols-outlined text-base">pending</span>
+            미답변
+            <span class="px-2 py-0.5 rounded-full bg-error/20 text-error text-xs font-label"
+                  th:text="${#lists.size(unanswered)}">0</span>
+        </button>
+        <button onclick="switchTab('answered')" id="tab-answered"
+                class="tab-btn flex items-center gap-2 px-5 py-2.5 rounded-xl border text-sm font-label tracking-wide transition-all border-outline-variant/30 bg-slate-800/50 text-slate-400">
+            <span class="material-symbols-outlined text-base">check_circle</span>
+            답변완료
+            <span class="px-2 py-0.5 rounded-full bg-primary/20 text-primary text-xs font-label"
+                  th:text="${#lists.size(answered)}">0</span>
+        </button>
+    </div>
+
+    <!-- ===== 전체 탭 ===== -->
+    <div id="section-all" class="flex flex-col gap-3">
+
+        <!-- 미답변 -->
+        <a th:each="qna : ${unanswered}"
+           th:href="@{/instructor/courses/{courseId}/qna/{qnaId}(courseId=${courseId}, qnaId=${qna.qnaId})}"
+           class="bg-surface-container/60 backdrop-blur-xl rounded-2xl border border-error/20 p-5 hover:border-error/40 transition-all shadow-lg flex items-center gap-4">
+            <div class="flex-shrink-0 w-10 h-10 rounded-lg bg-error/10 border border-error/20 flex items-center justify-center">
+                <span class="material-symbols-outlined text-error text-sm">help</span>
+            </div>
+            <div class="flex-1 min-w-0">
+                <h3 class="text-base font-headline font-bold text-on-surface mb-1 truncate"
+                    th:text="${qna.qnaTitle}">질문 제목</h3>
+                <p class="text-xs text-slate-400 font-body"
+                   th:text="|${qna.authorName} · ${qna.createdAt}|">작성자 · 날짜</p>
+            </div>
+            <span class="flex-shrink-0 px-3 py-1 rounded-full bg-error/10 border border-error/20 text-error text-xs font-label">PENDING</span>
+        </a>
+
+        <!-- 답변완료 -->
+        <a th:each="qna : ${answered}"
+           th:href="@{/instructor/courses/{courseId}/qna/{qnaId}(courseId=${courseId}, qnaId=${qna.qnaId})}"
+           class="bg-surface-container/60 backdrop-blur-xl rounded-2xl border border-outline-variant/20 p-5 hover:border-cyan-400/20 transition-all shadow-lg flex items-center gap-4 opacity-70">
+            <div class="flex-shrink-0 w-10 h-10 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center">
+                <span class="material-symbols-outlined text-primary text-sm">check</span>
+            </div>
+            <div class="flex-1 min-w-0">
+                <h3 class="text-base font-headline font-bold text-on-surface mb-1 truncate"
+                    th:text="${qna.qnaTitle}">질문 제목</h3>
+                <p class="text-xs text-slate-400 font-body"
+                   th:text="|${qna.authorName} · ${qna.createdAt}|">작성자 · 날짜</p>
+            </div>
+            <span class="flex-shrink-0 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-label">RESOLVED</span>
+        </a>
+
+        <div th:if="${#lists.isEmpty(unanswered) and #lists.isEmpty(answered)}"
+             class="text-center py-16 text-slate-500 text-sm font-body">
+            등록된 질문이 없습니다.
+        </div>
+    </div>
+
+    <!-- ===== 미답변 탭 ===== -->
+    <div id="section-unanswered" class="hidden flex flex-col gap-3">
+        <a th:each="qna : ${unanswered}"
+           th:href="@{/instructor/courses/{courseId}/qna/{qnaId}(courseId=${courseId}, qnaId=${qna.qnaId})}"
+           class="bg-surface-container/60 backdrop-blur-xl rounded-2xl border border-error/20 p-5 hover:border-error/40 transition-all shadow-lg flex items-center gap-4">
+            <div class="flex-shrink-0 w-10 h-10 rounded-lg bg-error/10 border border-error/20 flex items-center justify-center">
+                <span class="material-symbols-outlined text-error text-sm">help</span>
+            </div>
+            <div class="flex-1 min-w-0">
+                <h3 class="text-base font-headline font-bold text-on-surface mb-1 truncate"
+                    th:text="${qna.qnaTitle}">질문 제목</h3>
+                <p class="text-xs text-slate-400 font-body"
+                   th:text="|${qna.authorName} · ${qna.createdAt}|">작성자 · 날짜</p>
+            </div>
+            <span class="flex-shrink-0 px-3 py-1 rounded-full bg-error/10 border border-error/20 text-error text-xs font-label">PENDING</span>
+        </a>
+        <div th:if="${#lists.isEmpty(unanswered)}"
+             class="text-center py-16 text-slate-500 text-sm font-body">
+            미답변 질문이 없습니다.
+        </div>
+    </div>
+
+    <!-- ===== 답변완료 탭 ===== -->
+    <div id="section-answered" class="hidden flex flex-col gap-3">
+        <a th:each="qna : ${answered}"
+           th:href="@{/instructor/courses/{courseId}/qna/{qnaId}(courseId=${courseId}, qnaId=${qna.qnaId})}"
+           class="bg-surface-container/60 backdrop-blur-xl rounded-2xl border border-outline-variant/20 p-5 hover:border-cyan-400/20 transition-all shadow-lg flex items-center gap-4 opacity-70">
+            <div class="flex-shrink-0 w-10 h-10 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center">
+                <span class="material-symbols-outlined text-primary text-sm">check</span>
+            </div>
+            <div class="flex-1 min-w-0">
+                <h3 class="text-base font-headline font-bold text-on-surface mb-1 truncate"
+                    th:text="${qna.qnaTitle}">질문 제목</h3>
+                <p class="text-xs text-slate-400 font-body"
+                   th:text="|${qna.authorName} · ${qna.createdAt}|">작성자 · 날짜</p>
+            </div>
+            <span class="flex-shrink-0 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-label">RESOLVED</span>
+        </a>
+        <div th:if="${#lists.isEmpty(answered)}"
+             class="text-center py-16 text-slate-500 text-sm font-body">
+            답변완료된 질문이 없습니다.
+        </div>
+    </div>
+
+</main>
+
+<!-- 배경 그라디언트 -->
+<div class="fixed inset-0 pointer-events-none -z-10">
+    <div class="absolute top-1/4 left-1/4 w-[400px] h-[400px] bg-primary/5 rounded-full blur-[120px]"></div>
+    <div class="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-secondary/5 rounded-full blur-[150px]"></div>
+</div>
+
+<script>
+    const sections = ['all', 'unanswered', 'answered'];
+
+    function switchTab(target) {
+        // 모든 섹션 숨기기
+        sections.forEach(s => {
+            document.getElementById('section-' + s).classList.add('hidden');
+        });
+
+        // 모든 탭 버튼 비활성화 스타일
+        sections.forEach(s => {
+            const btn = document.getElementById('tab-' + s);
+            btn.classList.remove('border-primary/50', 'bg-primary/10', 'text-primary');
+            btn.classList.add('border-outline-variant/30', 'bg-slate-800/50', 'text-slate-400');
+        });
+
+        // 선택된 섹션 표시
+        document.getElementById('section-' + target).classList.remove('hidden');
+
+        // 선택된 탭 버튼 활성화 스타일
+        const activeBtn = document.getElementById('tab-' + target);
+        activeBtn.classList.remove('border-outline-variant/30', 'bg-slate-800/50', 'text-slate-400');
+        activeBtn.classList.add('border-primary/50', 'bg-primary/10', 'text-primary');
+    }
+</script>
+
+</body>
+</html>
