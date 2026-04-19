@@ -1,5 +1,6 @@
 package com.wanted.ailienlmsprogram.global.exception;
 
+import com.wanted.ailienlmsprogram.global.filtering.BadWordDetectedException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -7,6 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 /**
  * 프로젝트 전역 예외 처리기.
@@ -16,6 +18,25 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @Slf4j
 @ControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(BadWordDetectedException.class)
+    public String handleBadWordDetectedException(BadWordDetectedException e,
+                                                 HttpServletRequest request,
+                                                 RedirectAttributes redirectAttributes) {
+
+        log.warn("[BadWordDetectedException] path={}, message={}",
+                request.getRequestURI(), e.getMessage());
+
+        redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+
+        String referer = request.getHeader("Referer");
+        if (referer != null && !referer.isBlank()) {
+            return "redirect:" + referer;
+        }
+
+        return "redirect:/";
+    }
+
 
     @ExceptionHandler(BusinessException.class)
     public String handleBusinessException(BusinessException e,

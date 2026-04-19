@@ -6,6 +6,7 @@ import com.wanted.ailienlmsprogram.admin.dto.AdminContinentNoticeFormRequest;
 import com.wanted.ailienlmsprogram.admin.dto.AdminContinentNoticeListResponse;
 import com.wanted.ailienlmsprogram.admin.repository.AdminContinentNoticeQueryRepository;
 import com.wanted.ailienlmsprogram.community.entity.CommunityPost;
+import com.wanted.ailienlmsprogram.global.filtering.BadWordCheck;
 import com.wanted.ailienlmsprogram.member.entity.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -52,6 +53,8 @@ public class AdminContinentNoticeService {
         return detail;
     }
 
+
+    @BadWordCheck
     public void createNotice(AdminContinentNoticeFormRequest request, Long adminMemberId) {
         validateContinent(request.getContinentId());
         Member adminMember = getAdminMember(adminMemberId);
@@ -68,6 +71,7 @@ public class AdminContinentNoticeService {
         adminContinentNoticeQueryRepository.save(post);
     }
 
+    @BadWordCheck
     public void updateNotice(AdminContinentNoticeFormRequest request) {
         CommunityPost post = getTargetNotice(request.getContinentId(), request.getPostId());
 
