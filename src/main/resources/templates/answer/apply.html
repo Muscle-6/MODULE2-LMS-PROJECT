@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html class="dark" lang="ko" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!-- ===== 답변 작성 폼 fragment ===== -->
+<div th:fragment="replyForm">
+
+    <!-- 답변하기 버튼 -->
+    <button type="button" onclick="toggleReplyForm()"
+            class="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-primary/30 bg-primary/10 text-primary text-sm font-label tracking-wide hover:bg-primary/20 hover:border-primary/50 transition-all mb-4">
+        <span class="material-symbols-outlined text-base">rate_review</span>
+        답변하기
+    </button>
+
+    <!-- 답변 작성 폼 (기본 hidden) -->
+    <div id="replyForm"
+         style="display: none;"
+         class="bg-surface-container/60 backdrop-blur-xl rounded-2xl border border-primary/20 p-6">
+
+        <h3 class="text-sm font-headline font-bold text-primary tracking-widest uppercase mb-4">답변 작성</h3>
+
+        <form th:action="@{/instructor/courses/{courseId}/qna/{qnaId}/reply(courseId=${courseId}, qnaId=${qna.qnaId})}"
+              method="post">
+
+            <div class="mb-6">
+                <label class="block text-xs font-label text-slate-400 mb-2">내용</label>
+                <textarea name="qnaContent"
+                          rows="5"
+                          placeholder="답변 내용을 입력하세요"
+                          class="w-full bg-slate-800/50 border border-outline-variant/30 rounded-xl px-4 py-3 text-sm text-on-surface placeholder-slate-500 focus:outline-none focus:border-primary/50 transition-all resize-none"></textarea>
+            </div>
+
+            <div class="flex gap-3 justify-end">
+                <button type="button" onclick="toggleReplyForm()"
+                        class="px-5 py-2.5 rounded-xl bg-slate-800/50 border border-slate-700/40 text-slate-400 hover:text-white transition-all text-sm font-label">
+                    취소
+                </button>
+                <button type="submit"
+                        class="px-5 py-2.5 rounded-xl border border-primary/30 bg-primary/10 text-primary hover:bg-primary/20 hover:border-primary/50 transition-all text-sm font-label">
+                    등록
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        function toggleReplyForm() {
+            const form = document.getElementById('replyForm');
+            form.style.display = form.style.display === 'none' ? 'block' : 'none';
+        }
+    </script>
+</div>
+
+</body>
+</html>

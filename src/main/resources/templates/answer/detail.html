@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html class="dark" lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module02 LMS - 질문 상세</title>
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#99f7ff",
+                        "secondary": "#c97cff",
+                        "error": "#ff716c",
+                        "on-surface": "#ecedf6",
+                        "surface-container": "#161a21",
+                        "surface-container-highest": "#22262f",
+                        "outline-variant": "#45484f",
+                    },
+                    fontFamily: {
+                        "headline": ["Space Grotesk"],
+                        "body": ["Inter"],
+                        "label": ["Space Grotesk"]
+                    }
+                },
+            },
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0b0e14;
+            color: #ecedf6;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen">
+
+<!-- ===== HEADER ===== -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-6 h-16 bg-slate-950/40 backdrop-blur-xl border-b border-cyan-400/10">
+    <span class="text-2xl font-bold tracking-tighter text-cyan-400 font-headline">MODULE02 LMS</span>
+</header>
+
+<!-- ===== MAIN ===== -->
+<main class="pt-24 px-6 md:px-12 pb-12 max-w-4xl mx-auto">
+
+    <!-- 뒤로가기 -->
+    <div class="mb-6">
+        <a th:href="@{/instructor/courses/{courseId}/qna(courseId=${courseId})}"
+           class="flex items-center gap-1 text-slate-500 hover:text-cyan-400 transition-colors text-xs font-label">
+            <span class="material-symbols-outlined text-sm">arrow_back</span>
+            질의응답 목록으로
+        </a>
+    </div>
+
+    <!-- ===== 질문 카드 ===== -->
+    <div class="bg-surface-container/60 backdrop-blur-xl rounded-2xl border border-outline-variant/20 p-6 mb-6">
+
+        <!-- 상태 배지 -->
+        <div class="mb-3">
+            <span th:if="${qna.isAnswered}"
+                  class="px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-label">
+                RESOLVED
+            </span>
+            <span th:unless="${qna.isAnswered}"
+                  class="px-3 py-1 rounded-full bg-error/10 border border-error/20 text-error text-xs font-label">
+                PENDING
+            </span>
+        </div>
+
+        <h1 class="text-2xl font-headline font-bold text-on-surface mb-3"
+            th:text="${qna.qnaTitle}">질문 제목</h1>
+
+        <p class="text-slate-300 font-body leading-relaxed mb-4"
+           th:text="${qna.qnaContent}">질문 내용</p>
+
+        <div class="flex items-center gap-4 text-xs text-slate-500 font-label border-t border-outline-variant/20 pt-4">
+            <span th:text="|작성자: ${qna.authorName}|">작성자</span>
+            <span th:text="${qna.createdAt}">날짜</span>
+        </div>
+    </div>
+
+    <!-- ===== 답변 목록 ===== -->
+    <div class="mb-6" th:if="${!#lists.isEmpty(replies)}">
+        <h2 class="text-sm font-headline font-bold text-slate-400 tracking-widest uppercase mb-3">답변</h2>
+
+        <!-- 답변은 1개만 표시 -->
+        <div th:with="reply=${replies[0]}"
+             class="bg-surface-container/40 rounded-2xl border border-primary/10 p-5 ml-6 relative">
+
+            <div class="absolute left-[-24px] top-1/2 w-5 h-px bg-primary/30"></div>
+
+            <p class="text-slate-300 font-body leading-relaxed mb-4"
+               th:text="${reply.qnaContent}">답변 내용</p>
+
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-4 text-xs text-slate-500 font-label">
+                    <span th:text="|강사: ${reply.authorName}|">강사명</span>
+                    <span th:text="${reply.createdAt}">날짜</span>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <a th:href="@{/instructor/courses/{courseId}/qna/{qnaId}/reply/{replyId}/modify(courseId=${courseId}, qnaId=${qna.qnaId}, replyId=${reply.qnaId})}"
+                       class="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-outline-variant/30 text-slate-400 hover:text-primary hover:border-primary/30 transition-all text-xs font-label">
+                        <span class="material-symbols-outlined text-sm">edit</span>
+                        수정
+                    </a>
+                    <button type="button"
+                            th:onclick="|openDeleteModal([[${reply.qnaId}]])|"
+                            class="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-error/30 text-error/70 hover:text-error hover:border-error/50 transition-all text-xs font-label">
+                        <span class="material-symbols-outlined text-sm">delete</span>
+                        삭제
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== 답변 작성 폼 — 답변이 없을 때만 표시 ===== -->
+    <div th:if="${#lists.isEmpty(replies)}">
+        <div th:replace="~{answer/apply :: replyForm}"></div>
+    </div>
+
+</main>
+
+<!-- ===== 삭제 확인 모달 ===== -->
+<div id="deleteModal"
+     class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+    <div class="bg-surface-container border border-outline-variant/30 rounded-2xl p-8 w-full max-w-sm shadow-2xl">
+
+        <div class="flex justify-center mb-4">
+            <div class="w-14 h-14 rounded-2xl bg-error/10 border border-error/20 flex items-center justify-center">
+                <span class="material-symbols-outlined text-error text-3xl">delete_forever</span>
+            </div>
+        </div>
+
+        <h3 class="text-lg font-headline font-bold text-on-surface text-center mb-2">답변을 삭제하시겠습니까?</h3>
+        <p class="text-sm text-slate-400 font-body text-center mb-6">삭제된 답변은 복구할 수 없습니다.</p>
+
+        <div class="flex gap-3">
+            <button type="button" onclick="closeDeleteModal()"
+                    class="flex-1 py-2.5 rounded-xl bg-slate-800/50 border border-slate-700/40 text-slate-400 hover:text-white transition-all text-sm font-label">
+                취소
+            </button>
+            <form id="deleteConfirmForm" method="post">
+                <button type="submit"
+                        class="flex-1 py-2.5 rounded-xl bg-error/10 border border-error/30 text-error hover:bg-error/20 transition-all text-sm font-label px-6">
+                    삭제
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- 배경 그라디언트 -->
+<div class="fixed inset-0 pointer-events-none -z-10">
+    <div class="absolute top-1/4 left-1/4 w-[400px] h-[400px] bg-primary/5 rounded-full blur-[120px]"></div>
+    <div class="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-secondary/5 rounded-full blur-[150px]"></div>
+</div>
+
+<script th:inline="javascript">
+    const courseId = /*[[${courseId}]]*/ 0;
+    const qnaId = /*[[${qna.qnaId}]]*/ 0;
+
+    function openDeleteModal(replyId) {
+        document.getElementById('deleteConfirmForm').action =
+            `/instructor/courses/${courseId}/qna/${qnaId}/reply/${replyId}/delete`;
+        document.getElementById('deleteModal').classList.remove('hidden');
+    }
+
+    function closeDeleteModal() {
+        document.getElementById('deleteModal').classList.add('hidden');
+    }
+
+    document.getElementById('deleteModal').addEventListener('click', function(e) {
+        if (e.target === this) closeDeleteModal();
+    });
+</script>
+
+</body>
+</html>

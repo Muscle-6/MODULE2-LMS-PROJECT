@@ -28,10 +28,15 @@ public class QnaService {
 
     public List<QnaResponseDTO> questionByCourse(Long courseId) {
 
-        List<Qna> qnaList = qnaRepository.findAllByCourse_CourseIdAndQnaIsDeletedFalse(courseId);
+        List<Qna> qnaList = qnaRepository.findAllByCourse_CourseIdAndParentIsNullAndQnaIsDeletedFalse(courseId);
 
         return qnaList.stream()
-                .map(qna -> modelMapper.map(qna, QnaResponseDTO.class))
+                .map(qna -> {
+                    QnaResponseDTO dto = modelMapper.map(qna, QnaResponseDTO.class);
+                    dto.setAuthorName(qna.getAuthor().getName());
+                    dto.setAnswered(qnaRepository.existsReplyByParentId(qna.getQnaId()));
+                    return dto;
+                })
                 .collect(Collectors.toList());
     }
 
@@ -120,5 +125,35 @@ public class QnaService {
 
         qna.changeTitleAndContent(requsetDTO.getQnaTitle(), requsetDTO.getQnaContent());
 
+    }
+
+    // 강사 답변 작성
+    @Transactional
+    public void replyWrite(Long courseId, Long memberId, Long parentId, QnawriteRequestDTO dto) {
+
+        Course course = courseRepository.findById(courseId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 강좌가 존재하지 않습니다."));
+
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 요원입니다."));
+
+        Qna parent = qnaRepository.findById(parentId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 질문입니다."));
+
+        // 이미 답변이 있으면 중복 등록 방지
+        if (qnaRepository.existsReplyByParentId(parentId)) {
+            throw new IllegalStateException("이미 답변이 등록된 질문입니다.");
+        }
+
+        Qna reply = Qna.builder()
+                .qnaTitle("REPLY")
+                .qnaContent(dto.getQnaContent())
+                .createdAt(LocalDateTime.now())
+                .course(course)
+                .author(member)
+                .parent(parent)
+                .build();
+
+        qnaRepository.save(reply);
     }
 }
