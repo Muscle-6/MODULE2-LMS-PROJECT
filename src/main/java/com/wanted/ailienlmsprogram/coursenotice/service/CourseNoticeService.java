@@ -85,15 +85,8 @@ public class CourseNoticeService {
         Member author = memberRepository.getReferenceById(memberId);
 
         // 3. 엔티티 생성 후 저장
-        CourseNotice notice = new CourseNotice(
-                null,
-                course,
-                author,
-                request.getCourseNoticeTitle(),
-                request.getCourseNoticeContent(),
-                LocalDateTime.now(),    // createdAt
-                LocalDateTime.now()     // updatedAt → 등록 시 초기값
-        );
+        CourseNotice notice = CourseNotice.create(course, author,
+                request.getCourseNoticeTitle(), request.getCourseNoticeContent());
 
         courseNoticeRepository.save(notice);
     }

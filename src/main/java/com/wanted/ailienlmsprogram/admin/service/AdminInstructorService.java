@@ -8,7 +8,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 
 /*관리자 강사 계정 생성 비즈니스 로직을 담당하는 서비스.
 *
@@ -27,20 +26,16 @@ public class AdminInstructorService {
     public void createInstructor(AdminInstructorCreateRequest request) {
         validateDuplicate(request);
 
-        Member member = new Member();
-        member.setLoginId(request.getLoginId());
-        member.setEmail(request.getEmail());
-        member.setPassword(passwordEncoder.encode(request.getPassword()));
-        member.setName(request.getName());
-
-        member.setRole(Member.MemberRole.INSTRUCTOR);
-        member.setAccountStatus(Member.AccountStatus.ACTIVE);
-
-        member.setCreatedAt(LocalDateTime.now());
-        member.setUpdatedAt(LocalDateTime.now());
-
-        // nullable 컬럼은 세팅하지 않음
-        // phone, profileImageUrl, introduction, deletedAt, rank, lastLoginAt
+        Member member = Member.create(
+                request.getLoginId(),
+                request.getEmail(),
+                passwordEncoder.encode(request.getPassword()),
+                request.getName(),
+                null,
+                Member.MemberRole.INSTRUCTOR,
+                Member.AccountStatus.ACTIVE,
+                null
+        );
 
         memberRepository.save(member);
     }

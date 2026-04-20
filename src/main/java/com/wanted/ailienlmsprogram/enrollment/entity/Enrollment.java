@@ -5,7 +5,6 @@ import com.wanted.ailienlmsprogram.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -13,7 +12,6 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "ENROLLMENT")
 @Getter
-@Setter
 @NoArgsConstructor
 public class Enrollment {
 
@@ -46,5 +44,26 @@ public class Enrollment {
 
     public void updateProgressRate(BigDecimal rate) {
         this.enrollmentProgressRate = rate;
+    }
+
+    // 생성 메서드
+    public static Enrollment create(Member member, Course course) {
+        Enrollment enrollment = new Enrollment();
+        enrollment.member = member;
+        enrollment.course = course;
+        enrollment.status = EnrollmentStatus.ACTIVE;
+        enrollment.enrolledAt = LocalDateTime.now();
+        return enrollment;
+    }
+
+    // 재활성화 메서드 (환불 후 재수강)
+    public void reActivate() {
+        this.status = EnrollmentStatus.ACTIVE;
+        this.enrolledAt = LocalDateTime.now();
+    }
+
+    // 환불 메서드
+    public void refund() {
+        this.status = EnrollmentStatus.REFUNDED;
     }
 }

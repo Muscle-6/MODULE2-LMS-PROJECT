@@ -37,15 +37,13 @@ public class PostService {
     @Transactional
     @BadWordCheck
     public void savePost(PostCreateRequestDTO request, Member member) {
-        // 학생용 서비스이므로 postIsNotice는 무조건 false(0)로 고정!
-        CommunityPost post = CommunityPost.builder()
-                .postTitle(request.getPostTitle())
-                .postContent(request.getPostContent())
-                .continentId(request.getContinentId())
-                .member(member)
-                .postIsDeleted(false)
-                .postIsNotice(false)
-                .build();
+        CommunityPost post = CommunityPost.create(
+                request.getContinentId(),
+                request.getPostTitle(),
+                request.getPostContent(),
+                member,
+                false
+        );
 
         postRepository.save(post);
     }

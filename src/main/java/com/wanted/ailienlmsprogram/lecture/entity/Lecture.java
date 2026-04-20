@@ -42,9 +42,21 @@ public class Lecture {
     public void editLectureInfo(String lectureTitle, String lectureDescription, String videoUrl) {
         this.lectureTitle = lectureTitle;
         this.lectureDescription = lectureDescription;
-        if (videoUrl != null) {          // 새 영상 업로드 했을 때만 교체
+        if (videoUrl != null) {
             this.videoUrl = videoUrl;
         }
     }
 
+    // 생성 메서드
+    public static Lecture create(Course course, String lectureTitle, String lectureDescription,
+                                 Integer lectureOrderIndex, String videoUrl) {
+        Lecture lecture = new Lecture();
+        lecture.course = course;
+        lecture.lectureTitle = lectureTitle;
+        lecture.lectureDescription = lectureDescription;
+        lecture.lectureOrderIndex = lectureOrderIndex;
+        lecture.videoUrl = videoUrl;
+        lecture.createdAt = LocalDateTime.now();
+        return lecture;
+    }
 }

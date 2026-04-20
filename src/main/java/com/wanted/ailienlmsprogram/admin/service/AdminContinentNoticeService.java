@@ -59,14 +59,13 @@ public class AdminContinentNoticeService {
         validateContinent(request.getContinentId());
         Member adminMember = getAdminMember(adminMemberId);
 
-        CommunityPost post = CommunityPost.builder()
-                .continentId(request.getContinentId())
-                .postTitle(request.getPostTitle().trim())
-                .postContent(request.getPostContent().trim())
-                .postIsDeleted(false)
-                .postIsNotice(true)
-                .member(adminMember)
-                .build();
+        CommunityPost post = CommunityPost.create(
+                request.getContinentId(),
+                request.getPostTitle().trim(),
+                request.getPostContent().trim(),
+                adminMember,
+                true
+        );
 
         adminContinentNoticeQueryRepository.save(post);
     }

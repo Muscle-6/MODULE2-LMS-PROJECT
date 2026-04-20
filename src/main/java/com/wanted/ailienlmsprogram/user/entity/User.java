@@ -77,10 +77,4 @@ public class User {
         return this;
     }
 
-    public User builder(){
-        return new User(memberId, loginId, email, password,
-                name, phone, profileImageUrl, role, status,
-                introduction, createdAt, updatedAt, deletedAt,
-                rank, lastLoginAt);
-    }
 }

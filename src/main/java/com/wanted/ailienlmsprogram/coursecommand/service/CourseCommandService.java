@@ -9,7 +9,6 @@ import com.wanted.ailienlmsprogram.coursecommand.dto.CourseApplyDTO;
 import com.wanted.ailienlmsprogram.coursecommand.dto.CourseFindDTO;
 import com.wanted.ailienlmsprogram.coursecommand.entity.Course;
 import com.wanted.ailienlmsprogram.coursecommand.entity.CourseStatus;
-import com.wanted.ailienlmsprogram.global.security.CustomUserDetails;
 import com.wanted.ailienlmsprogram.user.entity.User;
 import com.wanted.ailienlmsprogram.user.repository.UserRepository;
 import lombok.AllArgsConstructor;
@@ -22,7 +21,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -50,17 +48,8 @@ public class CourseCommandService {
         }
 
 
-        Course course = new Course(
-                null,
-                continent,
-                instructor,
-                request.getCourseTitle(),
-                request.getCourseDescription(),
-                thumbnailUrl,
-                request.getCoursePrice(),
-                LocalDateTime.now(),
-                CourseStatus.DRAFT
-        );
+        Course course = Course.create(continent, instructor, request.getCourseTitle(),
+                request.getCourseDescription(), thumbnailUrl, request.getCoursePrice());
 
         courseRepository.save(course);
     }
