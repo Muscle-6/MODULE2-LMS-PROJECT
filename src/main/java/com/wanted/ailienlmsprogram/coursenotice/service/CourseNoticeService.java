@@ -54,14 +54,11 @@ public class CourseNoticeService {
                 .findByCourse_CourseIdOrderByCreatedAtDesc(courseId);
 
         return notices.stream()
-                .map(notice -> new CourseNoticeFindDTO(
-                        notice.getNoticeId(),
-                        notice.getNoticeTitle(),
-                        notice.getNoticeContent(),
-                        notice.getAuthor().getName(),   // 작성자 이름
-                        notice.getCreatedAt(),
-                        notice.getUpdatedAt()
-                ))
+                .map(notice -> {
+                    CourseNoticeFindDTO dto = modelMapper.map(notice, CourseNoticeFindDTO.class);
+                    dto.setAuthorName(notice.getAuthor().getName());
+                    return dto;
+                })
                 .collect(Collectors.toList());
     }
 
@@ -71,14 +68,9 @@ public class CourseNoticeService {
         CourseNotice notice = courseNoticeRepository.findById(noticeId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 공지사항입니다."));
 
-        return new CourseNoticeFindDTO(
-                notice.getNoticeId(),
-                notice.getNoticeTitle(),
-                notice.getNoticeContent(),
-                notice.getAuthor().getName(),
-                notice.getCreatedAt(),
-                notice.getUpdatedAt()
-        );
+        CourseNoticeFindDTO dto = modelMapper.map(notice, CourseNoticeFindDTO.class);
+        dto.setAuthorName(notice.getAuthor().getName());
+        return dto;
     }
 
     // ===== 등록 =====

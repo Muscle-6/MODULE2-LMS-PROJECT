@@ -14,7 +14,7 @@ public class CourseFindDTO {
 
     private Long courseId;
     private String courseTitle;
-    private Long continent;
+    private Long continentId;
     private String courseDescription;
     private Integer coursePrice;
     private String courseThumbnailUrl;
