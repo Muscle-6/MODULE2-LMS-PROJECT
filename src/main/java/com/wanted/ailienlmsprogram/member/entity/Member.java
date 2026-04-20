@@ -92,6 +92,18 @@ public class Member {
         this.rank = rank;
     }
 
+    public void ban(LocalDateTime now) {
+        this.accountStatus = AccountStatus.BANNED;
+        this.deletedAt = now;
+        this.updatedAt = now;
+    }
+
+    public void activate() {
+        this.accountStatus = AccountStatus.ACTIVE;
+        this.deletedAt = null;
+        this.updatedAt = LocalDateTime.now();
+    }
+
     // 생성 메서드
     public static Member create(String loginId, String email, String password, String name,
                                 String phone, MemberRole role, AccountStatus status, MemberRank rank) {

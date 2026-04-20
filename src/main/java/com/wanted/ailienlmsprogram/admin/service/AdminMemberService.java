@@ -35,17 +35,13 @@ public class AdminMemberService {
         validateAdminTarget(member);
 
         if (member.getAccountStatus() == Member.AccountStatus.ACTIVE) {
-            member.setAccountStatus(Member.AccountStatus.BANNED);
-            member.setDeletedAt(LocalDateTime.now());
+            member.ban(LocalDateTime.now());
         } else if (member.getAccountStatus() == Member.AccountStatus.BANNED
         || member.getAccountStatus() == Member.AccountStatus.INACTIVE) {
-            member.setAccountStatus(Member.AccountStatus.ACTIVE);
-            member.setDeletedAt(null);
-        }else{
+            member.activate();
+        } else {
             throw new IllegalArgumentException("처리할 수 없는 계정 상태입니다.");
         }
-
-        member.setUpdatedAt(LocalDateTime.now());
     }
 
     //특정 회원을 삭제 처리한다.

@@ -33,7 +33,7 @@ public class CommentService {
             throw new IllegalStateException("공지사항에는 댓글을 달 수 없습니다.");
         }
 
-        CommunityComment comment = CommunityComment.create(content, post, member);
+        CommunityComment comment = CommunityComment.create(request.getContent(), post, member);
         commentRepository.save(comment);
     }
 
