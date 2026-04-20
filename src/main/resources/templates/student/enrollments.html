@@ -85,7 +85,7 @@
 
             <div class="card-footer">
                 <span class="status-badge" th:text="'STATUS: ' + ${item.status}">STATUS: UNKNOWN</span>
-                <a th:href="@{/student/course/{id}(id=${item.enrollmentId})}" class="enter-link">ENTER CLASSROOM →</a>
+                <a th:href="@{/student/course/{id}(id=${item.courseId})}" class="enter-link">ENTER CLASSROOM →</a>
             </div>
         </div>
 

@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 public class EnrollmentResponseDTO {
 
     private Long enrollmentId;
+    private Long courseId;
     private String courseTitle;
     private LocalDateTime enrolledAt;
     private String status;
