@@ -1,6 +1,7 @@
 package com.wanted.ailienlmsprogram.coursenotice.controller;
 
 import com.wanted.ailienlmsprogram.coursenotice.dto.CourseNoticeApplyDTO;
+import com.wanted.ailienlmsprogram.coursenotice.dto.CourseNoticeDetailDTO;
 import com.wanted.ailienlmsprogram.coursenotice.dto.CourseNoticeFindDTO;
 import com.wanted.ailienlmsprogram.coursenotice.service.CourseNoticeService;
 import com.wanted.ailienlmsprogram.global.security.CustomUserDetails;
@@ -8,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -126,6 +128,17 @@ public class CourseNoticeController {
         mv.setViewName("student/notice-list");
 
         return mv;
+    }
+
+    // 공지 상세 조회
+    @GetMapping("/student/notice/{noticeId}")
+    public String findNoticeDetail(@PathVariable("noticeId") Long noticeId, Model model) {
+        CourseNoticeDetailDTO notice = courseNoticeService.detailNotice(noticeId);
+        model.addAttribute("notice", notice);
+
+        model.addAttribute("courseId", notice.getCourseID());
+
+        return "student/notice-detail";
     }
 }
 
