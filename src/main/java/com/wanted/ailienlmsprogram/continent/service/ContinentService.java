@@ -3,6 +3,8 @@ package com.wanted.ailienlmsprogram.continent.service;
 import com.wanted.ailienlmsprogram.continent.dto.ContinentAllResponseDTO;
 import com.wanted.ailienlmsprogram.continent.entity.Continent;
 import com.wanted.ailienlmsprogram.continent.repository.ContinentRepository;
+import com.wanted.ailienlmsprogram.global.exception.BusinessException;
+import com.wanted.ailienlmsprogram.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -40,7 +42,7 @@ public class ContinentService {
     public ContinentAllResponseDTO getContinentDetail(Long continentId) {
 
         Continent continent = continentRepository.findById(continentId)
-                .orElseThrow(IllegalArgumentException::new);
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "존재하지 않는 대륙입니다."));
 
         ContinentAllResponseDTO continentAllResponseDTO = modelMapper.map(continent, ContinentAllResponseDTO.class);
 

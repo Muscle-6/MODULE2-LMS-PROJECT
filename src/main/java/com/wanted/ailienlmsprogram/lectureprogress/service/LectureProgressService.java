@@ -8,6 +8,8 @@ import com.wanted.ailienlmsprogram.lectureprogress.dao.LectureProgressRepository
 import com.wanted.ailienlmsprogram.lectureprogress.entity.LectureProgress;
 import com.wanted.ailienlmsprogram.member.entity.Member;
 import com.wanted.ailienlmsprogram.member.repository.MemberRepository;
+import com.wanted.ailienlmsprogram.global.exception.BusinessException;
+import com.wanted.ailienlmsprogram.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,11 +33,11 @@ public class LectureProgressService {
 
         // 1. 강의 조회
         Lecture lecture = lectureRepository.findById(lectureId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 강의입니다."));
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "존재하지 않는 강의입니다."));
 
         // 2. 회원 조회
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "존재하지 않는 회원입니다."));
 
         // 3. 이미 완료된 강의면 중복 처리 방지
         Optional<LectureProgress> existing = lectureProgressRepository
@@ -63,7 +65,7 @@ public class LectureProgressService {
         // 6. Enrollment 진척률 업데이트
         Enrollment enrollment = enrollmentRepository
                 .findByMemberMemberIdAndCourseCourseId(memberId, courseId)
-                .orElseThrow(() -> new IllegalArgumentException("수강 정보가 없습니다."));
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "수강 정보가 없습니다."));
 
         enrollment.updateProgressRate(progressRate);
 
@@ -84,7 +86,7 @@ public class LectureProgressService {
     // courseId 조회 (컨트롤러에서 redirect용으로 사용)
     public Long findCourseId(Long lectureId) {
         Lecture lecture = lectureRepository.findById(lectureId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 강의입니다."));
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "존재하지 않는 강의입니다."));
         return lecture.getCourse().getCourseId();
     }
 }

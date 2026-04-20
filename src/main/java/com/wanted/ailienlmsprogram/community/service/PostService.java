@@ -6,6 +6,8 @@ import com.wanted.ailienlmsprogram.community.repository.PostRepository;
 import com.wanted.ailienlmsprogram.community.entity.CommunityPost;
 import com.wanted.ailienlmsprogram.global.filtering.BadWordCheck;
 import com.wanted.ailienlmsprogram.member.entity.Member;
+import com.wanted.ailienlmsprogram.global.exception.BusinessException;
+import com.wanted.ailienlmsprogram.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,7 +32,7 @@ public class PostService {
 
     public PostDTO findPostById(Long postId) {
         CommunityPost post = postRepository.findById(postId)
-                .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다. ID: " + postId));
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "게시글을 찾을 수 없습니다. ID: " + postId));
         return new PostDTO(post);
     }
 
@@ -52,7 +54,7 @@ public class PostService {
     @BadWordCheck
     public void updatePost(Long postId, PostCreateRequestDTO request) {
         CommunityPost post = postRepository.findById(postId)
-                .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다. ID: " + postId));
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "게시글을 찾을 수 없습니다. ID: " + postId));
 
         post.setPostTitle(request.getPostTitle());
         post.setPostContent(request.getPostContent());
@@ -61,7 +63,7 @@ public class PostService {
     @Transactional
     public void deletePost(Long postId) {
         CommunityPost post = postRepository.findById(postId)
-                .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다. ID: " + postId));
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "게시글을 찾을 수 없습니다. ID: " + postId));
 
         post.setPostIsDeleted(true);
     }
