@@ -24,9 +24,9 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
 
-    // 댓글 쓰기 (DTO를 사용하도록 수정)
+
     @Transactional
-    @BadWordCheck // ★ AOP가 DTO 내부의 content 필드를 감시합니다.
+    @BadWordCheck
     public void saveComment(Long postId, CommentRequestDTO request, Member member) { // 2. String 대신 DTO로 변경
         CommunityPost post = postRepository.findById(postId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "게시글이 없습니다."));
@@ -39,7 +39,7 @@ public class CommentService {
         commentRepository.save(comment);
     }
 
-    // 댓글 목록 조회 (기존 유지)
+    // 댓글 목록 조회
     public List<CommentResponseDTO> findComments(Long postId) {
         return commentRepository.findByPostPostIdAndIsDeletedFalse(postId).stream()
                 .map(comment -> CommentResponseDTO.builder()
@@ -51,7 +51,7 @@ public class CommentService {
                 .collect(Collectors.toList());
     }
 
-    // 댓글 삭제 (기존 유지)
+    // 댓글 삭제
     @Transactional
     public void deleteComment(Long commentId, Member loginMember) {
         CommunityComment comment = commentRepository.findById(commentId)
