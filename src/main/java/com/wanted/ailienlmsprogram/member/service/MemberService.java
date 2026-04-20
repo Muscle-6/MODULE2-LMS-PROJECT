@@ -35,21 +35,16 @@ public class MemberService {
             throw new IllegalArgumentException("이미 사용 중인 이메일입니다.");
         }
 
-        Member member = new Member();
-        member.setLoginId(request.getLoginId());
-        member.setEmail(request.getEmail());
-        member.setPassword(passwordEncoder.encode(request.getPassword()));
-        member.setName(request.getName());
-        member.setPhone(request.getPhone());
-        member.setRole(Member.MemberRole.STUDENT);
-        member.setAccountStatus(Member.AccountStatus.ACTIVE);
-
-        // 첫 회원가입 등급
-        member.setRank(Member.MemberRank.REPTILIAN);
-
-        LocalDateTime now = LocalDateTime.now();
-        member.setCreatedAt(now);
-        member.setUpdatedAt(now);
+        Member member = Member.create(
+                request.getLoginId(),
+                request.getEmail(),
+                passwordEncoder.encode(request.getPassword()),
+                request.getName(),
+                request.getPhone(),
+                Member.MemberRole.STUDENT,
+                Member.AccountStatus.ACTIVE,
+                Member.MemberRank.REPTILIAN
+        );
 
         memberRepository.save(member);
     }
@@ -71,8 +66,7 @@ public class MemberService {
         applyRankPolicy(member, now);
 
         // 다음 로그인 기준 시점 갱신
-        member.setLastLoginAt(now);
-        member.setUpdatedAt(now);
+        member.updateLastLogin(now);
     }
 
     // 마지막 로그인 시점과 현재 시각 차이를 기준으로 등급 정책을 적용한다.
@@ -86,15 +80,13 @@ public class MemberService {
 
         long inactiveDays = Duration.between(lastLoginAt, now).toDays();
 
-        // 7일 이상 미로그인 -> NOVICE
         if (inactiveDays >= 7) {
-            member.setRank(Member.MemberRank.NOVICE);
+            member.demoteRank(Member.MemberRank.NOVICE);
             return;
         }
 
-        // 3일 이상 7일 미만 미로그인 -> MINERVAL (REPTILIAN 등급에만 적용)
         if (inactiveDays >= 3 && member.getRank() == Member.MemberRank.REPTILIAN) {
-            member.setRank(Member.MemberRank.MINERVAL);
+            member.demoteRank(Member.MemberRank.MINERVAL);
         }
     }
 

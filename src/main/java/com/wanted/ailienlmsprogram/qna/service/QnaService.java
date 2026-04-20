@@ -13,7 +13,6 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -55,13 +54,7 @@ public class QnaService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 요원입니다."));
 
-        Qna qna = Qna.builder()
-                .qnaTitle(dto.getQnaTitle())
-                .qnaContent(dto.getQnaContent())
-                .createdAt(LocalDateTime.now())
-                .course(course)
-                .author(member)
-                .build();
+        Qna qna = Qna.create(dto.getQnaTitle(), dto.getQnaContent(), course, member, null);
         qnaRepository.save(qna);
 
     }
@@ -163,14 +156,7 @@ public class QnaService {
             throw new IllegalStateException("이미 답변이 등록된 질문입니다.");
         }
 
-        Qna reply = Qna.builder()
-                .qnaTitle("REPLY")
-                .qnaContent(dto.getQnaContent())
-                .createdAt(LocalDateTime.now())
-                .course(course)
-                .author(member)
-                .parent(parent)
-                .build();
+        Qna reply = Qna.create("REPLY", dto.getQnaContent(), course, member, parent);
 
         qnaRepository.save(reply);
     }

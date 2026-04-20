@@ -3,14 +3,12 @@ package com.wanted.ailienlmsprogram.member.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "MEMBER")
 @Getter
-@Setter
 @NoArgsConstructor
 public class Member {
 
@@ -78,10 +76,36 @@ public class Member {
     private LocalDateTime lastLoginAt;
 
     public void upgradeRank() {
-        if (this.rank == MemberRank.NOVICE) {  // ← 서비스에 rank 필드 없음
+        if (this.rank == MemberRank.NOVICE) {
             this.rank = MemberRank.MINERVAL;
         } else if (this.rank == MemberRank.MINERVAL) {
             this.rank = MemberRank.REPTILIAN;
         }
+    }
+
+    public void updateLastLogin(LocalDateTime now) {
+        this.lastLoginAt = now;
+        this.updatedAt = now;
+    }
+
+    public void demoteRank(MemberRank rank) {
+        this.rank = rank;
+    }
+
+    // 생성 메서드
+    public static Member create(String loginId, String email, String password, String name,
+                                String phone, MemberRole role, AccountStatus status, MemberRank rank) {
+        Member member = new Member();
+        member.loginId = loginId;
+        member.email = email;
+        member.password = password;
+        member.name = name;
+        member.phone = phone;
+        member.role = role;
+        member.accountStatus = status;
+        member.rank = rank;
+        member.createdAt = LocalDateTime.now();
+        member.updatedAt = LocalDateTime.now();
+        return member;
     }
 }

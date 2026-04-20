@@ -16,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -55,15 +54,8 @@ public class LectureService {
         int orderIndex = lectureRepository.countByCourse_CourseId(courseId) + 1;
 
         // 4. 엔티티 생성 후 저장
-        Lecture lecture = new Lecture(
-                null,
-                course,
-                request.getLectureTitle(),
-                request.getLectureDescription(),
-                orderIndex,
-                videoUrl,
-                LocalDateTime.now()
-        );
+        Lecture lecture = Lecture.create(course, request.getLectureTitle(),
+                request.getLectureDescription(), orderIndex, videoUrl);
 
         lectureRepository.save(lecture);
     }

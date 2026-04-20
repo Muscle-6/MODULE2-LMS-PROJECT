@@ -33,12 +33,7 @@ public class CommentService {
             throw new IllegalStateException("공지사항에는 댓글을 달 수 없습니다.");
         }
 
-        CommunityComment comment = CommunityComment.builder()
-                .content(request.getContent()) // 3. DTO에서 내용을 꺼내서 저장
-                .post(post)
-                .member(member)
-                .isDeleted(false)
-                .build();
+        CommunityComment comment = CommunityComment.create(content, post, member);
         commentRepository.save(comment);
     }
 
