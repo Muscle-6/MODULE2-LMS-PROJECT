@@ -154,12 +154,10 @@
 
             <!-- 환불 영역 -->
             <div style="flex-shrink:0; min-width:80px; text-align:right;">
-                <form th:if="${payment.refundStatus == null}"
-                      th:action="@{/student/payments/{id}/refund(id=${payment.paymentId})}"
-                      method="post" class="refund-form" style="display:inline;">
-                    <input type="hidden" name="refundReason" value=""/>
-                    <button type="submit" class="refund-btn">환불 신청</button>
-                </form>
+                <button th:if="${payment.refundStatus == null}"
+                        type="button" class="refund-btn"
+                        th:attr="data-payment-id=${payment.paymentId},data-action=@{/student/payments/{id}/refund(id=${payment.paymentId})}"
+                        onclick="openRefundModal(this)">환불 신청</button>
                 <div th:if="${payment.refundStatus != null}">
                     <span th:switch="${payment.refundStatus.name()}">
                         <span th:case="'REQUESTED'" class="status-badge badge-requested">검토 중</span>
@@ -172,13 +170,46 @@
     </div>
 </main>
 
+<!-- 환불 사유 입력 모달 -->
+<div id="refundModal" style="display:none; position:fixed; inset:0; z-index:100; background:rgba(0,0,0,.7); backdrop-filter:blur(4px);">
+    <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:90%; max-width:480px;
+                background:#1a1e27; border:1px solid rgba(239,68,68,.3); border-left:3px solid #ef4444; border-radius:4px; padding:28px;">
+        <p style="font-family:'Oswald',sans-serif; font-style:italic; font-size:13px; color:#6b7280; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:16px;">
+            <span class="material-symbols-outlined" style="font-size:16px; color:#ef4444; vertical-align:middle; margin-right:6px;">currency_exchange</span>
+            Refund Request
+        </p>
+        <p style="font-size:13px; color:#9ca3af; margin-bottom:16px;">환불 사유를 입력하십시오. 관리자 검토 후 처리됩니다.</p>
+        <form id="refundForm" method="post">
+            <textarea id="refundReason" name="refundReason" rows="4"
+                      placeholder="환불 사유를 입력하십시오..."
+                      style="width:100%; padding:12px; border-radius:3px; border:1px solid rgba(255,255,255,.1);
+                             background:rgba(0,0,0,.3); color:#d1d5db; font-family:'Noto Sans KR',sans-serif;
+                             font-size:13px; resize:none; outline:none; box-sizing:border-box;"></textarea>
+            <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:14px;">
+                <button type="button" onclick="closeRefundModal()"
+                        style="font-family:'Oswald',sans-serif; font-style:italic; padding:9px 20px; font-size:12px;
+                               font-weight:700; letter-spacing:1px; border:1px solid rgba(255,255,255,.15);
+                               color:#6b7280; background:transparent; cursor:pointer; text-transform:uppercase;">취소</button>
+                <button type="submit"
+                        style="font-family:'Oswald',sans-serif; font-style:italic; padding:9px 24px; font-size:12px;
+                               font-weight:700; letter-spacing:1px; border:1px solid rgba(239,68,68,.5);
+                               color:#f87171; background:rgba(239,68,68,.06); cursor:pointer; text-transform:uppercase;">환불 요청 &gt;</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
-    document.querySelectorAll('.refund-form').forEach(function(form) {
-        form.addEventListener('submit', function(e) {
-            if (!confirm('환불을 신청하시겠습니까? 관리자 검토 후 처리됩니다.')) { e.preventDefault(); return; }
-            var btn = form.querySelector('.refund-btn');
-            btn.textContent = '검토 중'; btn.disabled = true;
-        });
+    function openRefundModal(btn) {
+        document.getElementById('refundForm').action = btn.getAttribute('data-action');
+        document.getElementById('refundReason').value = '';
+        document.getElementById('refundModal').style.display = 'block';
+    }
+    function closeRefundModal() {
+        document.getElementById('refundModal').style.display = 'none';
+    }
+    document.getElementById('refundModal').addEventListener('click', function(e) {
+        if (e.target === this) closeRefundModal();
     });
 </script>
 </body>
