@@ -8,6 +8,8 @@ import com.wanted.ailienlmsprogram.community.repository.CommentRepository;
 import com.wanted.ailienlmsprogram.community.repository.PostRepository;
 import com.wanted.ailienlmsprogram.global.filtering.BadWordCheck;
 import com.wanted.ailienlmsprogram.member.entity.Member;
+import com.wanted.ailienlmsprogram.global.exception.BusinessException;
+import com.wanted.ailienlmsprogram.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,10 +29,10 @@ public class CommentService {
     @BadWordCheck // ★ AOP가 DTO 내부의 content 필드를 감시합니다.
     public void saveComment(Long postId, CommentRequestDTO request, Member member) { // 2. String 대신 DTO로 변경
         CommunityPost post = postRepository.findById(postId)
-                .orElseThrow(() -> new IllegalArgumentException("게시글이 없습니다."));
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "게시글이 없습니다."));
 
         if (post.getPostTitle().startsWith("[공지]")) {
-            throw new IllegalStateException("공지사항에는 댓글을 달 수 없습니다.");
+            throw new BusinessException(ErrorCode.BAD_REQUEST, "공지사항에는 댓글을 달 수 없습니다.");
         }
 
         CommunityComment comment = CommunityComment.create(request.getContent(), post, member);
@@ -53,10 +55,10 @@ public class CommentService {
     @Transactional
     public void deleteComment(Long commentId, Member loginMember) {
         CommunityComment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new IllegalArgumentException("댓글을 찾을 수 없습니다."));
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "댓글을 찾을 수 없습니다."));
 
         if (!comment.getMember().getMemberId().equals(loginMember.getMemberId())) {
-            throw new IllegalStateException("본인이 작성한 댓글만 삭제할 수 있습니다.");
+            throw new BusinessException(ErrorCode.FORBIDDEN, "본인이 작성한 댓글만 삭제할 수 있습니다.");
         }
 
         comment.delete();

@@ -4,6 +4,8 @@ import com.wanted.ailienlmsprogram.community.entity.CommunityComment;
 import com.wanted.ailienlmsprogram.community.entity.CommunityPost;
 import com.wanted.ailienlmsprogram.community.entity.Report;
 import com.wanted.ailienlmsprogram.qna.entity.Qna;
+import com.wanted.ailienlmsprogram.global.exception.BusinessException;
+import com.wanted.ailienlmsprogram.global.exception.ErrorCode;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
@@ -18,7 +20,7 @@ public class AdminReportCommandRepository {
         Report report = em.find(Report.class, reportId);
 
         if (report == null) {
-            throw new IllegalArgumentException("존재하지 않는 신고입니다.");
+            throw new BusinessException(ErrorCode.NOT_FOUND, "존재하지 않는 신고입니다.");
         }
 
         switch (report.getTargetType()) {
@@ -32,7 +34,7 @@ public class AdminReportCommandRepository {
         CommunityPost post = em.find(CommunityPost.class, postId);
 
         if (post == null) {
-            throw new IllegalArgumentException("삭제할 게시글이 존재하지 않습니다.");
+            throw new BusinessException(ErrorCode.NOT_FOUND, "삭제할 게시글이 존재하지 않습니다.");
         }
 
         if (!post.isPostIsDeleted()) {
@@ -44,7 +46,7 @@ public class AdminReportCommandRepository {
         CommunityComment comment = em.find(CommunityComment.class, commentId);
 
         if (comment == null) {
-            throw new IllegalArgumentException("삭제할 댓글이 존재하지 않습니다.");
+            throw new BusinessException(ErrorCode.NOT_FOUND, "삭제할 댓글이 존재하지 않습니다.");
         }
 
         if (!comment.isDeleted()) {
@@ -56,7 +58,7 @@ public class AdminReportCommandRepository {
         Qna qna = em.find(Qna.class, qnaId);
 
         if (qna == null) {
-            throw new IllegalArgumentException("삭제할 Q&A가 존재하지 않습니다.");
+            throw new BusinessException(ErrorCode.NOT_FOUND, "삭제할 Q&A가 존재하지 않습니다.");
         }
 
         if (!qna.isQnaIsDeleted()) {

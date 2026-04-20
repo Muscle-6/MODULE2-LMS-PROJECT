@@ -9,6 +9,8 @@ import com.wanted.ailienlmsprogram.lecture.dto.LectureFindDTO;
 import com.wanted.ailienlmsprogram.lecture.dto.LectureResponseDTO;
 import com.wanted.ailienlmsprogram.lecture.dto.LectureWatchDTO;
 import com.wanted.ailienlmsprogram.lecture.entity.Lecture;
+import com.wanted.ailienlmsprogram.global.exception.BusinessException;
+import com.wanted.ailienlmsprogram.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -85,7 +87,7 @@ public class LectureService {
     public LectureFindDTO findLectureById(Long lectureId) {
 
         Lecture lecture = lectureRepository.findById(lectureId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 강의입니다."));
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "존재하지 않는 강의입니다."));
 
         return  modelMapper.map(lecture, LectureFindDTO.class);
 
@@ -96,7 +98,7 @@ public class LectureService {
 
         // 1. 강의 조회
         Lecture lecture = lectureRepository.findById(lectureId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 강의입니다."));
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "존재하지 않는 강의입니다."));
 
         // 2. 새 영상이 있을 때만 GCS 처리
         String videoUrl = null;
@@ -125,7 +127,7 @@ public class LectureService {
 
         // 1. 강의 조회
         Lecture lecture = lectureRepository.findById(lectureId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 강의입니다."));
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "존재하지 않는 강의입니다."));
 
         // 2. GCS 영상 삭제 (영상이 있을 때만)
         if (lecture.getVideoUrl() != null) {
@@ -138,7 +140,7 @@ public class LectureService {
     public LectureWatchDTO findWatchLecture(Long lectureId) {
 
         Lecture lecture = lectureRepository.findById(lectureId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 강의입니다."));
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "존재하지 않는 강의입니다."));
 
         return modelMapper.map(lecture, LectureWatchDTO.class);
     }

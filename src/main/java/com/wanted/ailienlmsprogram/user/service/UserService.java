@@ -4,6 +4,8 @@ import com.wanted.ailienlmsprogram.user.dto.UserFindDTO;
 import com.wanted.ailienlmsprogram.user.dto.UserEditDTO;
 import com.wanted.ailienlmsprogram.user.entity.User;
 import com.wanted.ailienlmsprogram.user.repository.UserRepository;
+import com.wanted.ailienlmsprogram.global.exception.BusinessException;
+import com.wanted.ailienlmsprogram.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.core.io.Resource;
@@ -26,7 +28,7 @@ public class UserService {
 
     public UserFindDTO findUserById(Long memberId) {
         User user = userRepository.findById(memberId)
-                .orElseThrow(RuntimeException::new);
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "존재하지 않는 회원입니다."));
 
         return modelMapper.map(user, UserFindDTO.class);
     }
@@ -35,7 +37,7 @@ public class UserService {
     public void editUserProfile(Long memberId, UserEditDTO request, MultipartFile profileImageFile) throws IOException {
 
         User user = userRepository.findById(memberId)
-                                  .orElseThrow(RuntimeException::new);
+                                  .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "존재하지 않는 회원입니다."));
 
         // 이미지 처리
         String profileImageUrl;

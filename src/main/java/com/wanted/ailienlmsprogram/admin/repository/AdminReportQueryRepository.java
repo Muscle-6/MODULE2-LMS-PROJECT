@@ -7,8 +7,12 @@ import com.wanted.ailienlmsprogram.community.entity.CommunityPost;
 import com.wanted.ailienlmsprogram.community.entity.Report;
 import com.wanted.ailienlmsprogram.community.entity.TargetType;
 import com.wanted.ailienlmsprogram.continent.entity.Continent;
+import com.wanted.ailienlmsprogram.global.exception.BusinessException;
+import com.wanted.ailienlmsprogram.global.exception.ErrorCode;
 import com.wanted.ailienlmsprogram.member.entity.Member;
 import com.wanted.ailienlmsprogram.qna.entity.Qna;
+import com.wanted.ailienlmsprogram.global.exception.BusinessException;
+import com.wanted.ailienlmsprogram.global.exception.ErrorCode;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
@@ -76,7 +80,7 @@ public class AdminReportQueryRepository {
         Report report = em.find(Report.class, reportId);
 
         if (report == null) {
-            throw new IllegalArgumentException("존재하지 않는 신고입니다.");
+            throw new BusinessException(ErrorCode.NOT_FOUND, "존재하지 않는 신고입니다.");
         }
 
         Member reporter = report.getReporterNo() != null ? em.find(Member.class, report.getReporterNo()) : null;

@@ -4,6 +4,8 @@ import com.wanted.ailienlmsprogram.admin.dto.AdminMemberListResponse;
 import com.wanted.ailienlmsprogram.admin.dto.AdminMemberSearchCondition;
 import com.wanted.ailienlmsprogram.admin.repository.AdminMemberQueryRepository;
 import com.wanted.ailienlmsprogram.member.entity.Member;
+import com.wanted.ailienlmsprogram.global.exception.BusinessException;
+import com.wanted.ailienlmsprogram.global.exception.ErrorCode;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -40,7 +42,7 @@ public class AdminMemberService {
         || member.getAccountStatus() == Member.AccountStatus.INACTIVE) {
             member.activate();
         } else {
-            throw new IllegalArgumentException("처리할 수 없는 계정 상태입니다.");
+            throw new BusinessException(ErrorCode.BAD_REQUEST, "처리할 수 없는 계정 상태입니다.");
         }
     }
 
@@ -56,7 +58,7 @@ public class AdminMemberService {
     private Member getTarget(Long memberId) {
         Member member = adminMemberQueryRepository.findMember(memberId);
         if (member == null) {
-            throw new IllegalArgumentException("회원이 존재하지 않습니다.");
+            throw new BusinessException(ErrorCode.NOT_FOUND, "회원이 존재하지 않습니다.");
         }
         return member;
     }
@@ -64,7 +66,7 @@ public class AdminMemberService {
     //관리자 계정인지 검증한다.
     private void validateAdminTarget(Member member) {
         if (member.getRole() == Member.MemberRole.ADMIN) {
-            throw new IllegalArgumentException("관리자 계정은 처리할 수 없습니다.");
+            throw new BusinessException(ErrorCode.FORBIDDEN, "관리자 계정은 처리할 수 없습니다.");
         }
     }
 }

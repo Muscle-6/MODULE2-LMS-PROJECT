@@ -9,6 +9,8 @@ import com.wanted.ailienlmsprogram.member.entity.Member;
 import com.wanted.ailienlmsprogram.payment.dto.CartItemResponse;
 import com.wanted.ailienlmsprogram.payment.entity.Cart;
 import com.wanted.ailienlmsprogram.payment.repository.CartRepository;
+import com.wanted.ailienlmsprogram.global.exception.BusinessException;
+import com.wanted.ailienlmsprogram.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,18 +39,17 @@ public class CartService {
     public void addToCart(Long courseId, Member member) {
 
         Course course = courseRepository.findById(courseId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 강좌입니다."));
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "존재하지 않는 강좌입니다."));
 
         if (cartRepository.existsByCourseCourseIdAndMemberMemberId(courseId, member.getMemberId())) {
-            throw new IllegalArgumentException("이미 장바구니에 담긴 강좌입니다.");
+            throw new BusinessException(ErrorCode.BAD_REQUEST, "이미 장바구니에 담긴 강좌입니다.");
         }
 
-        // '수강 중(COMPLETED)'인 상태의 데이터가 있을 때만 막아야 합니다 예아~~~
         if (enrollmentRepository.existsByMember_LoginIdAndCourse_CourseIdAndStatus(
                 member.getLoginId(),
                 courseId,
                 Enrollment.EnrollmentStatus.ACTIVE)) {
-            throw new IllegalArgumentException("이미 수강 중인 강좌입니다.");
+            throw new BusinessException(ErrorCode.BAD_REQUEST, "이미 수강 중인 강좌입니다.");
         }
 
         Cart cart = new Cart();
@@ -61,10 +62,10 @@ public class CartService {
     @Transactional
     public void removeFromCart(Long cartId, Member member) {
         Cart cart = cartRepository.findById(cartId)
-                .orElseThrow(() -> new IllegalArgumentException("장바구니 항목이 존재하지 않습니다."));
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "장바구니 항목이 존재하지 않습니다."));
 
         if (!cart.getMember().getMemberId().equals(member.getMemberId())) {
-            throw new IllegalArgumentException("본인의 장바구니 항목만 삭제할 수 있습니다.");
+            throw new BusinessException(ErrorCode.FORBIDDEN, "본인의 장바구니 항목만 삭제할 수 있습니다.");
         }
 
         cartRepository.delete(cart);
@@ -76,19 +77,19 @@ public class CartService {
      */
     public Map<String, Object> prepareTossPayment(List<Long> cartIds, Member member) {
         if (cartIds == null || cartIds.isEmpty()) {
-            throw new IllegalArgumentException("선택된 강좌가 없습니다.");
+            throw new BusinessException(ErrorCode.BAD_REQUEST, "선택된 강좌가 없습니다.");
         }
 
         List<Cart> carts = cartRepository.findAllById(cartIds);
 
         if (carts.size() != cartIds.size()) {
-            throw new IllegalArgumentException("존재하지 않는 장바구니 항목이 포함되어 있습니다.");
+            throw new BusinessException(ErrorCode.NOT_FOUND, "존재하지 않는 장바구니 항목이 포함되어 있습니다.");
         }
 
         boolean allBelongToMember = carts.stream()
                 .allMatch(c -> c.getMember().getMemberId().equals(member.getMemberId()));
         if (!allBelongToMember) {
-            throw new IllegalArgumentException("접근 권한이 없는 항목이 포함되어 있습니다.");
+            throw new BusinessException(ErrorCode.FORBIDDEN, "접근 권한이 없는 항목이 포함되어 있습니다.");
         }
 
         int totalAmount = carts.stream().mapToInt(c -> c.getCourse().getCoursePrice()).sum();
