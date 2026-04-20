@@ -1,6 +1,5 @@
 package com.wanted.ailienlmsprogram.payment.service;
 
-import com.wanted.ailienlmsprogram.coursecommand.entity.Course;
 import com.wanted.ailienlmsprogram.enrollment.service.EnrollmentService;
 import com.wanted.ailienlmsprogram.member.entity.Member;
 import com.wanted.ailienlmsprogram.payment.client.TossPaymentClient;
@@ -181,8 +180,7 @@ public class PaymentService {
 
     /**
      * 환불 요청.
-     * - Toss 결제: cancel API 호출 → APPROVED 저장 + 수강 취소
-     * - 서버사이드 결제: REQUESTED 저장 → 관리자 수동 승인 대기
+     * - 결제 수단에 관계없이 REQUESTED 상태로 저장 → 관리자 승인/거절 대기
      */
     @Transactional
     public void requestRefund(Long paymentId, String refundReason, Member member) {
@@ -199,24 +197,6 @@ public class PaymentService {
         refund.setRefundReason(refundReason);
         refund.setRefundStatus(Refund.RefundStatus.REQUESTED);
         refund.setRefundRequestedAt(LocalDateTime.now());
-
-        String tossPaymentKey = payment.getTossPaymentKey();
-
-        if (tossPaymentKey != null && !tossPaymentKey.isBlank()) {
-            // Toss cancel API 호출 (실패 시 예외 → 트랜잭션 롤백)
-            tossPaymentClient.cancel(tossPaymentKey, refundReason);
-            refund.setRefundStatus(Refund.RefundStatus.APPROVED);
-            refund.setRefundProcessedAt(LocalDateTime.now());
-
-            // 수강 취소
-            List<Course> courses = payment.getItems().stream()
-                    .map(PaymentItem::getCourse)
-                    .toList();
-            enrollmentService.unenroll(member, courses);
-        } else {
-            // 서버사이드 결제 → 관리자 수동 승인 대기
-            refund.setRefundStatus(Refund.RefundStatus.REQUESTED);
-        }
 
         refundRepository.save(refund);
     }

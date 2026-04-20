@@ -3,6 +3,7 @@ package com.wanted.ailienlmsprogram.admin.service;
 import com.wanted.ailienlmsprogram.admin.dto.AdminRefundListResponse;
 import com.wanted.ailienlmsprogram.coursecommand.entity.Course;
 import com.wanted.ailienlmsprogram.enrollment.service.EnrollmentService;
+import com.wanted.ailienlmsprogram.payment.client.TossPaymentClient;
 import com.wanted.ailienlmsprogram.payment.entity.Payment;
 import com.wanted.ailienlmsprogram.payment.entity.PaymentItem;
 import com.wanted.ailienlmsprogram.payment.entity.Refund;
@@ -26,6 +27,7 @@ public class AdminRefundService {
 
     private final RefundRepository refundRepository;
     private final EnrollmentService enrollmentService;
+    private final TossPaymentClient tossPaymentClient;
 
 
     public List<AdminRefundListResponse> getRefunds(Refund.RefundStatus status){
@@ -37,10 +39,10 @@ public class AdminRefundService {
                 .toList();
     }
     /**
-     * 서버사이드 결제의 REQUESTED 환불을 승인 처리한다.
-     * 수강 취소(REFUNDED)까지 한 트랜잭션에서 처리.
+     * REQUESTED 환불을 승인 처리한다.
+     * - Toss 결제: cancel API 호출 후 수강 취소
+     * - 서버사이드 결제: 수강 취소만 처리
      */
-    //환불 요청을 승인 처리한다
     @Transactional
     public void approveRefund(Long refundId) {
         Refund refund = refundRepository.findById(refundId)
@@ -50,11 +52,18 @@ public class AdminRefundService {
             throw new IllegalArgumentException("처리 대기 중(REQUESTED) 상태의 환불만 승인할 수 있습니다.");
         }
 
+        Payment payment = refund.getPayment();
+
+        // Toss 결제인 경우 결제 취소 API 호출 (실패 시 예외 → 트랜잭션 롤백)
+        String tossPaymentKey = payment.getTossPaymentKey();
+        if (tossPaymentKey != null && !tossPaymentKey.isBlank()) {
+            tossPaymentClient.cancel(tossPaymentKey, refund.getRefundReason());
+        }
+
         refund.setRefundStatus(Refund.RefundStatus.APPROVED);
         refund.setRefundProcessedAt(LocalDateTime.now());
 
         // 결제에 포함된 강좌 수강 취소
-        Payment payment = refund.getPayment();
         List<Course> courses = payment.getItems().stream()
                 .map(PaymentItem::getCourse)
                 .toList();
