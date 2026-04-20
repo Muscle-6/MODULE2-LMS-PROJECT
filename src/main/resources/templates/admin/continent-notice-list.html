@@ -2,201 +2,480 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>대륙 공지 목록 | ADMIN</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
+    :root {
+      --primary: #4f46e5;
+      --primary-dark: #4338ca;
+      --secondary: #64748b;
+      --bg-body: #f8fafc;
+      --bg-sidebar: #1e293b;
+      --white: #ffffff;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --success-bg: #ecfdf5;
+      --success-text: #059669;
+      --success-border: #a7f3d0;
+      --error-bg: #fef2f2;
+      --error-text: #dc2626;
+      --error-border: #fecaca;
+    }
+
     body {
-      font-family: Arial, sans-serif;
-      background: #f6f8fb;
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+      background: var(--bg-body);
       margin: 0;
-      color: #222;
+      display: flex;
+      min-height: 100vh;
+      color: var(--text-main);
+    }
+
+    /* --- Sidebar --- */
+    aside {
+      width: 260px;
+      background: var(--bg-sidebar);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      height: 100vh;
+      transition: all 0.3s ease;
+      z-index: 100;
+    }
+
+    .sidebar-header {
+      padding: 30px 24px;
+      font-size: 1.25rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .sidebar-menu {
+      flex: 1;
+      padding: 20px 12px;
+      overflow-y: auto;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      padding: 12px 16px;
+      color: #cbd5e1;
+      text-decoration: none;
+      border-radius: 8px;
+      margin-bottom: 4px;
+      transition: all 0.2s;
+      font-size: 0.95rem;
+    }
+
+    .nav-item i {
+      width: 24px;
+      font-size: 1.1rem;
+    }
+
+    .nav-item:hover, .nav-item.active {
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+    }
+
+    .nav-item.logout {
+      margin-top: 20px;
+      color: #fca5a5;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      padding-top: 20px;
+    }
+
+    /* --- Main Content --- */
+    main {
+      flex: 1;
+      margin-left: 260px;
+      display: flex;
+      flex-direction: column;
     }
 
     header {
-      background: #2f3241;
-      color: white;
-      padding: 20px 32px;
+      background: var(--white);
+      padding: 16px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 50;
     }
 
-    header h1 {
-      margin: 0;
-      font-size: 24px;
-    }
-
-    nav {
-      margin-top: 10px;
-    }
-
-    nav a {
-      color: #ffffff;
-      text-decoration: none;
-      margin-right: 14px;
-      font-size: 14px;
+    .breadcrumb {
+      color: var(--text-muted);
+      font-size: 0.875rem;
     }
 
     .container {
-      width: 1100px;
-      max-width: calc(100% - 40px);
-      margin: 30px auto;
+      padding: 40px;
+      max-width: 1200px;
     }
 
-    .panel {
-      background: white;
-      border-radius: 16px;
-      padding: 24px;
-      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
-      margin-bottom: 20px;
+    /* --- Page Info --- */
+    .page-header {
+      margin-bottom: 24px;
     }
 
-    .panel h2 {
-      margin-top: 0;
-    }
-
-    .notice-actions {
+    .page-header h2 {
+      margin: 0;
+      font-size: 1.75rem;
+      font-weight: 700;
       display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .page-description {
+      background: #eff6ff;
+      border-left: 4px solid var(--primary);
+      padding: 16px 20px;
+      border-radius: 0 8px 8px 0;
       margin-top: 16px;
+      color: #1e40af;
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    /* --- Alerts / Messages --- */
+    .alert {
+      padding: 16px 20px;
+      border-radius: 12px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    .alert-success {
+      background: var(--success-bg);
+      color: var(--success-text);
+      border: 1px solid var(--success-border);
+    }
+
+    .alert-error {
+      background: var(--error-bg);
+      color: var(--error-text);
+      border: 1px solid var(--error-border);
+    }
+
+    /* --- Action Bar --- */
+    .action-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
     }
 
     .btn {
-      display: inline-block;
-      padding: 10px 16px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 20px;
       border: none;
-      border-radius: 10px;
-      background: #3a1f44;
-      color: white;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 600;
       cursor: pointer;
-      font-size: 14px;
+      transition: all 0.2s;
       text-decoration: none;
     }
 
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+      box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2);
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+    }
+
     .btn-secondary {
-      background: #6b7280;
+      background: var(--white);
+      color: var(--text-main);
+      border: 1px solid var(--border);
     }
 
-    .btn-danger {
-      background: #c0392b;
+    .btn-secondary:hover {
+      background: #f1f5f9;
     }
 
-    .message {
-      padding: 12px 16px;
-      border-radius: 10px;
-      margin-bottom: 16px;
-      font-size: 14px;
+    .btn-sm {
+      padding: 8px 14px;
+      font-size: 0.85rem;
+      border-radius: 6px;
     }
 
-    .success {
-      background: #e8f7ec;
-      color: #1e7a34;
+    .btn-outline-danger {
+      background: #fef2f2;
+      color: #dc2626;
+      border: 1px solid #fecaca;
     }
 
-    .error {
-      background: #fdecec;
-      color: #b42318;
+    .btn-outline-danger:hover {
+      background: #dc2626;
+      color: white;
+    }
+
+    /* --- Table Card --- */
+    .table-card {
+      background: var(--white);
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+      overflow: hidden;
+    }
+
+    .table-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--white);
+    }
+
+    .table-header h3 {
+      margin: 0;
+      font-size: 1.1rem;
+      color: var(--text-main);
+    }
+
+    .table-responsive {
+      overflow-x: auto;
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 12px;
-    }
-
-    th, td {
-      padding: 14px 12px;
-      border-bottom: 1px solid #eceff3;
       text-align: left;
-      vertical-align: middle;
     }
 
     th {
-      background: #fafbfd;
+      background: #f8fafc;
+      padding: 16px 24px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-bottom: 1px solid var(--border);
+    }
+
+    td {
+      padding: 16px 24px;
+      font-size: 0.95rem;
+      color: var(--text-main);
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+
+    tbody tr {
+      transition: background 0.2s;
+    }
+
+    tbody tr:hover {
+      background: #f1f5f9;
+    }
+
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .td-actions {
+      display: flex;
+      gap: 8px;
     }
 
     .inline-form {
+      margin: 0;
       display: inline-block;
-      margin-right: 6px;
     }
 
-    .empty {
-      color: #666;
-      padding: 20px 0;
+    /* --- Empty State --- */
+    .empty-state {
+      padding: 60px 20px;
+      text-align: center;
+      color: var(--text-muted);
+    }
+
+    .empty-state i {
+      font-size: 2.5rem;
+      color: #cbd5e1;
+      margin-bottom: 16px;
+    }
+
+    /* 반응형 */
+    @media (max-width: 1024px) {
+      aside { width: 80px; }
+      aside .sidebar-header span, aside .nav-item span { display: none; }
+      main { margin-left: 80px; }
+      .sidebar-header { justify-content: center; padding: 20px 0; }
+      .nav-item { justify-content: center; }
+      .container { padding: 24px; }
+    }
+
+    @media (max-width: 640px) {
+      main { margin-left: 0; }
+      aside { transform: translateX(-100%); }
+      .action-bar { flex-direction: column-reverse; gap: 12px; align-items: stretch; }
+      th, td { padding: 12px 16px; }
     }
   </style>
 </head>
 <body>
-<header>
-  <h1>ADMIN PANEL</h1>
-  <nav>
-    <a th:href="@{/admin}">대시보드 홈</a>
-    <a th:href="@{/admin/members}">회원/계정 관리</a>
-    <a th:href="@{/admin/reports}">게시판/신고 관리</a>
-    <a th:href="@{/admin/refunds}">환불 요청 관리</a>
-    <a th:href="@{/admin/courses}">강좌 신청 관리</a>
-    <a th:href="@{/admin/continent-notices}">대륙 공지 작성</a>
-    <a th:href="@{/logout}">로그아웃</a>
+
+<aside>
+  <div class="sidebar-header">
+    <i class="fa-solid fa-shield-halved"></i>
+    <span>ADMIN PANEL</span>
+  </div>
+  <nav class="sidebar-menu">
+    <a th:href="@{/admin}" class="nav-item">
+      <i class="fa-solid fa-house"></i>
+      <span>대시보드 홈</span>
+    </a>
+    <a th:href="@{/admin/members}" class="nav-item">
+      <i class="fa-solid fa-users"></i>
+      <span>회원/계정 관리</span>
+    </a>
+    <a th:href="@{/admin/instructors/new}" class="nav-item">
+      <i class="fa-solid fa-user-plus"></i>
+      <span>강사 계정 생성</span>
+    </a>
+    <a th:href="@{/admin/reports}" class="nav-item">
+      <i class="fa-solid fa-circle-exclamation"></i>
+      <span>게시판/신고 관리</span>
+    </a>
+    <a th:href="@{/admin/statics}" class="nav-item">
+      <i class="fa-solid fa-chart-line"></i>
+      <span>통계/모니터링</span>
+    </a>
+    <a th:href="@{/admin/refunds}" class="nav-item">
+      <i class="fa-solid fa-receipt"></i>
+      <span>환불 요청 관리</span>
+    </a>
+    <a th:href="@{/admin/courses}" class="nav-item">
+      <i class="fa-solid fa-book-open"></i>
+      <span>강좌 신청 관리</span>
+    </a>
+    <a th:href="@{/admin/continent-notices}" class="nav-item active">
+      <i class="fa-solid fa-bullhorn"></i>
+      <span>대륙 공지 작성</span>
+    </a>
+    <a th:href="@{/logout}" class="nav-item logout">
+      <i class="fa-solid fa-arrow-right-from-bracket"></i>
+      <span>로그아웃</span>
+    </a>
   </nav>
-</header>
+</aside>
 
-<div class="container">
-  <div class="panel">
-    <div th:if="${successMessage}" class="message success" th:text="${successMessage}">성공 메시지</div>
-    <div th:if="${errorMessage}" class="message error" th:text="${errorMessage}">에러 메시지</div>
-
-    <h2>
-      <span th:text="${continent.continentName}">대륙명</span>
-      대륙 공지 관리
-    </h2>
-    <p th:text="${continent.description != null and !#strings.isEmpty(continent.description)} ? ${continent.description} : '대륙 설명이 없습니다.'">
-      대륙 설명
-    </p>
-
-    <div class="notice-actions">
-      <a th:href="@{/admin/continent-notices/new(continentId=${continent.continentId})}" class="btn">
-        공지 추가
+<main>
+  <header>
+    <div class="breadcrumb">Admin &gt; Continent Notices &gt; <span style="color: var(--text-main); font-weight: 600;">List</span></div>
+    <div class="top-links">
+      <a th:href="@{/}" style="text-decoration: none; color: var(--primary); font-weight: 600; font-size: 0.9rem;">
+        <i class="fa-solid fa-globe"></i> 사이트 바로가기
       </a>
-
-      <a th:href="@{/admin/continent-notices}" class="btn btn-secondary">대륙 선택으로 돌아가기</a>
     </div>
-  </div>
+  </header>
 
-  <div class="panel">
-    <h2>기존 공지글</h2>
-
-    <div th:if="${#lists.isEmpty(notices)}" class="empty">
-      아직 등록된 공지글이 없습니다.
+  <div class="container">
+    <div th:if="${successMessage}" class="alert alert-success">
+      <i class="fa-solid fa-circle-check"></i>
+      <span th:text="${successMessage}">성공 메시지</span>
+    </div>
+    <div th:if="${errorMessage}" class="alert alert-error">
+      <i class="fa-solid fa-triangle-exclamation"></i>
+      <span th:text="${errorMessage}">에러 메시지</span>
     </div>
 
-    <table th:if="${!#lists.isEmpty(notices)}">
-      <thead>
-      <tr>
-        <th>제목</th>
-        <th>작성자</th>
-        <th>작성일</th>
-        <th>관리</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr th:each="notice : ${notices}">
-        <td th:text="${notice.postTitle}">공지 제목</td>
-        <td th:text="${notice.authorName}">관리자명</td>
-        <td th:text="${#temporals.format(notice.createdAt, 'yyyy-MM-dd HH:mm')}">날짜</td>
-        <td>
-          <a th:href="@{/admin/continent-notices/{postId}/edit(postId=${notice.postId}, continentId=${continent.continentId})}"
-             class="btn btn-secondary">
-            수정
-          </a>
+    <div class="page-header">
+      <h2>
+        <i class="fa-solid fa-map-location-dot" style="color: var(--primary);"></i>
+        <span th:text="${continent.continentName}">대륙명</span> 통제실
+      </h2>
+      <div class="page-description">
+        <i class="fa-solid fa-circle-info"></i>
+        <span th:text="${continent.description != null and !#strings.isEmpty(continent.description)} ? ${continent.description} : '이 대륙에 등록된 공지사항을 관리하고 새로운 공지를 추가할 수 있습니다.'">
+                    대륙 설명
+                </span>
+      </div>
+    </div>
 
-          <form th:action="@{/admin/continent-notices/{postId}/delete(postId=${notice.postId}, continentId=${continent.continentId})}"
-                method="post"
-                class="inline-form"
-                onsubmit="return confirm('해당 공지글을 삭제하시겠습니까?');">
-            <button type="submit" class="btn btn-danger">삭제</button>
-          </form>
-        </td>
-      </tr>
-      </tbody>
-    </table>
+    <div class="action-bar">
+      <a th:href="@{/admin/continent-notices}" class="btn btn-secondary">
+        <i class="fa-solid fa-arrow-left"></i> 대륙 목록으로 돌아가기
+      </a>
+      <a th:href="@{/admin/continent-notices/new(continentId=${continent.continentId})}" class="btn btn-primary">
+        <i class="fa-solid fa-pen"></i> 새 공지 작성
+      </a>
+    </div>
+
+    <div class="table-card">
+      <div class="table-header">
+        <h3>등록된 공지글 목록</h3>
+      </div>
+
+      <div th:if="${#lists.isEmpty(notices)}" class="empty-state">
+        <i class="fa-regular fa-folder-open"></i>
+        <p>해당 대륙에 아직 등록된 공지글이 없습니다.</p>
+      </div>
+
+      <div class="table-responsive" th:if="${!#lists.isEmpty(notices)}">
+        <table>
+          <thead>
+          <tr>
+            <th>제목</th>
+            <th>작성자</th>
+            <th>작성일</th>
+            <th style="width: 150px; text-align: center;">관리</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr th:each="notice : ${notices}">
+            <td th:text="${notice.postTitle}" style="font-weight: 600;">공지 제목</td>
+            <td>
+                                <span style="background: #f1f5f9; padding: 4px 10px; border-radius: 20px; font-size: 0.85rem; color: var(--text-muted);" th:text="${notice.authorName}">
+                                    관리자명
+                                </span>
+            </td>
+            <td th:text="${#temporals.format(notice.createdAt, 'yyyy-MM-dd HH:mm')}">날짜</td>
+            <td class="td-actions" style="justify-content: center;">
+              <a th:href="@{/admin/continent-notices/{postId}/edit(postId=${notice.postId}, continentId=${continent.continentId})}"
+                 class="btn btn-secondary btn-sm">
+                수정
+              </a>
+
+              <form th:action="@{/admin/continent-notices/{postId}/delete(postId=${notice.postId}, continentId=${continent.continentId})}"
+                    method="post"
+                    class="inline-form"
+                    onsubmit="return confirm('해당 공지글을 정말로 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.');">
+                <button type="submit" class="btn btn-outline-danger btn-sm">삭제</button>
+              </form>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
   </div>
-</div>
+</main>
 </body>
 </html>

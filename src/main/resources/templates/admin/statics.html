@@ -1,295 +1,539 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title><!DOCTYPE html>
-      <html lang="ko" xmlns:th="http://www.thymeleaf.org">
-      <head>
-      <meta charset="UTF-8">
-      <title>대륙별 통계 | ADMIN</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>대륙별 통계 | ADMIN</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
+    :root {
+      --primary: #4f46e5;
+      --primary-dark: #4338ca;
+      --primary-light: #e0e7ff;
+      --secondary: #64748b;
+      --bg-body: #f8fafc;
+      --bg-sidebar: #1e293b;
+      --white: #ffffff;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+    }
+
     body {
-      font-family: Arial, sans-serif;
-      background: #f6f8fb;
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+      background: var(--bg-body);
       margin: 0;
-      color: #222;
+      display: flex;
+      min-height: 100vh;
+      color: var(--text-main);
+    }
+
+    /* --- Sidebar --- */
+    aside {
+      width: 260px;
+      background: var(--bg-sidebar);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      height: 100vh;
+      transition: all 0.3s ease;
+      z-index: 100;
+    }
+
+    .sidebar-header {
+      padding: 30px 24px;
+      font-size: 1.25rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .sidebar-menu {
+      flex: 1;
+      padding: 20px 12px;
+      overflow-y: auto;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      padding: 12px 16px;
+      color: #cbd5e1;
+      text-decoration: none;
+      border-radius: 8px;
+      margin-bottom: 4px;
+      transition: all 0.2s;
+      font-size: 0.95rem;
+    }
+
+    .nav-item i {
+      width: 24px;
+      font-size: 1.1rem;
+    }
+
+    .nav-item:hover, .nav-item.active {
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+    }
+
+    .nav-item.logout {
+      margin-top: 20px;
+      color: #fca5a5;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      padding-top: 20px;
+    }
+
+    /* --- Main Content --- */
+    main {
+      flex: 1;
+      margin-left: 260px;
+      display: flex;
+      flex-direction: column;
     }
 
     header {
-      background: #2f3241;
-      color: white;
-      padding: 20px 32px;
+      background: var(--white);
+      padding: 16px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 50;
     }
 
-    header h1 {
-      margin: 0;
-      font-size: 24px;
-    }
-
-    nav {
-      margin-top: 10px;
-    }
-
-    nav a {
-      color: #ffffff;
-      text-decoration: none;
-      margin-right: 14px;
-      font-size: 14px;
+    .breadcrumb {
+      color: var(--text-muted);
+      font-size: 0.875rem;
     }
 
     .container {
-      width: 1100px;
-      max-width: calc(100% - 40px);
-      margin: 30px auto;
+      padding: 40px;
+      max-width: 1400px;
     }
 
-    .panel {
-      background: white;
-      border-radius: 16px;
-      padding: 24px;
-      box-shadow: 0 6px 18px rgba(0,0,0,0.06);
-      margin-bottom: 24px;
+    /* --- Page Info --- */
+    .page-header {
+      margin-bottom: 32px;
     }
 
-    .panel h2 {
-      margin-top: 0;
-      margin-bottom: 8px;
+    .page-header h2 {
+      margin: 0;
+      font-size: 1.75rem;
+      font-weight: 700;
     }
 
-    .desc {
-      color: #666;
-      font-size: 14px;
-      margin-bottom: 20px;
+    .page-description {
+      background: #eff6ff;
+      border-left: 4px solid var(--primary);
+      padding: 16px 20px;
+      border-radius: 0 8px 8px 0;
+      margin-top: 16px;
+      color: #1e40af;
+      font-size: 0.95rem;
+      line-height: 1.5;
     }
 
-    .filter-form {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      align-items: end;
-      margin-bottom: 20px;
-    }
-
+    /* --- Form & Filters --- */
     .filter-group {
       display: flex;
       flex-direction: column;
       gap: 6px;
+      flex: 1;
+      min-width: 180px;
     }
 
     .filter-group label {
-      font-size: 13px;
-      color: #555;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
     }
 
-    select, button {
+    select {
+      width: 100%;
       height: 40px;
-      padding: 0 12px;
-      border: 1px solid #d5dbe3;
-      border-radius: 10px;
-      background: white;
+      padding: 0 16px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--white);
+      color: var(--text-main);
+      font-size: 0.95rem;
+      font-family: inherit;
+      transition: all 0.2s;
+      cursor: pointer;
     }
 
-    button {
-      background: #2f3241;
+    select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    }
+
+    .btn-submit {
+      height: 40px;
+      padding: 0 20px;
+      background: var(--primary);
       color: white;
       border: none;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 600;
       cursor: pointer;
-      min-width: 100px;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      white-space: nowrap;
     }
 
-    .grid {
+    .btn-submit:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+    }
+
+    /* 섹션별 필터 바 (새로 추가된 UI) */
+    .section-filter-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      align-items: flex-end;
+      background: #f1f5f9;
+      padding: 16px 24px;
+      border-radius: 12px;
+      margin-bottom: 24px;
+      border: 1px solid #e2e8f0;
+    }
+
+    /* --- Statistics Sections --- */
+    .stats-section {
+      background: var(--white);
+      border-radius: 16px;
+      padding: 32px;
+      border: 1px solid var(--border);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+      margin-bottom: 32px;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 20px;
+    }
+
+    .section-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .sub-info {
+      display: inline-block;
+      margin-top: 8px;
+      color: var(--secondary);
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    /* Grid Layout */
+    .stats-grid {
       display: grid;
-      grid-template-columns: 1.1fr 1fr;
-      gap: 20px;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 32px;
+      align-items: start;
     }
 
-    .chart-box, .table-box {
-      background: #fafbfd;
-      border: 1px solid #edf1f5;
-      border-radius: 14px;
-      padding: 18px;
+    /* 차트 박스 (빈 공간 채우기 Flexbox 적용 완료) */
+    .chart-box {
+      background: var(--bg-body);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      min-height: 350px;
+      display: flex;
+      flex-direction: column;
     }
 
+    .table-box {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    /* Tables */
     table {
       width: 100%;
       border-collapse: collapse;
-      background: white;
-    }
-
-    th, td {
-      padding: 12px 10px;
-      border-bottom: 1px solid #eef1f4;
-      text-align: left;
-      font-size: 14px;
     }
 
     th {
       background: #f8fafc;
-    }
-
-    .rank {
-      width: 70px;
+      padding: 14px 20px;
+      font-size: 0.85rem;
       font-weight: 700;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+      text-align: left;
     }
 
-    .empty {
-      padding: 30px 0;
+    td {
+      padding: 14px 20px;
+      font-size: 0.95rem;
+      color: var(--text-main);
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+
+    tbody tr:hover {
+      background: #f1f5f9;
+    }
+
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .rank-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      background: var(--primary-light);
+      color: var(--primary-dark);
+      border-radius: 50%;
+      font-weight: 700;
+      font-size: 0.85rem;
+    }
+
+    .empty-state {
+      padding: 40px 20px;
       text-align: center;
-      color: #888;
-      font-size: 14px;
+      color: var(--text-muted);
+      font-size: 0.95rem;
     }
 
-    .section-title {
-      margin-bottom: 4px;
-      font-size: 18px;
-      font-weight: bold;
+    /* 반응형 */
+    @media (max-width: 1200px) {
+      .stats-grid { grid-template-columns: 1fr; }
+      .chart-box { min-height: 300px; }
     }
 
-    .sub-info {
-      margin-bottom: 16px;
-      color: #666;
-      font-size: 14px;
+    @media (max-width: 1024px) {
+      aside { width: 80px; }
+      aside .sidebar-header span, aside .nav-item span { display: none; }
+      main { margin-left: 80px; }
+      .sidebar-header { justify-content: center; padding: 20px 0; }
+      .nav-item { justify-content: center; }
+      .container { padding: 24px; }
+    }
+
+    @media (max-width: 768px) {
+      .section-header { flex-direction: column; align-items: flex-start; gap: 16px; }
+      .section-filter-bar { flex-direction: column; align-items: stretch; }
+    }
+
+    @media (max-width: 640px) {
+      main { margin-left: 0; }
+      aside { transform: translateX(-100%); }
     }
   </style>
 </head>
 <body>
-<header>
-  <h1>ADMIN PANEL</h1>
-  <nav>
-    <a th:href="@{/admin}">대시보드 홈</a>
-    <a th:href="@{/admin/members}">회원/계정 관리</a>
-    <a th:href="@{/admin/instructors/new}">강사 계정 생성</a>
-    <a th:href="@{/admin/reports}">게시판/신고 관리</a>
-    <a th:href="@{/admin/statics}">통계/모니터링</a>
-    <a th:href="@{/admin/refunds}">환불 요청 관리</a>
-    <a th:href="@{/admin/courses}">강좌 신청 관리</a>
-    <a th:href="@{/admin/continent-notices}">대륙 공지 작성</a>
-    <a th:href="@{/logout}">로그아웃</a>
+
+<aside>
+  <div class="sidebar-header">
+    <i class="fa-solid fa-shield-halved"></i>
+    <span>ADMIN PANEL</span>
+  </div>
+  <nav class="sidebar-menu">
+    <a th:href="@{/admin}" class="nav-item">
+      <i class="fa-solid fa-house"></i>
+      <span>대시보드 홈</span>
+    </a>
+    <a th:href="@{/admin/members}" class="nav-item">
+      <i class="fa-solid fa-users"></i>
+      <span>회원/계정 관리</span>
+    </a>
+    <a th:href="@{/admin/instructors/new}" class="nav-item">
+      <i class="fa-solid fa-user-plus"></i>
+      <span>강사 계정 생성</span>
+    </a>
+    <a th:href="@{/admin/reports}" class="nav-item">
+      <i class="fa-solid fa-circle-exclamation"></i>
+      <span>게시판/신고 관리</span>
+    </a>
+    <a th:href="@{/admin/statics}" class="nav-item active">
+      <i class="fa-solid fa-chart-line"></i>
+      <span>통계/모니터링</span>
+    </a>
+    <a th:href="@{/admin/refunds}" class="nav-item">
+      <i class="fa-solid fa-receipt"></i>
+      <span>환불 요청 관리</span>
+    </a>
+    <a th:href="@{/admin/courses}" class="nav-item">
+      <i class="fa-solid fa-book-open"></i>
+      <span>강좌 신청 관리</span>
+    </a>
+    <a th:href="@{/admin/continent-notices}" class="nav-item">
+      <i class="fa-solid fa-bullhorn"></i>
+      <span>대륙 공지 작성</span>
+    </a>
+    <a th:href="@{/logout}" class="nav-item logout">
+      <i class="fa-solid fa-arrow-right-from-bracket"></i>
+      <span>로그아웃</span>
+    </a>
   </nav>
-</header>
+</aside>
 
-<div class="container">
-  <div class="panel">
-    <h2>대륙별 통계</h2>
-    <p class="desc">
-      관리자는 대륙 활성화 순위와, 선택 대륙 내 강좌 순위를 각각 다른 기준으로 조회할 수 있습니다.
-    </p>
+<main>
+  <header>
+    <div class="breadcrumb">Admin &gt; <span style="color: var(--text-main); font-weight: 600;">Statistics</span></div>
+    <div class="top-links">
+      <a th:href="@{/}" style="text-decoration: none; color: var(--primary); font-weight: 600; font-size: 0.9rem;">
+        <i class="fa-solid fa-globe"></i> 사이트 바로가기
+      </a>
+    </div>
+  </header>
 
-    <form class="filter-form" method="get" th:action="@{/admin/statics}" th:object="${condition}">
-      <div class="filter-group">
-        <label for="continentMetric">대륙 활성화 기준</label>
-        <select id="continentMetric" th:field="*{continentMetric}">
-          <option th:each="metric : ${continentMetricValues}"
-                  th:value="${metric}"
-                  th:text="${metric.label}">
-          </option>
-        </select>
+  <div class="container">
+    <div class="page-header">
+      <h2>대륙 및 강좌 통계</h2>
+      <div class="page-description">
+        <i class="fa-solid fa-chart-pie"></i>
+        관리자는 대륙 활성화 순위와 선택한 대륙 내의 강좌 성과 순위를 다양한 기준으로 필터링하여 조회할 수 있습니다.
+      </div>
+    </div>
+
+    <form method="get" th:action="@{/admin/statics}" th:object="${condition}">
+
+      <div class="stats-section">
+        <div class="section-header">
+          <div>
+            <div class="section-title"><i class="fa-solid fa-earth-americas" style="color: var(--primary);"></i> 전체 대륙 활성화 순위</div>
+            <div class="sub-info">모든 대륙의 실적을 한눈에 비교합니다.</div>
+          </div>
+
+          <div style="display: flex; gap: 8px; align-items: flex-end;">
+            <div class="filter-group" style="min-width: 200px;">
+              <label for="continentMetric">통계 산출 기준</label>
+              <select id="continentMetric" th:field="*{continentMetric}">
+                <option th:each="metric : ${continentMetricValues}" th:value="${metric}" th:text="${metric.label}"></option>
+              </select>
+            </div>
+            <button type="submit" class="btn-submit">
+              <i class="fa-solid fa-rotate-right"></i> 갱신
+            </button>
+          </div>
+        </div>
+
+        <div class="stats-grid">
+          <div class="chart-box">
+            <div style="position: relative; flex: 1; width: 100%;">
+              <canvas id="continentChart"></canvas>
+            </div>
+          </div>
+
+          <div class="table-box">
+            <table id="continentTable">
+              <thead>
+              <tr>
+                <th style="width: 80px; text-align: center;">순위</th>
+                <th>대륙명</th>
+                <th th:text="${condition.continentMetric.label}" style="text-align: right;">지표</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr th:each="row, stat : ${page.continentRankings}" th:attr="data-label=${row.continentName}, data-value=${row.metricValueOrZero}">
+                <td style="text-align: center;"><span class="rank-badge" th:text="${stat.count}">1</span></td>
+                <td th:text="${row.continentName}" style="font-weight: 600;">대륙명</td>
+                <td th:text="${#numbers.formatInteger(row.metricValueOrZero, 1, 'COMMA')}" style="text-align: right; color: var(--primary); font-weight: 700;">0</td>
+              </tr>
+              <tr th:if="${#lists.isEmpty(page.continentRankings)}">
+                <td colspan="3" class="empty-state">조회된 대륙 통계 데이터가 존재하지 않습니다.</td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
 
-      <div class="filter-group">
-        <label for="selectedContinentId">강좌 순위 대륙 선택</label>
-        <select id="selectedContinentId" th:field="*{selectedContinentId}">
-          <option th:each="continent : ${page.continentOptions}"
-                  th:value="${continent.continentId}"
-                  th:text="${continent.continentName}">
-          </option>
-        </select>
+      <div class="stats-section">
+        <div class="section-header" style="margin-bottom: 16px;">
+          <div>
+            <div class="section-title"><i class="fa-solid fa-graduation-cap" style="color: var(--primary);"></i> 선택 대륙 강좌 성과 순위</div>
+            <div class="sub-info">특정 대륙 내에서 개설된 강좌들의 상세 지표를 확인합니다.</div>
+          </div>
+        </div>
+
+        <div class="section-filter-bar">
+          <div class="filter-group">
+            <label for="selectedContinentId"><i class="fa-solid fa-filter"></i> 조회할 대륙 선택</label>
+            <select id="selectedContinentId" th:field="*{selectedContinentId}">
+              <option th:each="continent : ${page.continentOptions}" th:value="${continent.continentId}" th:text="${continent.continentName}"></option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label for="courseMetric"><i class="fa-solid fa-filter"></i> 강좌 순위 기준</label>
+            <select id="courseMetric" th:field="*{courseMetric}">
+              <option th:each="metric : ${courseMetricValues}" th:value="${metric}" th:text="${metric.label}"></option>
+            </select>
+          </div>
+
+          <div style="flex: 0 0 auto;">
+            <button type="submit" class="btn-submit">
+              <i class="fa-solid fa-magnifying-glass"></i> 데이터 조회
+            </button>
+          </div>
+        </div>
+
+        <div class="stats-grid">
+          <div class="chart-box">
+            <div style="position: relative; flex: 1; width: 100%;">
+              <canvas id="courseChart"></canvas>
+            </div>
+          </div>
+
+          <div class="table-box">
+            <table id="courseTable">
+              <thead>
+              <tr>
+                <th style="width: 80px; text-align: center;">순위</th>
+                <th>강좌명</th>
+                <th>강사명</th>
+                <th th:text="${condition.courseMetric.label}" style="text-align: right;">지표</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr th:each="row, stat : ${page.courseRankings}" th:attr="data-label=${row.courseTitle}, data-value=${row.metricValueOrZero}">
+                <td style="text-align: center;"><span class="rank-badge" th:text="${stat.count}">1</span></td>
+                <td th:text="${row.courseTitle}" style="font-weight: 600;">강좌명</td>
+                <td th:text="${row.instructorName}" style="font-size: 0.9rem; color: var(--text-muted);">강사명</td>
+                <td th:text="${#numbers.formatInteger(row.metricValueOrZero, 1, 'COMMA')}" style="text-align: right; color: var(--primary); font-weight: 700;">0</td>
+              </tr>
+              <tr th:if="${#lists.isEmpty(page.courseRankings)}">
+                <td colspan="4" class="empty-state">선택한 대륙 내에 통계로 잡힌 강좌가 없습니다.</td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
 
-      <div class="filter-group">
-        <label for="courseMetric">강좌 순위 기준</label>
-        <select id="courseMetric" th:field="*{courseMetric}">
-          <option th:each="metric : ${courseMetricValues}"
-                  th:value="${metric}"
-                  th:text="${metric.label}">
-          </option>
-        </select>
-      </div>
-
-      <div class="filter-group">
-        <label>&nbsp;</label>
-        <button type="submit">조회하기</button>
-      </div>
     </form>
   </div>
-
-  <div class="panel">
-    <div class="section-title">전체 대륙 활성화 순위</div>
-    <div class="sub-info"
-         th:text="'현재 기준: ' + ${condition.continentMetric.label}">
-      현재 기준
-    </div>
-
-    <div class="grid">
-      <div class="chart-box">
-        <canvas id="continentChart"></canvas>
-      </div>
-
-      <div class="table-box">
-        <table id="continentTable">
-          <thead>
-          <tr>
-            <th class="rank">순위</th>
-            <th>대륙명</th>
-            <th th:text="${condition.continentMetric.label}">지표</th>
-          </tr>
-          </thead>
-          <tbody>
-          <tr th:each="row, stat : ${page.continentRankings}"
-              th:attr="data-label=${row.continentName}, data-value=${row.metricValueOrZero}">
-            <td class="rank" th:text="${stat.count}">1</td>
-            <td th:text="${row.continentName}">대륙명</td>
-            <td th:text="${#numbers.formatInteger(row.metricValueOrZero, 1, 'COMMA')}">0</td>
-          </tr>
-          <tr th:if="${#lists.isEmpty(page.continentRankings)}">
-            <td colspan="3" class="empty">조회된 대륙 통계가 없습니다.</td>
-          </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
-  <div class="panel">
-    <div class="section-title">선택 대륙 강좌 순위</div>
-    <div class="sub-info"
-         th:text="'선택 대륙: ' + (${page.selectedContinentName != null} ? ${page.selectedContinentName} : '-') + ' / 기준: ' + ${condition.courseMetric.label}">
-      선택 대륙 정보
-    </div>
-
-    <div class="grid">
-      <div class="chart-box">
-        <canvas id="courseChart"></canvas>
-      </div>
-
-      <div class="table-box">
-        <table id="courseTable">
-          <thead>
-          <tr>
-            <th class="rank">순위</th>
-            <th>강좌명</th>
-            <th>강사명</th>
-            <th th:text="${condition.courseMetric.label}">지표</th>
-          </tr>
-          </thead>
-          <tbody>
-          <tr th:each="row, stat : ${page.courseRankings}"
-              th:attr="data-label=${row.courseTitle}, data-value=${row.metricValueOrZero}">
-            <td class="rank" th:text="${stat.count}">1</td>
-            <td th:text="${row.courseTitle}">강좌명</td>
-            <td th:text="${row.instructorName}">강사명</td>
-            <td th:text="${#numbers.formatInteger(row.metricValueOrZero, 1, 'COMMA')}">0</td>
-          </tr>
-          <tr th:if="${#lists.isEmpty(page.courseRankings)}">
-            <td colspan="4" class="empty">선택한 대륙의 강좌 통계가 없습니다.</td>
-          </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-</div>
+</main>
 
 <script>
   function extractChartData(tableId) {
@@ -306,32 +550,52 @@
   }
 
   function renderBarChart(canvasId, labels, values, labelText) {
-    if (!labels.length) {
-      return;
-    }
+    if (!labels.length) return;
 
-    new Chart(document.getElementById(canvasId), {
+    const ctx = document.getElementById(canvasId).getContext('2d');
+
+    let gradient = ctx.createLinearGradient(0, 0, 0, 400);
+    gradient.addColorStop(0, 'rgba(79, 70, 229, 0.8)');
+    gradient.addColorStop(1, 'rgba(67, 56, 202, 0.4)');
+
+    new Chart(ctx, {
       type: 'bar',
       data: {
         labels: labels,
         datasets: [{
           label: labelText,
           data: values,
-          borderWidth: 1
+          backgroundColor: gradient,
+          borderColor: '#4f46e5',
+          borderWidth: 1,
+          borderRadius: 6,
+          barPercentage: 0.6
         }]
       },
       options: {
         responsive: true,
+        maintainAspectRatio: false,
         plugins: {
-          legend: {
-            display: true
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: 'rgba(30, 41, 59, 0.9)',
+            padding: 12,
+            titleFont: { size: 14, family: 'Pretendard' },
+            bodyFont: { size: 13, family: 'Pretendard' },
+            cornerRadius: 8
           }
         },
         scales: {
+          x: {
+            grid: { display: false },
+            ticks: { font: { family: 'Pretendard' } }
+          },
           y: {
             beginAtZero: true,
+            grid: { borderDash: [4, 4], color: '#e2e8f0' },
             ticks: {
-              precision: 0
+              precision: 0,
+              font: { family: 'Pretendard' }
             }
           }
         }
@@ -339,16 +603,13 @@
     });
   }
 
-  const continentData = extractChartData('continentTable');
-  renderBarChart('continentChart', continentData.labels, continentData.values, '대륙 활성화 지표');
+  document.addEventListener("DOMContentLoaded", function() {
+    const continentData = extractChartData('continentTable');
+    renderBarChart('continentChart', continentData.labels, continentData.values, '대륙별 지표');
 
-  const courseData = extractChartData('courseTable');
-  renderBarChart('courseChart', courseData.labels, courseData.values, '강좌 순위 지표');
+    const courseData = extractChartData('courseTable');
+    renderBarChart('courseChart', courseData.labels, courseData.values, '강좌별 지표');
+  });
 </script>
-</body>
-</html></title>
-</head>
-<body>
-
 </body>
 </html>
