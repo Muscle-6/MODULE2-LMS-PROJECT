@@ -4,6 +4,7 @@ import com.wanted.ailienlmsprogram.coursecommand.dao.CourseRepository;
 import com.wanted.ailienlmsprogram.coursecommand.entity.Course;
 import com.wanted.ailienlmsprogram.coursenotice.dao.CourseNoticeRepository;
 import com.wanted.ailienlmsprogram.coursenotice.dto.CourseNoticeApplyDTO;
+import com.wanted.ailienlmsprogram.coursenotice.dto.CourseNoticeDetailDTO;
 import com.wanted.ailienlmsprogram.coursenotice.dto.CourseNoticeFindDTO;
 import com.wanted.ailienlmsprogram.coursenotice.entity.CourseNotice;
 import com.wanted.ailienlmsprogram.enrollment.entity.Enrollment;
@@ -11,6 +12,7 @@ import com.wanted.ailienlmsprogram.enrollment.repository.EnrollmentRepository;
 import com.wanted.ailienlmsprogram.member.entity.Member;
 import com.wanted.ailienlmsprogram.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +29,7 @@ public class CourseNoticeService {
     private final CourseRepository courseRepository;
     private final MemberRepository memberRepository;
     private final EnrollmentRepository enrollmentRepository;
+    private final ModelMapper modelMapper;
 
     // ===== 조회 =====
 
@@ -132,6 +135,25 @@ public class CourseNoticeService {
 
         // 2. DB에서 삭제
         courseNoticeRepository.delete(notice);
+    }
+
+
+    public CourseNoticeDetailDTO detailNotice(Long noticeId) {
+
+        CourseNotice notice = courseNoticeRepository.findById(noticeId)
+                .orElseThrow(()-> new IllegalArgumentException("존재하지 않는 공지사항입니다."));
+
+        CourseNoticeDetailDTO detail = modelMapper.map(notice, CourseNoticeDetailDTO.class);
+
+        if (notice.getCourse() != null) {
+            detail.setCourseID(notice.getCourse().getCourseId());
+        }
+
+        if (notice.getAuthor() != null) {
+            detail.setAuthorName(notice.getAuthor().getName());
+        }
+
+        return detail;
     }
 }
 
