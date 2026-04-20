@@ -20,4 +20,11 @@ public interface CourseRepository extends JpaRepository<Course,Long> {
     List<Course> findByInstructor_MemberIdAndCourseStatus(Long memberId, CourseStatus courseStatus);
 
     boolean existsByCourseIdAndInstructor_MemberId(Long courseId, Long instructorMemberId);
+
+    @Query("select c from Course c " +
+            "join fetch c.instructor " +
+            "where c.instructor.memberId = :memberId " +
+            "and c.courseStatus = :courseStatus")
+    List<Course> findMyCoursesWithInstructor(@Param("memberId") Long memberId,
+                                             @Param("courseStatus") CourseStatus courseStatus);
 }

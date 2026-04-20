@@ -57,7 +57,7 @@ public class EnrollmentService {
 
     // 내가 수강 중인 강좌 조회
     public List<EnrollmentResponseDTO> enrollmentsByMemberId(Long studentId) {
-        List<Enrollment> enrollmentList = enrollmentRepository.findAllByMember_MemberId(studentId);
+        List<Enrollment> enrollmentList = enrollmentRepository.findAllByMemberWithCourseAndInstructor(studentId);
 
         return enrollmentList.stream()
                 .map(enrollment -> {

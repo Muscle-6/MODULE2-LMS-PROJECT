@@ -14,9 +14,12 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
 
     Optional<Enrollment> findByMemberMemberIdAndCourseCourseId(Long memberId, Long courseId);
 
-    @Query(value = "SELECT e FROM Enrollment e WHERE e.member.memberId = :memberId AND e.status = 'ACTIVE'")
-    List<Enrollment> findAllByMember_MemberId(@Param("memberId") Long studentId);
-
+    @Query("SELECT e FROM Enrollment e " +
+            "JOIN FETCH e.course c " +          // 강좌 정보를 조인해서 가져오고
+            "LEFT JOIN FETCH c.instructor i " + // 강좌의 강사 정보까지 조인해서 가져옴
+            "WHERE e.member.memberId = :memberId " +
+            "AND e.status = 'ACTIVE'")
+    List<Enrollment> findAllByMemberWithCourseAndInstructor(@Param("memberId") Long studentId);
 
     boolean existsByMember_LoginIdAndCourse_CourseIdAndStatus(String memberLoginId, Long courseCourseId, Enrollment.EnrollmentStatus status);
 

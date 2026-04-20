@@ -19,7 +19,7 @@ public class Lecture {
     @Column(name = "lecture_id")
     private Long lectureId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "course_id", nullable = false)
     private Course course;
 

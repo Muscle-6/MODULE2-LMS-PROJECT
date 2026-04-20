@@ -51,7 +51,7 @@ public class CourseNoticeService {
         }
 
         List<CourseNotice> notices = courseNoticeRepository
-                .findByCourse_CourseIdOrderByCreatedAtDesc(courseId);
+                .findByCourseIdWithFetchJoin(courseId);
 
         return notices.stream()
                 .map(notice -> {
