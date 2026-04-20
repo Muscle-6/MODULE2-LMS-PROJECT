@@ -1,10 +1,12 @@
 package com.wanted.ailienlmsprogram.community.controller;
 
-import com.wanted.ailienlmsprogram.community.dto.PostCreateRequest;
+import com.wanted.ailienlmsprogram.community.dto.CommentRequestDTO; // 1. 댓글 요청 DTO 임포트 추가
+import com.wanted.ailienlmsprogram.community.dto.PostCreateRequestDTO;
 import com.wanted.ailienlmsprogram.community.dto.PostDTO;
-import com.wanted.ailienlmsprogram.community.dto.CommentResponse;
+import com.wanted.ailienlmsprogram.community.dto.CommentResponseDTO;
 import com.wanted.ailienlmsprogram.community.service.PostService;
 import com.wanted.ailienlmsprogram.community.service.CommentService;
+import com.wanted.ailienlmsprogram.global.filtering.BadWordDetectedException;
 import com.wanted.ailienlmsprogram.global.security.CustomUserDetails;
 import com.wanted.ailienlmsprogram.member.entity.Member;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +25,7 @@ import java.util.List;
 public class PostController {
 
     private final PostService postService;
-    private final CommentService commentService; // 댓글 서비스 주입 추가
+    private final CommentService commentService;
 
     // 목록 페이지 이동
     @GetMapping("/continents/{continentId}/posts")
@@ -34,22 +36,22 @@ public class PostController {
         return "community/posts";
     }
 
-    // 상세 페이지 이동
+    // 상세 페이지 이동 (수정됨)
     @GetMapping("/posts/{postId}")
     public String findPostDetail(@PathVariable Long postId,
                                  Model model,
                                  @AuthenticationPrincipal CustomUserDetails userDetails) {
 
-        // 1. 게시글 정보 가져오기
         PostDTO post = postService.findPostById(postId);
         model.addAttribute("post", post);
 
-        // 2. 댓글 목록 가져와서 모델에 담기★
-        // 서비스의 findComments 메서드를 호출해서 'comments'라는 이름으로 넘김
-        List<CommentResponse> comments = commentService.findComments(postId);
+        List<CommentResponseDTO> comments = commentService.findComments(postId);
         model.addAttribute("comments", comments);
 
-        // 현재 로그인 유저 정보 처리
+        // ★ 핵심: 상세 페이지를 처음 열 때 빈 댓글 DTO를 모델에 담아줍니다.
+        // 이래야 html의 th:object="${commentRequestDTO}" 가 에러 없이 작동합니다.
+        model.addAttribute("commentRequestDTO", new CommentRequestDTO());
+
         if (userDetails != null) {
             String currentUserId = String.valueOf(userDetails.getMember().getMemberId());
             model.addAttribute("currentUserId", currentUserId);
@@ -62,21 +64,30 @@ public class PostController {
     @GetMapping("/continents/{continentId}/posts/new")
     public String createPostForm(@PathVariable Long continentId, Model model) {
         model.addAttribute("continentId", continentId);
-        model.addAttribute("postCreateRequest", new PostCreateRequest());
+        model.addAttribute("postCreateRequest", new PostCreateRequestDTO());
         return "community/post_create";
     }
 
     // 새 글 저장 처리
     @PostMapping("/continents/{continentId}/posts/new")
     public String createPost(@PathVariable Long continentId,
-                             @ModelAttribute PostCreateRequest request,
-                             @AuthenticationPrincipal CustomUserDetails userDetails) {
+                             @ModelAttribute PostCreateRequestDTO request,
+                             @AuthenticationPrincipal CustomUserDetails userDetails,
+                             Model model) {
 
-        Member loginMember = userDetails.getMember();
-        request.setContinentId(continentId);
-        postService.savePost(request, loginMember);
+        try {
+            Member loginMember = userDetails.getMember();
+            request.setContinentId(continentId);
+            postService.savePost(request, loginMember);
 
-        return "redirect:/continents/" + continentId + "/posts";
+            return "redirect:/continents/" + continentId + "/posts";
+
+        } catch (BadWordDetectedException e) {
+            model.addAttribute("continentId", continentId);
+            model.addAttribute("postCreateRequest", request);
+            model.addAttribute("errorMessage", e.getMessage());
+            return "community/post_create";
+        }
     }
 
     // 수정 화면 이동
@@ -90,9 +101,18 @@ public class PostController {
     // 수정 처리
     @PostMapping("/continents/posts/edit/{postId}")
     public String updatePost(@PathVariable Long postId,
-                             @ModelAttribute PostCreateRequest request) {
-        postService.updatePost(postId, request);
-        return "redirect:/posts/" + postId;
+                             @ModelAttribute PostCreateRequestDTO request,
+                             Model model) {
+        try {
+            postService.updatePost(postId, request);
+            return "redirect:/posts/" + postId;
+
+        } catch (BadWordDetectedException e) {
+            model.addAttribute("postId", postId);
+            model.addAttribute("post", request);
+            model.addAttribute("errorMessage", e.getMessage());
+            return "community/post_update";
+        }
     }
 
     // 삭제 처리
@@ -104,8 +124,4 @@ public class PostController {
         postService.deletePost(postId);
         return "redirect:/continents/" + continentId + "/posts";
     }
-
-
-
-
 }

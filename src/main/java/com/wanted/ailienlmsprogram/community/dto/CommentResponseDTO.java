@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CommentResponse {
+public class CommentResponseDTO {
     private Long commentId;
     private String content;
     private String memberName; // 작성자 이름
