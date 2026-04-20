@@ -9,9 +9,10 @@ import com.wanted.ailienlmsprogram.coursecommand.dto.CourseApplyDTO;
 import com.wanted.ailienlmsprogram.coursecommand.dto.CourseFindDTO;
 import com.wanted.ailienlmsprogram.coursecommand.entity.Course;
 import com.wanted.ailienlmsprogram.coursecommand.entity.CourseStatus;
-import com.wanted.ailienlmsprogram.global.security.CustomUserDetails;
 import com.wanted.ailienlmsprogram.user.entity.User;
 import com.wanted.ailienlmsprogram.user.repository.UserRepository;
+import com.wanted.ailienlmsprogram.global.exception.BusinessException;
+import com.wanted.ailienlmsprogram.global.exception.ErrorCode;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.core.io.Resource;
@@ -22,7 +23,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -50,17 +50,8 @@ public class CourseCommandService {
         }
 
 
-        Course course = new Course(
-                null,
-                continent,
-                instructor,
-                request.getCourseTitle(),
-                request.getCourseDescription(),
-                thumbnailUrl,
-                request.getCoursePrice(),
-                LocalDateTime.now(),
-                CourseStatus.DRAFT
-        );
+        Course course = Course.create(continent, instructor, request.getCourseTitle(),
+                request.getCourseDescription(), thumbnailUrl, request.getCoursePrice());
 
         courseRepository.save(course);
     }
@@ -94,14 +85,13 @@ public class CourseCommandService {
     public CourseDetailResponseDTO courseDetail(Long courseId) {
 
         Course foundCourse = courseRepository.findById(courseId)
-                .orElseThrow(IllegalArgumentException::new);
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "존재하지 않는 강좌입니다."));
 
         CourseDetailResponseDTO course = modelMapper.map(foundCourse, CourseDetailResponseDTO.class);
 
         if (foundCourse.getInstructor() != null) {
             course.setInstructorName(foundCourse.getInstructor().getName());
         }
-
 
         // 테스트 로직입니다
         course.setCourseDescription("지구를 정복하기 위한 최고의 자바 강의! 일루미나티도 수강 중입니다.");
@@ -139,7 +129,7 @@ public class CourseCommandService {
     public void editMyCourse(MultipartFile thumbnailFile, Long courseId, CourseApplyDTO request) throws IOException {
 
         Course course = courseRepository.findById(courseId)
-                                        .orElseThrow(RuntimeException::new);
+                                        .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "존재하지 않는 강좌입니다."));
 
         Continent continent = continentRepository.getReferenceById(request.getContinentId());
 
@@ -163,7 +153,7 @@ public class CourseCommandService {
     public CourseFindDTO findCourseById(Long courseId) {
 
         Course course = courseRepository.findById(courseId)
-                .orElseThrow(RuntimeException::new);
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "존재하지 않는 강좌입니다."));
 
         CourseFindDTO dto = modelMapper.map(course, CourseFindDTO.class);
         dto.setContinentId(course.getContinent().getContinentId());

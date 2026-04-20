@@ -6,6 +6,8 @@ import com.wanted.ailienlmsprogram.community.repository.PostRepository;
 import com.wanted.ailienlmsprogram.community.entity.CommunityPost;
 import com.wanted.ailienlmsprogram.global.filtering.BadWordCheck;
 import com.wanted.ailienlmsprogram.member.entity.Member;
+import com.wanted.ailienlmsprogram.global.exception.BusinessException;
+import com.wanted.ailienlmsprogram.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,22 +32,20 @@ public class PostService {
 
     public PostDTO findPostById(Long postId) {
         CommunityPost post = postRepository.findById(postId)
-                .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다. ID: " + postId));
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "게시글을 찾을 수 없습니다. ID: " + postId));
         return new PostDTO(post);
     }
 
     @Transactional
     @BadWordCheck
     public void savePost(PostCreateRequestDTO request, Member member) {
-        // 학생용 서비스이므로 postIsNotice는 무조건 false(0)로 고정!
-        CommunityPost post = CommunityPost.builder()
-                .postTitle(request.getPostTitle())
-                .postContent(request.getPostContent())
-                .continentId(request.getContinentId())
-                .member(member)
-                .postIsDeleted(false)
-                .postIsNotice(false)
-                .build();
+        CommunityPost post = CommunityPost.create(
+                request.getContinentId(),
+                request.getPostTitle(),
+                request.getPostContent(),
+                member,
+                false
+        );
 
         postRepository.save(post);
     }
@@ -54,7 +54,7 @@ public class PostService {
     @BadWordCheck
     public void updatePost(Long postId, PostCreateRequestDTO request) {
         CommunityPost post = postRepository.findById(postId)
-                .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다. ID: " + postId));
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "게시글을 찾을 수 없습니다. ID: " + postId));
 
         post.setPostTitle(request.getPostTitle());
         post.setPostContent(request.getPostContent());
@@ -63,7 +63,7 @@ public class PostService {
     @Transactional
     public void deletePost(Long postId) {
         CommunityPost post = postRepository.findById(postId)
-                .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다. ID: " + postId));
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "게시글을 찾을 수 없습니다. ID: " + postId));
 
         post.setPostIsDeleted(true);
     }

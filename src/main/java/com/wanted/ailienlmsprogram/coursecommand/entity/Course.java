@@ -60,5 +60,18 @@ public class Course {
         return this;
     }
 
-
+    // 생성 메서드
+    public static Course create(Continent continent, User instructor, String courseTitle,
+                                String courseDescription, String courseThumbnailUrl, Integer coursePrice) {
+        Course course = new Course();
+        course.continent = continent;
+        course.instructor = instructor;
+        course.courseTitle = courseTitle;
+        course.courseDescription = courseDescription;
+        course.courseThumbnailUrl = courseThumbnailUrl;
+        course.coursePrice = coursePrice;
+        course.createdAt = LocalDateTime.now();
+        course.courseStatus = CourseStatus.DRAFT;
+        return course;
+    }
 }

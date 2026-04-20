@@ -1,5 +1,7 @@
 package com.wanted.ailienlmsprogram.payment.client;
 
+import com.wanted.ailienlmsprogram.global.exception.BusinessException;
+import com.wanted.ailienlmsprogram.global.exception.ErrorCode;
 import com.wanted.ailienlmsprogram.payment.dto.TossPaymentResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -52,7 +54,7 @@ public class TossPaymentClient {
 
         } catch (RestClientException e) {
             log.error("Toss confirm failed: paymentKey={}, orderId={}", paymentKey, orderId, e);
-            throw new IllegalArgumentException("토스페이먼츠 결제 확인에 실패했습니다.");
+            throw new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR, "토스페이먼츠 결제 확인에 실패했습니다.");
         }
     }
 
@@ -87,8 +89,9 @@ public class TossPaymentClient {
             log.error("Toss cancel failed: paymentKey={}, status={}, body={}", paymentKey, e.getStatusCode(), tossError);
             throw new IllegalArgumentException("토스페이먼츠 결제 취소에 실패했습니다. (Toss 응답: " + tossError + ")");
         } catch (RestClientException e) {
-            log.error("Toss cancel failed (network): paymentKey={}", paymentKey, e);
-            throw new IllegalArgumentException("토스페이먼츠 결제 취소에 실패했습니다.");
+
+            log.error("Toss cancel failed: paymentKey={}", paymentKey, e);
+            throw new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR, "토스페이먼츠 결제 취소에 실패했습니다.");
         }
     }
 

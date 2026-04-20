@@ -15,12 +15,7 @@ public class ReportService {
     private final ReportRepository reportRepository;
 
     public void createReport(Long reporterNo, String targetType, Long targetNo, String reason) {
-        Report report = Report.builder()
-                .reporterNo(reporterNo)
-                .targetType(TargetType.valueOf(targetType))
-                .targetNo(targetNo)
-                .reason(reason)
-                .build();
+        Report report = Report.create(reporterNo, TargetType.valueOf(targetType), targetNo, reason);
 
         reportRepository.save(report);
     }

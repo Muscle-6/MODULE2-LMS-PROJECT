@@ -4,14 +4,16 @@ import com.wanted.ailienlmsprogram.coursecommand.entity.Course;
 import com.wanted.ailienlmsprogram.lecture.entity.Lecture;
 import com.wanted.ailienlmsprogram.member.entity.Member;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 
 @Entity
 @Getter
-@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Table(name = "QNA")
@@ -56,5 +58,15 @@ public class Qna {
     public void changeTitleAndContent(String title, String content) {
         this.qnaTitle = title;
         this.qnaContent = content;
+    }
+
+    public static Qna create(String title, String content, Course course, Member author, Qna parent) {
+        Qna qna = new Qna();
+        qna.qnaTitle = title;
+        qna.qnaContent = content;
+        qna.course = course;
+        qna.author = author;
+        qna.parent = parent;
+        return qna;
     }
 }

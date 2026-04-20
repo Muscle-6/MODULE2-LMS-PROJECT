@@ -3,7 +3,6 @@ package com.wanted.ailienlmsprogram.community.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
-
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -31,11 +30,12 @@ public class Report {
     @Column(name = "created_at")
     private LocalDateTime reportDate = LocalDateTime.now();
 
-    @Builder
-    public Report(Long reporterNo, TargetType targetType, Long targetNo, String reason) {
-        this.reporterNo = reporterNo;
-        this.targetType = targetType;
-        this.targetNo = targetNo;
-        this.reason = reason;
+    public static Report create(Long reporterNo, TargetType targetType, Long targetNo, String reason) {
+        Report report = new Report();
+        report.reporterNo = reporterNo;
+        report.targetType = targetType;
+        report.targetNo = targetNo;
+        report.reason = reason;
+        return report;
     }
 }

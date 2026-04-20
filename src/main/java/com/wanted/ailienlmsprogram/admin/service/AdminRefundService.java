@@ -8,6 +8,8 @@ import com.wanted.ailienlmsprogram.payment.entity.Payment;
 import com.wanted.ailienlmsprogram.payment.entity.PaymentItem;
 import com.wanted.ailienlmsprogram.payment.entity.Refund;
 import com.wanted.ailienlmsprogram.payment.repository.RefundRepository;
+import com.wanted.ailienlmsprogram.global.exception.BusinessException;
+import com.wanted.ailienlmsprogram.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,10 +42,10 @@ public class AdminRefundService {
     @Transactional
     public void approveRefund(Long refundId) {
         Refund refund = refundRepository.findById(refundId)
-                .orElseThrow(() -> new IllegalArgumentException("환불 요청이 존재하지 않습니다."));
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "환불 요청이 존재하지 않습니다."));
 
         if (refund.getRefundStatus() != Refund.RefundStatus.REQUESTED) {
-            throw new IllegalArgumentException("처리 대기 중(REQUESTED) 상태의 환불만 승인할 수 있습니다.");
+            throw new BusinessException(ErrorCode.BAD_REQUEST, "처리 대기 중(REQUESTED) 상태의 환불만 승인할 수 있습니다.");
         }
 
         Payment payment = refund.getPayment();
@@ -65,10 +67,10 @@ public class AdminRefundService {
     @Transactional
     public void rejectRefund(Long refundId) {
         Refund refund = refundRepository.findById(refundId)
-                .orElseThrow(() -> new IllegalArgumentException("환불 요청이 존재하지 않습니다."));
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "환불 요청이 존재하지 않습니다."));
 
         if (refund.getRefundStatus() != Refund.RefundStatus.REQUESTED) {
-            throw new IllegalArgumentException("처리 대기 중(REQUESTED) 상태의 환불만 거절할 수 있습니다.");
+            throw new BusinessException(ErrorCode.BAD_REQUEST, "처리 대기 중(REQUESTED) 상태의 환불만 거절할 수 있습니다.");
         }
 
         refund.setRefundStatus(Refund.RefundStatus.REJECTED);

@@ -3,7 +3,6 @@ package com.wanted.ailienlmsprogram.community.entity;
 import com.wanted.ailienlmsprogram.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -15,7 +14,6 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class CommunityPost {
 
     @Id
@@ -28,7 +26,6 @@ public class CommunityPost {
     private boolean postIsDeleted;
 
     @Column(name = "post_is_notice", nullable = false)
-    @Builder.Default
     private boolean postIsNotice = false;
 
     @Column(name = "created_at", updatable = false)
@@ -60,5 +57,16 @@ public class CommunityPost {
 
     public void setPostIsDeleted(boolean postIsDeleted) {
         this.postIsDeleted = postIsDeleted;
+    }
+
+    public static CommunityPost create(Long continentId, String title, String content, Member member, boolean isNotice) {
+        CommunityPost post = new CommunityPost();
+        post.continentId = continentId;
+        post.postTitle = title;
+        post.postContent = content;
+        post.member = member;
+        post.postIsNotice = isNotice;
+        post.postIsDeleted = false;
+        return post;
     }
 }

@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,22 +33,12 @@ public class EnrollmentService {
                 .orElse(null);
 
         if (enrollment != null) {
-            // 이미 ACTIVE면 중복 등록 방지
             if (enrollment.getStatus() == Enrollment.EnrollmentStatus.ACTIVE) {
                 return;
             }
-            // REFUNDED면 새로 INSERT 대신 기존 row 재활용!
-            enrollment.setStatus(Enrollment.EnrollmentStatus.ACTIVE);
-            enrollment.setEnrolledAt(LocalDateTime.now());
-            // save 불필요 - @Transactional이 자동으로 UPDATE 처리
+            enrollment.reActivate();
         } else {
-            // 최초 수강이면 새로 생성
-            enrollment = new Enrollment();
-            enrollment.setMember(member);
-            enrollment.setCourse(course);
-            enrollment.setStatus(Enrollment.EnrollmentStatus.ACTIVE);
-            enrollment.setEnrolledAt(LocalDateTime.now());
-            enrollmentRepository.save(enrollment);
+            enrollmentRepository.save(Enrollment.create(member, course));
         }
     }
 
@@ -62,7 +51,7 @@ public class EnrollmentService {
         for (Course course : courses) {
             enrollmentRepository
                     .findByMemberMemberIdAndCourseCourseId(member.getMemberId(), course.getCourseId())
-                    .ifPresent(e -> e.setStatus(Enrollment.EnrollmentStatus.REFUNDED));
+                    .ifPresent(Enrollment::refund);
         }
     }
 

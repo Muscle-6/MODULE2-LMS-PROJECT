@@ -6,6 +6,8 @@ import com.wanted.ailienlmsprogram.admin.dto.AdminContinentNoticeFormRequest;
 import com.wanted.ailienlmsprogram.admin.dto.AdminContinentNoticeListResponse;
 import com.wanted.ailienlmsprogram.admin.repository.AdminContinentNoticeQueryRepository;
 import com.wanted.ailienlmsprogram.community.entity.CommunityPost;
+import com.wanted.ailienlmsprogram.global.exception.BusinessException;
+import com.wanted.ailienlmsprogram.global.exception.ErrorCode;
 import com.wanted.ailienlmsprogram.global.filtering.BadWordCheck;
 import com.wanted.ailienlmsprogram.member.entity.Member;
 import lombok.RequiredArgsConstructor;
@@ -47,7 +49,7 @@ public class AdminContinentNoticeService {
                 adminContinentNoticeQueryRepository.findNoticeDetail(continentId, postId);
 
         if (detail == null) {
-            throw new IllegalArgumentException("해당 대륙의 공지글을 찾을 수 없습니다.");
+            throw new BusinessException(ErrorCode.NOT_FOUND, "해당 대륙의 공지글을 찾을 수 없습니다.");
         }
 
         return detail;
@@ -59,14 +61,13 @@ public class AdminContinentNoticeService {
         validateContinent(request.getContinentId());
         Member adminMember = getAdminMember(adminMemberId);
 
-        CommunityPost post = CommunityPost.builder()
-                .continentId(request.getContinentId())
-                .postTitle(request.getPostTitle().trim())
-                .postContent(request.getPostContent().trim())
-                .postIsDeleted(false)
-                .postIsNotice(true)
-                .member(adminMember)
-                .build();
+        CommunityPost post = CommunityPost.create(
+                request.getContinentId(),
+                request.getPostTitle().trim(),
+                request.getPostContent().trim(),
+                adminMember,
+                true
+        );
 
         adminContinentNoticeQueryRepository.save(post);
     }
@@ -87,25 +88,25 @@ public class AdminContinentNoticeService {
 
     private CommunityPost getTargetNotice(Long continentId, Long postId) {
         if (postId == null) {
-            throw new IllegalArgumentException("공지글 정보가 없습니다.");
+            throw new BusinessException(ErrorCode.NOT_FOUND, "공지글 정보가 없습니다.");
         }
 
         CommunityPost post = adminContinentNoticeQueryRepository.findPost(postId);
 
         if (post == null) {
-            throw new IllegalArgumentException("공지글이 존재하지 않습니다.");
+            throw new BusinessException(ErrorCode.NOT_FOUND, "공지글이 존재하지 않습니다.");
         }
 
         if (!Objects.equals(post.getContinentId(), continentId)) {
-            throw new IllegalArgumentException("선택한 대륙의 공지글이 아닙니다.");
+            throw new BusinessException(ErrorCode.FORBIDDEN, "선택한 대륙의 공지글이 아닙니다.");
         }
 
         if (post.isPostIsDeleted()) {
-            throw new IllegalArgumentException("이미 삭제된 공지글입니다.");
+            throw new BusinessException(ErrorCode.BAD_REQUEST, "이미 삭제된 공지글입니다.");
         }
 
         if (!post.isPostIsNotice()) {
-            throw new IllegalArgumentException("관리자 공지글만 수정/삭제할 수 있습니다.");
+            throw new BusinessException(ErrorCode.FORBIDDEN, "관리자 공지글만 수정/삭제할 수 있습니다.");
         }
 
         return post;
@@ -115,7 +116,7 @@ public class AdminContinentNoticeService {
         Member member = adminContinentNoticeQueryRepository.findMember(adminMemberId);
 
         if (member == null) {
-            throw new IllegalArgumentException("관리자 계정 정보를 찾을 수 없습니다.");
+            throw new BusinessException(ErrorCode.NOT_FOUND, "관리자 계정 정보를 찾을 수 없습니다.");
         }
 
         return member;
@@ -123,11 +124,11 @@ public class AdminContinentNoticeService {
 
     private void validateContinent(Long continentId) {
         if (continentId == null) {
-            throw new IllegalArgumentException("대륙 정보가 없습니다.");
+            throw new BusinessException(ErrorCode.NOT_FOUND, "대륙 정보가 없습니다.");
         }
 
         if (adminContinentNoticeQueryRepository.findContinentEntity(continentId) == null) {
-            throw new IllegalArgumentException("대륙이 존재하지 않습니다.");
+            throw new BusinessException(ErrorCode.NOT_FOUND, "대륙이 존재하지 않습니다.");
         }
     }
 }

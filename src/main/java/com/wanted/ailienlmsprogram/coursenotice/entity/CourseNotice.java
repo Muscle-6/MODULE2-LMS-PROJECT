@@ -46,6 +46,17 @@ public class CourseNotice {
         this.noticeTitle = noticeTitle;
         this.noticeContent = noticeContent;
         this.updatedAt = LocalDateTime.now();
+    }
 
+    // 생성 메서드
+    public static CourseNotice create(Course course, Member author, String noticeTitle, String noticeContent) {
+        CourseNotice notice = new CourseNotice();
+        notice.course = course;
+        notice.author = author;
+        notice.noticeTitle = noticeTitle;
+        notice.noticeContent = noticeContent;
+        notice.createdAt = LocalDateTime.now();
+        notice.updatedAt = LocalDateTime.now();
+        return notice;
     }
 }

@@ -6,6 +6,8 @@ import com.wanted.ailienlmsprogram.admin.dto.AdminCourseSearchCondition;
 import com.wanted.ailienlmsprogram.admin.repository.AdminCourseQueryRepository;
 import com.wanted.ailienlmsprogram.coursecommand.entity.Course;
 import com.wanted.ailienlmsprogram.coursecommand.entity.CourseStatus;
+import com.wanted.ailienlmsprogram.global.exception.BusinessException;
+import com.wanted.ailienlmsprogram.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,7 +36,7 @@ public class AdminCourseService {
         AdminCourseDetailResponse detail = adminCourseQueryRepository.findCourseDetail(courseId);
 
         if (detail == null) {
-            throw new IllegalArgumentException("강좌가 존재하지 않습니다.");
+            throw new BusinessException(ErrorCode.NOT_FOUND, "강좌가 존재하지 않습니다.");
         }
 
         return detail;
@@ -45,17 +47,17 @@ public class AdminCourseService {
         Course course = getTarget(courseId);
 
         if (targetStatus == null) {
-            throw new IllegalArgumentException("변경할 강좌 상태가 없습니다.");
+            throw new BusinessException(ErrorCode.BAD_REQUEST, "변경할 강좌 상태가 없습니다.");
         }
 
         if (course.getCourseStatus() == targetStatus) {
-            throw new IllegalArgumentException("이미 해당 상태로 설정된 강좌입니다.");
+            throw new BusinessException(ErrorCode.BAD_REQUEST, "이미 해당 상태로 설정된 강좌입니다.");
         }
 
         int updatedCount = adminCourseQueryRepository.updateCourseStatus(courseId, targetStatus);
 
         if (updatedCount == 0) {
-            throw new IllegalArgumentException("강좌 상태 변경에 실패했습니다.");
+            throw new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR, "강좌 상태 변경에 실패했습니다.");
         }
     }
 
@@ -64,7 +66,7 @@ public class AdminCourseService {
         Course course = adminCourseQueryRepository.findCourse(courseId);
 
         if (course == null) {
-            throw new IllegalArgumentException("강좌가 존재하지 않습니다.");
+            throw new BusinessException(ErrorCode.NOT_FOUND, "강좌가 존재하지 않습니다.");
         }
 
         return course;
