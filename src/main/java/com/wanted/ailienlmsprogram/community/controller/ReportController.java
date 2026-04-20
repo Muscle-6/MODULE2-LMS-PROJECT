@@ -1,6 +1,6 @@
 package com.wanted.ailienlmsprogram.community.controller;
 
-import com.wanted.ailienlmsprogram.community.dto.ReportRequest;
+import com.wanted.ailienlmsprogram.community.dto.ReportRequestDTO;
 import com.wanted.ailienlmsprogram.community.service.ReportService;
 import com.wanted.ailienlmsprogram.global.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +17,7 @@ public class ReportController {
 
     @PostMapping
     public ResponseEntity<String> submitReport(
-            @RequestBody ReportRequest request,
+            @RequestBody ReportRequestDTO request,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
 
         Long reporterNo = userDetails.getMember().getMemberId();

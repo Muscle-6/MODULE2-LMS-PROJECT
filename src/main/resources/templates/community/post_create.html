@@ -9,7 +9,13 @@
 <div class="container">
     <h1 style="color: #ff9d00;">> NEW POST // 새 글 작성</h1>
     <p style="color: #888;">대륙 침공 작전을 기록하십시오.</p>
-    <hr style="border: 0.5px solid #333;">
+    <hr style="border: 0.5px solid #333; margin-bottom: 30px;">
+
+    <div th:if="${errorMessage}"
+         style="margin-bottom: 20px; padding: 12px 16px; background: #2a1212; border: 1px solid #ff6b6b; color: #ffb4b4; border-radius: 6px; font-size: 14px;"
+         th:text="${errorMessage}">
+        에러 메시지
+    </div>
 
     <form th:action="@{/continents/{id}/posts/new(id=${continentId})}"
           th:object="${postCreateRequest}" method="post">
@@ -18,12 +24,24 @@
             <label style="display: block; margin-bottom: 10px;">작전 제목</label>
             <input type="text" th:field="*{postTitle}" placeholder="제목을 입력하세요"
                    style="width: 100%; padding: 15px; background: #1a1d23; border: 1px solid #444; color: white; border-radius: 5px;" required>
+
+            <div th:if="${#fields.hasErrors('postTitle')}"
+                 th:errors="*{postTitle}"
+                 style="margin-top: 8px; color: #ff7b7b; font-size: 13px;">
+                제목 오류
+            </div>
         </div>
 
         <div style="margin-bottom: 20px;">
             <label style="display: block; margin-bottom: 10px;">세부 작전 내용</label>
             <textarea th:field="*{postContent}" rows="10" placeholder="내용을 입력하세요"
                       style="width: 100%; padding: 15px; background: #1a1d23; border: 1px solid #444; color: white; border-radius: 5px; resize: none;" required></textarea>
+
+            <div th:if="${#fields.hasErrors('postContent')}"
+                 th:errors="*{postContent}"
+                 style="margin-top: 8px; color: #ff7b7b; font-size: 13px;">
+                내용 오류
+            </div>
         </div>
 
         <div class="btn-group">

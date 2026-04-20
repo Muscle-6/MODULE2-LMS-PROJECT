@@ -1,9 +1,10 @@
 package com.wanted.ailienlmsprogram.community.service;
 
-import com.wanted.ailienlmsprogram.community.dto.PostCreateRequest;
+import com.wanted.ailienlmsprogram.community.dto.PostCreateRequestDTO;
 import com.wanted.ailienlmsprogram.community.dto.PostDTO;
 import com.wanted.ailienlmsprogram.community.repository.PostRepository;
 import com.wanted.ailienlmsprogram.community.entity.CommunityPost;
+import com.wanted.ailienlmsprogram.global.filtering.BadWordCheck;
 import com.wanted.ailienlmsprogram.member.entity.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -34,7 +35,8 @@ public class PostService {
     }
 
     @Transactional
-    public void savePost(PostCreateRequest request, Member member) {
+    @BadWordCheck
+    public void savePost(PostCreateRequestDTO request, Member member) {
         // 학생용 서비스이므로 postIsNotice는 무조건 false(0)로 고정!
         CommunityPost post = CommunityPost.builder()
                 .postTitle(request.getPostTitle())
@@ -49,7 +51,8 @@ public class PostService {
     }
 
     @Transactional
-    public void updatePost(Long postId, PostCreateRequest request) {
+    @BadWordCheck
+    public void updatePost(Long postId, PostCreateRequestDTO request) {
         CommunityPost post = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다. ID: " + postId));
 

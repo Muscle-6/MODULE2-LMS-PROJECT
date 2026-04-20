@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ReportRequest {
+public class ReportRequestDTO {
     private String targetType;
     private Long targetNo;
     private String reason;
