@@ -11,6 +11,7 @@ import com.wanted.ailienlmsprogram.enrollment.repository.EnrollmentRepository;
 import com.wanted.ailienlmsprogram.member.entity.Member;
 import com.wanted.ailienlmsprogram.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +28,7 @@ public class CourseNoticeService {
     private final CourseRepository courseRepository;
     private final MemberRepository memberRepository;
     private final EnrollmentRepository enrollmentRepository;
+    private final ModelMapper modelMapper;
 
     // ===== 조회 =====
 
@@ -51,14 +53,11 @@ public class CourseNoticeService {
                 .findByCourse_CourseIdOrderByCreatedAtDesc(courseId);
 
         return notices.stream()
-                .map(notice -> new CourseNoticeFindDTO(
-                        notice.getNoticeId(),
-                        notice.getNoticeTitle(),
-                        notice.getNoticeContent(),
-                        notice.getAuthor().getName(),   // 작성자 이름
-                        notice.getCreatedAt(),
-                        notice.getUpdatedAt()
-                ))
+                .map(notice -> {
+                    CourseNoticeFindDTO dto = modelMapper.map(notice, CourseNoticeFindDTO.class);
+                    dto.setAuthorName(notice.getAuthor().getName());
+                    return dto;
+                })
                 .collect(Collectors.toList());
     }
 
@@ -68,14 +67,9 @@ public class CourseNoticeService {
         CourseNotice notice = courseNoticeRepository.findById(noticeId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 공지사항입니다."));
 
-        return new CourseNoticeFindDTO(
-                notice.getNoticeId(),
-                notice.getNoticeTitle(),
-                notice.getNoticeContent(),
-                notice.getAuthor().getName(),
-                notice.getCreatedAt(),
-                notice.getUpdatedAt()
-        );
+        CourseNoticeFindDTO dto = modelMapper.map(notice, CourseNoticeFindDTO.class);
+        dto.setAuthorName(notice.getAuthor().getName());
+        return dto;
     }
 
     // ===== 등록 =====

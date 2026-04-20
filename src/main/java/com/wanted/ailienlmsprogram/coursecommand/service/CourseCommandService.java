@@ -24,7 +24,6 @@ import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -125,23 +124,15 @@ public class CourseCommandService {
 
     public List<CourseFindDTO> findMyCourses(Long memberId, CourseStatus courseStatus) {
 
-        List<Course> courses = courseRepository.findByInstructor_MemberIdAndCourseStatus(memberId,courseStatus);
-        List<CourseFindDTO> result = new ArrayList<>();
+        List<Course> courses = courseRepository.findByInstructor_MemberIdAndCourseStatus(memberId, courseStatus);
 
-        for (Course course : courses) {
-            CourseFindDTO courseDTO = new CourseFindDTO();
-            courseDTO.setCourseId(course.getCourseId());
-            courseDTO.setCourseTitle(course.getCourseTitle());
-            courseDTO.setCourseDescription(course.getCourseDescription());
-            courseDTO.setContinent(course.getContinent().getContinentId());
-            courseDTO.setCoursePrice(course.getCoursePrice());
-            courseDTO.setCourseThumbnailUrl(course.getCourseThumbnailUrl());
-            courseDTO.setCourseStatus(course.getCourseStatus());
-            courseDTO.setCreatedAt(course.getCreatedAt());
-            result.add(courseDTO);
-        }
-
-        return result;
+        return courses.stream()
+                .map(course -> {
+                    CourseFindDTO dto = modelMapper.map(course, CourseFindDTO.class);
+                    dto.setContinentId(course.getContinent().getContinentId());
+                    return dto;
+                })
+                .collect(Collectors.toList());
     }
 
     @Transactional
@@ -174,17 +165,9 @@ public class CourseCommandService {
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(RuntimeException::new);
 
-        CourseFindDTO courseDTO = new CourseFindDTO();
-        courseDTO.setCourseId(course.getCourseId());
-        courseDTO.setCourseTitle(course.getCourseTitle());
-        courseDTO.setCourseDescription(course.getCourseDescription());
-        courseDTO.setContinent(course.getContinent().getContinentId());
-        courseDTO.setCoursePrice(course.getCoursePrice());
-        courseDTO.setCourseThumbnailUrl(course.getCourseThumbnailUrl());
-        courseDTO.setCourseStatus(course.getCourseStatus());
-        courseDTO.setCreatedAt(course.getCreatedAt());
-
-        return courseDTO;
+        CourseFindDTO dto = modelMapper.map(course, CourseFindDTO.class);
+        dto.setContinentId(course.getContinent().getContinentId());
+        return dto;
     }
 
 }
