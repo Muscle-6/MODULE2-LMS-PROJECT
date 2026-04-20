@@ -73,6 +73,9 @@ public class EnrollmentService {
         return enrollmentList.stream()
                 .map(enrollment -> {
                     EnrollmentResponseDTO dto = modelMapper.map(enrollment, EnrollmentResponseDTO.class);
+
+                    dto.setCourseId(enrollment.getCourse().getCourseId());
+
                     if (enrollment.getCourse().getInstructor() != null) {
                         dto.setInstructorName(enrollment.getCourse().getInstructor().getName());
                     }
