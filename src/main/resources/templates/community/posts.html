@@ -15,6 +15,11 @@
     .btn-write { background: #ffb648; color: #1d1d1d; }
     .empty-msg { text-align: center; padding: 50px; color: #b8c1e7; }
     a { color: inherit; text-decoration: none; }
+
+    /* 공지사항 전용 스타일 */
+    .notice-row { background: rgba(233, 182, 236, 0.05); border-left: 4px solid #e9b6ec; }
+    .notice-badge { background: #ff5f5f; color: white; padding: 2px 6px; border-radius: 4px; font-size: 11px; margin-right: 8px; vertical-align: middle; font-weight: bold; }
+    .notice-text { color: #e9b6ec !important; font-weight: bold; }
   </style>
 </head>
 <body>
@@ -28,39 +33,36 @@
     <table class="board-table">
       <thead>
       <tr>
-        <th style="width: 15%;">작성일</th> <th style="width: 50%;">제목</th>
-        <th style="width: 35%;">작성자</th>
+        <th style="width: 15%;">작성일</th> <th style="width: 55%;">제목</th>
+        <th style="width: 30%;">작성자</th>
       </tr>
       </thead>
       <tbody>
       <tr th:each="post : ${posts}"
-          th:onclick="|location.href='/posts/${post.postId}'|">
+          th:onclick="|location.href='/posts/${post.postId}'|"
+          th:classappend="${post.postIsNotice} ? 'notice-row' : ''">
 
-        <td th:text="${post.createdAt}" style="color: #b8c1e7; font-size: 14px;">2026-04-17</td>
+        <td th:text="${post.postIsNotice} ? '공지' : ${post.createdAt}"
+            th:classappend="${post.postIsNotice} ? 'notice-text' : ''"
+            style="color: #b8c1e7; font-size: 14px;">2026-04-17</td>
 
         <td>
-          <a th:href="@{/posts/{id}(id=${post.postId})}" th:text="${post.title}">게시글 제목</a>
+          <span th:if="${post.postIsNotice}" class="notice-badge">공지</span>
+          <a th:href="@{/posts/{id}(id=${post.postId})}"
+             th:text="${post.title}"
+             th:classappend="${post.postIsNotice} ? 'notice-text' : ''">게시글 제목</a>
         </td>
 
-        <td>
-          <span th:text="${post.authorName}">작성자 이름</span>
+        <td th:text="${post.authorName}">작성자 이름</td>
+      </tr>
 
-          <span th:if="${post.authorRankMent != null}">
-              <th:block th:if="${post.authorRank == 'REPTILIAN'}">
-                  <b style="color: #fff; margin-left: 5px; text-shadow: 0 0 5px #ffd700, 0 0 10px #ffd700; font-size: 12px;"
-                     th:text="'[' + ${post.authorRankMent} + ']'"></b>
-              </th:block>
-
-              <th:block th:if="${post.authorRank != 'REPTILIAN'}">
-                  <span style="color: #8892b0; font-size: 11px; margin-left: 5px;"
-                        th:text="'(' + ${post.authorRankMent} + ')'"></span>
-              </th:block>
-          </span>
-        </td>
+      <tr th:if="${#lists.isEmpty(posts)}">
+        <td colspan="3" class="empty-msg">게시글이 존재하지 않습니다.</td>
       </tr>
       </tbody>
     </table>
   </div>
+
   <div style="margin-top: 20px; text-align: right;">
     <a th:href="@{/continents/{id}/posts/new(id=${continentId})}" class="btn btn-write">새 글 쓰기</a>
   </div>
