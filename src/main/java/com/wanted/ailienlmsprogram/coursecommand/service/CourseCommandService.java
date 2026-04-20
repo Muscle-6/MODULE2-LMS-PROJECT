@@ -114,7 +114,12 @@ public class CourseCommandService {
 
     public List<CourseFindDTO> findMyCourses(Long memberId, CourseStatus courseStatus) {
 
-        List<Course> courses = courseRepository.findByInstructor_MemberIdAndCourseStatus(memberId, courseStatus);
+        //List<Course> courses = courseRepository.findByInstructor_MemberIdAndCourseStatus(memberId, courseStatus);
+
+        // fetch join 적용 메서드
+        List<Course> courses = courseRepository.findMyCoursesWithInstructor(memberId, courseStatus);
+
+
 
         return courses.stream()
                 .map(course -> {

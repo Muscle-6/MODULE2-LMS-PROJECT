@@ -21,11 +21,11 @@ public class Course {
     @Column(name = "course_id")
     private Long courseId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "continent_id", nullable = false)
     private Continent continent;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "instructor_id", nullable = false)
     private User instructor;
 

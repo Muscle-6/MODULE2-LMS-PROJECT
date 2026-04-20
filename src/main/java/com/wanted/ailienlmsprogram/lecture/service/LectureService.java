@@ -32,7 +32,7 @@ public class LectureService {
 
     public List<LectureFindDTO> findMyLectures(Long courseId) {
 
-        List<Lecture> lectures = lectureRepository.findByCourse_CourseId(courseId);
+        List<Lecture> lectures = lectureRepository.findByCourseIdWithFetchJoin(courseId);
 
         return lectures.stream()
                 .map(lecture -> modelMapper.map(lecture, LectureFindDTO.class))
@@ -65,7 +65,7 @@ public class LectureService {
     // 강좌 상세 입장 시 뜨는 강의 목록
     public List<LectureResponseDTO> lectureByCourse(Long courseId) {
 
-        List<Lecture> foundLectures = lectureRepository.findByCourse_CourseId(courseId);
+        List<Lecture> foundLectures = lectureRepository.findByCourseIdWithFetchJoin(courseId);
 
         return foundLectures.stream()
                 .map(lecture -> modelMapper.map(lecture, LectureResponseDTO.class))

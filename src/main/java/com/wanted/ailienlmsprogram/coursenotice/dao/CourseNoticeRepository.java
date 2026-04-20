@@ -2,11 +2,19 @@ package com.wanted.ailienlmsprogram.coursenotice.dao;
 
 import com.wanted.ailienlmsprogram.coursenotice.entity.CourseNotice;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
 public interface CourseNoticeRepository extends JpaRepository<CourseNotice, Long> {
 
     // 특정 강좌의 공지사항 전체 조회 (최신순)
-    List<CourseNotice> findByCourse_CourseIdOrderByCreatedAtDesc(Long courseId);
+    //List<CourseNotice> findByCourse_CourseIdOrderByCreatedAtDesc(Long courseId);
+
+    @Query("select cn from CourseNotice cn " +
+            "join fetch cn.course " +
+            "where cn.course.courseId = :courseId " +
+            "order by cn.createdAt desc")
+    List<CourseNotice> findByCourseIdWithFetchJoin(@Param("courseId") Long courseId);
 }

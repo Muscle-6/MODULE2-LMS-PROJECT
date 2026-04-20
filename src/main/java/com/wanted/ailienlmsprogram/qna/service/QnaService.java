@@ -27,14 +27,17 @@ public class QnaService {
     private  final MemberRepository memberRepository;
 
     public List<QnaResponseDTO> questionByCourse(Long courseId, String status) {
+        // 1. 쿼리 단 1번 실행 (작성자 + 답변여부 포함)
+        List<Object[]> results = qnaRepository.findAllByCourseIdWithAuthorAndReplyStatus(courseId);
 
-        List<Qna> qnaList = qnaRepository.findAllByCourse_CourseIdAndParentIsNullAndQnaIsDeletedFalse(courseId);
+        return results.stream()
+                .map(result -> {
+                    Qna qna = (Qna) result[0];
+                    boolean isAnswered = (boolean) result[1]; // 서브쿼리 결과값 (true/false)
 
-        return qnaList.stream()
-                .map(qna -> {
                     QnaResponseDTO dto = modelMapper.map(qna, QnaResponseDTO.class);
-                    dto.setAuthorName(qna.getAuthor().getName());
-                    dto.setAnswered(qnaRepository.existsReplyByParentId(qna.getQnaId()));
+                    dto.setAuthorName(qna.getAuthor().getName()); // Fetch Join으로 이미 로딩됨
+                    dto.setAnswered(isAnswered); // 추가 쿼리 없이 바로 셋팅!
                     return dto;
                 })
                 .filter(dto -> {
