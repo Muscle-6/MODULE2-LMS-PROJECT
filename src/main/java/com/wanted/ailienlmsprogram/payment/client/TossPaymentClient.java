@@ -7,6 +7,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestClientResponseException;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
@@ -76,8 +77,17 @@ public class TossPaymentClient {
                     .body(body)
                     .retrieve()
                     .toBodilessEntity();
+        } catch (RestClientResponseException e) {
+            String tossError = e.getResponseBodyAsString();
+            // 더미 데이터 또는 만료된 테스트 키처럼 Toss에 존재하지 않는 결제는 취소할 것이 없으므로 그냥 통과
+            if (tossError != null && tossError.contains("NOT_FOUND_PAYMENT")) {
+                log.warn("Toss cancel skipped (payment not found in Toss): paymentKey={}", paymentKey);
+                return;
+            }
+            log.error("Toss cancel failed: paymentKey={}, status={}, body={}", paymentKey, e.getStatusCode(), tossError);
+            throw new IllegalArgumentException("토스페이먼츠 결제 취소에 실패했습니다. (Toss 응답: " + tossError + ")");
         } catch (RestClientException e) {
-            log.error("Toss cancel failed: paymentKey={}", paymentKey, e);
+            log.error("Toss cancel failed (network): paymentKey={}", paymentKey, e);
             throw new IllegalArgumentException("토스페이먼츠 결제 취소에 실패했습니다.");
         }
     }

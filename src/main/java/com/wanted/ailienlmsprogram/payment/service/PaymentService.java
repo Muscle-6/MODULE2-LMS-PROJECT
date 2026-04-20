@@ -89,13 +89,16 @@ public class PaymentService {
         payment.setPaymentCompletedAt(LocalDateTime.now());
         paymentRepository.save(payment);
 
-        for (Cart cart : cartItems) {
+        List<PaymentItem> items = cartItems.stream().map(cart -> {
             PaymentItem item = new PaymentItem();
             item.setPayment(payment);
             item.setCourse(cart.getCourse());
             item.setItemPriceAtPurchase(cart.getCourse().getCoursePrice());
-            paymentItemRepository.save(item);
+            return item;
+        }).toList();
+        paymentItemRepository.saveAll(items);
 
+        for (Cart cart : cartItems) {
             enrollmentService.enroll(member, cart.getCourse());
         }
 
@@ -163,13 +166,16 @@ public class PaymentService {
 
 
         // 5. PaymentItem 생성 + 수강 등록
-        for (Cart cart : cartItems) {
+        List<PaymentItem> items = cartItems.stream().map(cart -> {
             PaymentItem item = new PaymentItem();
             item.setPayment(payment);
             item.setCourse(cart.getCourse());
             item.setItemPriceAtPurchase(cart.getCourse().getCoursePrice());
-            paymentItemRepository.save(item);
+            return item;
+        }).toList();
+        paymentItemRepository.saveAll(items);
 
+        for (Cart cart : cartItems) {
             enrollmentService.enroll(member, cart.getCourse());
         }
 
