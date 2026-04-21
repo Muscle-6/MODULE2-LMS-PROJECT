@@ -215,8 +215,8 @@ public class AdminReportQueryRepository {
                 .targetMemberName(targetMember != null ? targetMember.getName() : null)
                 .categoryLabel("대륙")
                 .categoryValue(continent != null ? continent.getContinentName() : null)
-                .targetTitle(post.getPostTitle())
-                .targetContent(post.getPostContent())
+                .targetTitle(report.getReportedTitle())     // post.getPostTitle() 대신 이거로!
+                .targetContent(report.getReportedContent()) // post.getPostContent() 대신 이거로!
                 .parentTitle(null)
                 .targetDeleted(post.isPostIsDeleted())
                 .build();
@@ -247,7 +247,7 @@ public class AdminReportQueryRepository {
                 .categoryLabel("대륙")
                 .categoryValue(continent != null ? continent.getContinentName() : null)
                 .targetTitle("댓글")
-                .targetContent(comment.getContent())
+                .targetContent(report.getReportedContent())
                 .parentTitle(parentPost != null ? parentPost.getPostTitle() : null)
                 .targetDeleted(comment.isDeleted())
                 .build();
