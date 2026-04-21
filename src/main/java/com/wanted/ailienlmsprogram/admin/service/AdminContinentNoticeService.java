@@ -19,7 +19,7 @@ import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
+@Transactional(readOnly = true)
 public class AdminContinentNoticeService {
 
     private final AdminContinentNoticeQueryRepository adminContinentNoticeQueryRepository;
@@ -56,6 +56,7 @@ public class AdminContinentNoticeService {
     }
 
 
+    @Transactional
     @BadWordCheck
     public void createNotice(AdminContinentNoticeFormRequest request, Long adminMemberId) {
         validateContinent(request.getContinentId());
@@ -72,18 +73,17 @@ public class AdminContinentNoticeService {
         adminContinentNoticeQueryRepository.save(post);
     }
 
+    @Transactional
     @BadWordCheck
     public void updateNotice(AdminContinentNoticeFormRequest request) {
         CommunityPost post = getTargetNotice(request.getContinentId(), request.getPostId());
-
-        post.setPostTitle(request.getPostTitle().trim());
-        post.setPostContent(request.getPostContent().trim());
-        post.setPostIsNotice(true);
+        post.updateContent(request.getPostTitle().trim(), request.getPostContent().trim());
     }
 
+    @Transactional
     public void deleteNotice(Long continentId, Long postId) {
         CommunityPost post = getTargetNotice(continentId, postId);
-        post.setPostIsDeleted(true);
+        post.delete();
     }
 
     private CommunityPost getTargetNotice(Long continentId, Long postId) {

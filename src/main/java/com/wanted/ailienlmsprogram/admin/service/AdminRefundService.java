@@ -14,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 /*관리자 환불 처리 비즈니스 로직을 담당하는 서비스
@@ -55,8 +54,7 @@ public class AdminRefundService {
             tossPaymentClient.cancel(tossPaymentKey, refund.getRefundReason());
         }
 
-        refund.setRefundStatus(Refund.RefundStatus.APPROVED);
-        refund.setRefundProcessedAt(LocalDateTime.now());
+        refund.approve();
 
         List<Course> courses = payment.getItems().stream()
                 .map(PaymentItem::getCourse)
@@ -73,7 +71,6 @@ public class AdminRefundService {
             throw new BusinessException(ErrorCode.BAD_REQUEST, "처리 대기 중(REQUESTED) 상태의 환불만 거절할 수 있습니다.");
         }
 
-        refund.setRefundStatus(Refund.RefundStatus.REJECTED);
-        refund.setRefundProcessedAt(LocalDateTime.now());
+        refund.reject();
     }
 }

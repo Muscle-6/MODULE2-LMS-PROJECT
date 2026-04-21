@@ -1,7 +1,7 @@
 package com.wanted.ailienlmsprogram.payment.service;
 
 
-import com.wanted.ailienlmsprogram.coursecommand.dao.CourseRepository;
+import com.wanted.ailienlmsprogram.coursecommand.repository.CourseRepository;
 import com.wanted.ailienlmsprogram.coursecommand.entity.Course;
 import com.wanted.ailienlmsprogram.enrollment.entity.Enrollment;
 import com.wanted.ailienlmsprogram.enrollment.repository.EnrollmentRepository;
@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
@@ -52,10 +51,7 @@ public class CartService {
             throw new BusinessException(ErrorCode.BAD_REQUEST, "이미 수강 중인 강좌입니다.");
         }
 
-        Cart cart = new Cart();
-        cart.setCourse(course);
-        cart.setMember(member);
-        cart.setCreatedAt(LocalDateTime.now());
+        Cart cart = Cart.create(course, member);
         cartRepository.save(cart);
     }
 

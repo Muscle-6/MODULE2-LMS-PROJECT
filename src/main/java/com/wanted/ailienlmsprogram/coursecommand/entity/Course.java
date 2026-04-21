@@ -3,7 +3,6 @@ package com.wanted.ailienlmsprogram.coursecommand.entity;
 import com.wanted.ailienlmsprogram.continent.entity.Continent;
 import com.wanted.ailienlmsprogram.user.entity.User;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -13,7 +12,6 @@ import java.time.LocalDateTime;
 @Table(name = "COURSE")
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
 public class Course {
 
     @Id

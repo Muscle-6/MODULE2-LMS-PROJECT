@@ -4,12 +4,10 @@ import com.wanted.ailienlmsprogram.coursecommand.entity.Course;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @Table(name = "PAYMENT_ITEM")
 @Getter
-@Setter
 @NoArgsConstructor
 public class PaymentItem {
 
@@ -28,4 +26,13 @@ public class PaymentItem {
 
     @Column(name = "item_price_at_purchase", nullable = false)
     private Integer itemPriceAtPurchase;
+
+    // 생성 메서드
+    public static PaymentItem create(Payment payment, Course course) {
+        PaymentItem item = new PaymentItem();
+        item.payment = payment;
+        item.course = course;
+        item.itemPriceAtPurchase = course.getCoursePrice();
+        return item;
+    }
 }

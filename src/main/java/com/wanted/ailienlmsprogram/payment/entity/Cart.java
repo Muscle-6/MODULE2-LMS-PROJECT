@@ -5,14 +5,12 @@ import com.wanted.ailienlmsprogram.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "CART")
 @Getter
-@Setter
 @NoArgsConstructor
 public class Cart {
 
@@ -31,4 +29,13 @@ public class Cart {
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
+
+    // 생성 메서드
+    public static Cart create(Course course, Member member) {
+        Cart cart = new Cart();
+        cart.course = course;
+        cart.member = member;
+        cart.createdAt = LocalDateTime.now();
+        return cart;
+    }
 }

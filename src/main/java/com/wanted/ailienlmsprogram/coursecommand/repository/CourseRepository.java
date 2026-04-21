@@ -1,4 +1,4 @@
-package com.wanted.ailienlmsprogram.coursecommand.dao;
+package com.wanted.ailienlmsprogram.coursecommand.repository;
 
 import com.wanted.ailienlmsprogram.coursecommand.entity.Course;
 import com.wanted.ailienlmsprogram.coursecommand.entity.CourseStatus;

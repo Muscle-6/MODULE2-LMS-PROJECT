@@ -56,8 +56,7 @@ public class PostService {
         CommunityPost post = postRepository.findById(postId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "게시글을 찾을 수 없습니다. ID: " + postId));
 
-        post.setPostTitle(request.getPostTitle());
-        post.setPostContent(request.getPostContent());
+        post.updateContent(request.getPostTitle(), request.getPostContent());
     }
 
     @Transactional
@@ -65,6 +64,6 @@ public class PostService {
         CommunityPost post = postRepository.findById(postId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "게시글을 찾을 수 없습니다. ID: " + postId));
 
-        post.setPostIsDeleted(true);
+        post.delete();
     }
 }

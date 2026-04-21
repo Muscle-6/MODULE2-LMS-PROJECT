@@ -1,4 +1,4 @@
-package com.wanted.ailienlmsprogram.lecture.dao;
+package com.wanted.ailienlmsprogram.lecture.repository;
 
 
 import com.wanted.ailienlmsprogram.lecture.entity.Lecture;

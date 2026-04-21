@@ -1,4 +1,4 @@
-package com.wanted.ailienlmsprogram.coursenotice.dao;
+package com.wanted.ailienlmsprogram.coursenotice.repository;
 
 import com.wanted.ailienlmsprogram.coursenotice.entity.CourseNotice;
 import org.springframework.data.jpa.repository.JpaRepository;

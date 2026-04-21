@@ -1,6 +1,6 @@
 package com.wanted.ailienlmsprogram.qna.service;
 
-import com.wanted.ailienlmsprogram.coursecommand.dao.CourseRepository;
+import com.wanted.ailienlmsprogram.coursecommand.repository.CourseRepository;
 import com.wanted.ailienlmsprogram.coursecommand.entity.Course;
 import com.wanted.ailienlmsprogram.member.entity.Member;
 import com.wanted.ailienlmsprogram.member.repository.MemberRepository;
@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class QnaService {
 
     private final QnaRepository qnaRepository;
@@ -111,7 +112,7 @@ public class QnaService {
                 .collect(Collectors.toList());
     }
 
-    @Transactional(readOnly = true) // 단순 조회이기에 readOnly 붙임
+    @Transactional(readOnly = true)
     public QnaModifyResponseDTO modifyPage(Long qnaId, Long memberId) {
 
         Qna qna = qnaRepository.findById(qnaId)

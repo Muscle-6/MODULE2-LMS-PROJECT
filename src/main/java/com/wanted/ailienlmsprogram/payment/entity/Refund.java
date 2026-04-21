@@ -4,14 +4,12 @@ import com.wanted.ailienlmsprogram.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "REFUND")
 @Getter
-@Setter
 @NoArgsConstructor
 public class Refund {
 
@@ -44,4 +42,26 @@ public class Refund {
 
     @Column(name = "refund_processed_at")
     private LocalDateTime refundProcessedAt;
+
+    // 생성 메서드
+    public static Refund create(Payment payment, Member member, String refundReason) {
+        Refund refund = new Refund();
+        refund.payment = payment;
+        refund.member = member;
+        refund.refundReason = refundReason;
+        refund.refundStatus = RefundStatus.REQUESTED;
+        refund.refundRequestedAt = LocalDateTime.now();
+        return refund;
+    }
+
+    // 도메인 메서드
+    public void approve() {
+        this.refundStatus = RefundStatus.APPROVED;
+        this.refundProcessedAt = LocalDateTime.now();
+    }
+
+    public void reject() {
+        this.refundStatus = RefundStatus.REJECTED;
+        this.refundProcessedAt = LocalDateTime.now();
+    }
 }

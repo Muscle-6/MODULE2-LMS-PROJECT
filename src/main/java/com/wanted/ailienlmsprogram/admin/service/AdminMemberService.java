@@ -6,7 +6,7 @@ import com.wanted.ailienlmsprogram.admin.repository.AdminMemberQueryRepository;
 import com.wanted.ailienlmsprogram.member.entity.Member;
 import com.wanted.ailienlmsprogram.global.exception.BusinessException;
 import com.wanted.ailienlmsprogram.global.exception.ErrorCode;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +21,7 @@ import java.util.List;
 * - 관리자 계정은 변경/삭제 대상에서 제외한다.*/
 @Service
 @RequiredArgsConstructor
-@Transactional
+@Transactional(readOnly = true)
 public class AdminMemberService {
 
     private final AdminMemberQueryRepository adminMemberQueryRepository;
@@ -31,7 +31,7 @@ public class AdminMemberService {
         return adminMemberQueryRepository.findMembers(condition);
     }
 
-    //특정 회원의 계정 상태를 토글한다.
+    @Transactional
     public void toggleMemberStatus(Long memberId) {
         Member member = getTarget(memberId);
         validateAdminTarget(member);
@@ -46,7 +46,7 @@ public class AdminMemberService {
         }
     }
 
-    //특정 회원을 삭제 처리한다.
+    @Transactional
     public void deleteMember(Long memberId) {
         Member member = getTarget(memberId);
         validateAdminTarget(member);

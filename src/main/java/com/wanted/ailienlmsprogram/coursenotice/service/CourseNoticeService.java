@@ -1,8 +1,8 @@
 package com.wanted.ailienlmsprogram.coursenotice.service;
 
-import com.wanted.ailienlmsprogram.coursecommand.dao.CourseRepository;
+import com.wanted.ailienlmsprogram.coursecommand.repository.CourseRepository;
 import com.wanted.ailienlmsprogram.coursecommand.entity.Course;
-import com.wanted.ailienlmsprogram.coursenotice.dao.CourseNoticeRepository;
+import com.wanted.ailienlmsprogram.coursenotice.repository.CourseNoticeRepository;
 import com.wanted.ailienlmsprogram.coursenotice.dto.CourseNoticeApplyDTO;
 import com.wanted.ailienlmsprogram.coursenotice.dto.CourseNoticeDetailDTO;
 import com.wanted.ailienlmsprogram.coursenotice.dto.CourseNoticeFindDTO;
@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class CourseNoticeService {
 
     private final CourseNoticeRepository courseNoticeRepository;

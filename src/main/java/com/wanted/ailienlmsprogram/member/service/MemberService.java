@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 /*회원가입 로그인 후 회원 상태 갱신을 담당하는 서비스*/
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class MemberService {
 
     private final MemberRepository memberRepository;
