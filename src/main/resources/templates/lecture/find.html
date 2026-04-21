@@ -212,13 +212,33 @@
 
                         <!-- 강의 정보 -->
                         <div class="flex-1 min-w-0">
-                            <h3 class="text-base font-headline font-bold text-on-surface mb-1 truncate"
-                                th:text="${lecture.lectureTitle}">강의 제목</h3>
+                            <a th:href="@{/instructor/courses/{courseId}/lectures/{lectureId}/watch(courseId=${course.courseId}, lectureId=${lecture.lectureId})}"
+                               class="hover:text-cyan-400 transition-colors">
+                                <h3 class="text-base font-headline font-bold text-on-surface mb-1 truncate"
+                                    th:text="${lecture.lectureTitle}">강의 제목</h3>
+                            </a>
                             <p class="text-xs text-slate-400 font-body line-clamp-1"
                                th:text="${lecture.lectureDescription != null ? lecture.lectureDescription : '강의 설명이 없습니다.'}">
                                 강의 설명
                             </p>
                         </div>
+
+                        <!-- 업로드 상태 배지 -->
+                        <span th:if="${lecture.videoStatus.name() == 'UPLOADING'}"
+                              class="flex-shrink-0 flex items-center gap-1 px-3 py-1 rounded-full bg-yellow-400/10 border border-yellow-400/30 text-yellow-400 text-xs font-label animate-pulse">
+                            <span class="material-symbols-outlined text-sm">cloud_upload</span>
+                            업로드 중
+                        </span>
+                        <span th:if="${lecture.videoStatus.name() == 'NONE'}"
+                              class="flex-shrink-0 flex items-center gap-1 px-3 py-1 rounded-full bg-slate-700/50 border border-slate-600/30 text-slate-500 text-xs font-label">
+                            <span class="material-symbols-outlined text-sm">videocam_off</span>
+                            영상 없음
+                        </span>
+                        <span th:if="${lecture.videoStatus.name() == 'READY'}"
+                              class="flex-shrink-0 flex items-center gap-1 px-3 py-1 rounded-full bg-cyan-400/10 border border-cyan-400/30 text-cyan-400 text-xs font-label">
+                            <span class="material-symbols-outlined text-sm">check_circle</span>
+                            업로드 완료
+                        </span>
 
                         <!-- 등록일 -->
                         <span class="flex-shrink-0 flex items-center gap-1 text-xs text-slate-500 font-label">

@@ -87,7 +87,7 @@ public class TossPaymentClient {
                 return;
             }
             log.error("Toss cancel failed: paymentKey={}, status={}, body={}", paymentKey, e.getStatusCode(), tossError);
-            throw new IllegalArgumentException("토스페이먼츠 결제 취소에 실패했습니다. (Toss 응답: " + tossError + ")");
+            throw new BusinessException(ErrorCode.BAD_REQUEST, "토스페이먼츠 결제 취소에 실패했습니다. (Toss 응답: " + tossError + ")");
         } catch (RestClientException e) {
 
             log.error("Toss cancel failed: paymentKey={}", paymentKey, e);

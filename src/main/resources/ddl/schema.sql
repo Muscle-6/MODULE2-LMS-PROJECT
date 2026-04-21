@@ -82,6 +82,7 @@ CREATE TABLE `LECTURE` (
     `lecture_description` TEXT NULL,
     `lecture_order_index` INT NOT NULL,
     `video_url` VARCHAR(500) NULL,
+    `video_status` ENUM('NONE','UPLOADING','READY') NOT NULL DEFAULT 'READY',
     `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT `PK_LECTURE` PRIMARY KEY (`lecture_id`),
     CONSTRAINT `FK_LECTURE_COURSE` FOREIGN KEY (`course_id`) REFERENCES `COURSE` (`course_id`),

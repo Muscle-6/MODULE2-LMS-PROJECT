@@ -126,7 +126,7 @@ public class CourseNoticeService {
     public CourseNoticeDetailDTO detailNotice(Long noticeId) {
 
         CourseNotice notice = courseNoticeRepository.findById(noticeId)
-                .orElseThrow(()-> new IllegalArgumentException("존재하지 않는 공지사항입니다."));
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "존재하지 않는 공지사항입니다."));
 
         CourseNoticeDetailDTO detail = modelMapper.map(notice, CourseNoticeDetailDTO.class);
 

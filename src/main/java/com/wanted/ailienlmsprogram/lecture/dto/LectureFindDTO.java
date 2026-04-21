@@ -1,5 +1,6 @@
 package com.wanted.ailienlmsprogram.lecture.dto;
 
+import com.wanted.ailienlmsprogram.lecture.entity.Lecture;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -17,7 +18,7 @@ public class LectureFindDTO {
     private String lectureDescription;
     private Integer lectureOrderIndex;
     private String videoUrl;
+    private Lecture.VideoStatus videoStatus;
     private LocalDateTime createdAt;
-
 
 }
