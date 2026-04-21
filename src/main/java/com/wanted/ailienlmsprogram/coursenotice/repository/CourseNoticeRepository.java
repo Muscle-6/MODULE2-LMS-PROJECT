@@ -14,6 +14,7 @@ public interface CourseNoticeRepository extends JpaRepository<CourseNotice, Long
 
     @Query("select cn from CourseNotice cn " +
             "join fetch cn.course " +
+            "join fetch cn.author " +
             "where cn.course.courseId = :courseId " +
             "order by cn.createdAt desc")
     List<CourseNotice> findByCourseIdWithFetchJoin(@Param("courseId") Long courseId);
