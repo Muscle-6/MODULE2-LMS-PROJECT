@@ -131,10 +131,15 @@ public class CourseCommandService {
     }
 
     @Transactional
-    public void editMyCourse(MultipartFile thumbnailFile, Long courseId, CourseApplyDTO request) throws IOException {
+    public void editMyCourse(MultipartFile thumbnailFile, Long courseId, Long memberId, CourseApplyDTO request) throws IOException {
 
         Course course = courseRepository.findById(courseId)
                                         .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "존재하지 않는 강좌입니다."));
+
+        // 본인 소유 강좌인지 확인
+        if (!course.getInstructor().getMemberId().equals(memberId)) {
+            throw new BusinessException(ErrorCode.FORBIDDEN, "본인의 강좌만 수정할 수 있습니다.");
+        }
 
         Continent continent = continentRepository.getReferenceById(request.getContinentId());
 

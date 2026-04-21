@@ -78,9 +78,11 @@ public class CourseNoticeController {
     @PostMapping("/instructor/courses/{courseId}/notices/{noticeId}/edit")
     public String editNotice(@ModelAttribute CourseNoticeApplyDTO request,
                              @PathVariable Long courseId,
-                             @PathVariable Long noticeId) {
+                             @PathVariable Long noticeId,
+                             @AuthenticationPrincipal CustomUserDetails userDetails) {
 
-        courseNoticeService.editNotice(request, noticeId);
+        Long memberId = userDetails.getMember().getMemberId();
+        courseNoticeService.editNotice(request, noticeId, memberId);
 
         return "redirect:/instructor/courses/" + courseId + "/notices";
     }
@@ -102,9 +104,11 @@ public class CourseNoticeController {
     // ===== 삭제 처리 =====
     @PostMapping("/instructor/courses/{courseId}/notices/{noticeId}/delete")
     public String deleteNotice(@PathVariable Long courseId,
-                               @PathVariable Long noticeId) {
+                               @PathVariable Long noticeId,
+                               @AuthenticationPrincipal CustomUserDetails userDetails) {
 
-        courseNoticeService.deleteNotice(noticeId);
+        Long memberId = userDetails.getMember().getMemberId();
+        courseNoticeService.deleteNotice(noticeId, memberId);
 
         return "redirect:/instructor/courses/" + courseId + "/notices";
     }

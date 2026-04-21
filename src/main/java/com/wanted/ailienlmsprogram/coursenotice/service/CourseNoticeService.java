@@ -94,15 +94,18 @@ public class CourseNoticeService {
     // ===== 수정 =====
 
     @Transactional
-    public void editNotice(CourseNoticeApplyDTO request, Long noticeId) {
+    public void editNotice(CourseNoticeApplyDTO request, Long noticeId, Long memberId) {
 
         // 1. 공지사항 조회
         CourseNotice notice = courseNoticeRepository.findById(noticeId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "존재하지 않는 공지사항입니다."));
 
-        // 2. 엔티티 수정 메서드 호출
-        //    → @Transactional + 더티체킹으로 save() 없이 자동 UPDATE
-        //    → editNotice() 내부에서 updatedAt 자동 갱신
+        // 2. 본인이 작성한 공지사항인지 확인
+        if (!notice.getAuthor().getMemberId().equals(memberId)) {
+            throw new BusinessException(ErrorCode.FORBIDDEN, "본인이 작성한 공지사항만 수정할 수 있습니다.");
+        }
+
+        // 3. 엔티티 수정 메서드 호출
         notice.editNotice(
                 request.getCourseNoticeTitle(),
                 request.getCourseNoticeContent()
@@ -112,13 +115,18 @@ public class CourseNoticeService {
     // ===== 삭제 =====
 
     @Transactional
-    public void deleteNotice(Long noticeId) {
+    public void deleteNotice(Long noticeId, Long memberId) {
 
         // 1. 공지사항 조회
         CourseNotice notice = courseNoticeRepository.findById(noticeId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "존재하지 않는 공지사항입니다."));
 
-        // 2. DB에서 삭제
+        // 2. 본인이 작성한 공지사항인지 확인
+        if (!notice.getAuthor().getMemberId().equals(memberId)) {
+            throw new BusinessException(ErrorCode.FORBIDDEN, "본인이 작성한 공지사항만 삭제할 수 있습니다.");
+        }
+
+        // 3. DB에서 삭제
         courseNoticeRepository.delete(notice);
     }
 
