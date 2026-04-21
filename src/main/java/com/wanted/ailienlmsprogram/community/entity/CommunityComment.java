@@ -2,7 +2,6 @@ package com.wanted.ailienlmsprogram.community.entity;
 
 import com.wanted.ailienlmsprogram.member.entity.Member;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
@@ -10,7 +9,6 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
 @Table(name = "continent_comment")
 public class CommunityComment {
 

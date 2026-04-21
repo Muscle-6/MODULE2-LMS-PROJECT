@@ -1,7 +1,7 @@
 package com.wanted.ailienlmsprogram.lecture.service;
 
 import com.wanted.ailienlmsprogram.global.gcs.GcsService;
-import com.wanted.ailienlmsprogram.lecture.dao.LectureRepository;
+import com.wanted.ailienlmsprogram.lecture.repository.LectureRepository;
 import com.wanted.ailienlmsprogram.lecture.entity.Lecture;
 import com.wanted.ailienlmsprogram.global.exception.BusinessException;
 import com.wanted.ailienlmsprogram.global.exception.ErrorCode;

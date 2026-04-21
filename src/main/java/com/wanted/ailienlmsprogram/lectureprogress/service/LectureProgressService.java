@@ -2,9 +2,9 @@ package com.wanted.ailienlmsprogram.lectureprogress.service;
 
 import com.wanted.ailienlmsprogram.enrollment.entity.Enrollment;
 import com.wanted.ailienlmsprogram.enrollment.repository.EnrollmentRepository;
-import com.wanted.ailienlmsprogram.lecture.dao.LectureRepository;
+import com.wanted.ailienlmsprogram.lecture.repository.LectureRepository;
 import com.wanted.ailienlmsprogram.lecture.entity.Lecture;
-import com.wanted.ailienlmsprogram.lectureprogress.dao.LectureProgressRepository;
+import com.wanted.ailienlmsprogram.lectureprogress.repository.LectureProgressRepository;
 import com.wanted.ailienlmsprogram.lectureprogress.entity.LectureProgress;
 import com.wanted.ailienlmsprogram.member.entity.Member;
 import com.wanted.ailienlmsprogram.member.repository.MemberRepository;
@@ -20,6 +20,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class LectureProgressService {
 
     private final LectureProgressRepository lectureProgressRepository;

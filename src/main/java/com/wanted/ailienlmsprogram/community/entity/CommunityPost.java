@@ -2,7 +2,6 @@ package com.wanted.ailienlmsprogram.community.entity;
 
 import com.wanted.ailienlmsprogram.member.entity.Member;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -13,16 +12,23 @@ import java.util.List;
 @Table(name = "continent_post")
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
 public class CommunityPost {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "post_id")
     private Long postId;
 
+    @Column(name = "continent_id")
     private Long continentId;
+
+    @Column(name = "post_title")
     private String postTitle;
+
+    @Column(name = "post_content", columnDefinition = "TEXT")
     private String postContent;
+
+    @Column(name = "post_is_deleted")
     private boolean postIsDeleted;
 
     @Column(name = "post_is_notice", nullable = false)
@@ -43,22 +49,17 @@ public class CommunityPost {
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CommunityComment> comments = new ArrayList<>();
 
-    public void setPostIsNotice(boolean postIsNotice) {
-        this.postIsNotice = postIsNotice;
-    }
-
-    public void setPostTitle(String postTitle) {
+    // 도메인 메서드
+    public void updateContent(String postTitle, String postContent) {
         this.postTitle = postTitle;
-    }
-
-    public void setPostContent(String postContent) {
         this.postContent = postContent;
     }
 
-    public void setPostIsDeleted(boolean postIsDeleted) {
-        this.postIsDeleted = postIsDeleted;
+    public void delete() {
+        this.postIsDeleted = true;
     }
 
+    // 생성 메서드
     public static CommunityPost create(Long continentId, String title, String content, Member member, boolean isNotice) {
         CommunityPost post = new CommunityPost();
         post.continentId = continentId;

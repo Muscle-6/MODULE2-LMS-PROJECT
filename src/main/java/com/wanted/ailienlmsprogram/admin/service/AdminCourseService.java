@@ -19,7 +19,7 @@ import java.util.List;
 * - 관리자 강좌 관리 기능의 핵심 흐름을 처리한다.*/
 @Service
 @RequiredArgsConstructor
-@Transactional
+@Transactional(readOnly = true)
 public class AdminCourseService {
 
     private final AdminCourseQueryRepository adminCourseQueryRepository;
@@ -42,7 +42,7 @@ public class AdminCourseService {
         return detail;
     }
 
-    //특정 강좌의 공개 상태를 변경한다.
+    @Transactional
     public void changeCourseStatus(Long courseId, CourseStatus targetStatus) {
         Course course = getTarget(courseId);
 

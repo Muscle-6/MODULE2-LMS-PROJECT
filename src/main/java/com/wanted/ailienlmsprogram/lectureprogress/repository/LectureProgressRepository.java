@@ -1,4 +1,4 @@
-package com.wanted.ailienlmsprogram.lectureprogress.dao;
+package com.wanted.ailienlmsprogram.lectureprogress.repository;
 
 import com.wanted.ailienlmsprogram.lectureprogress.entity.LectureProgress;
 import org.springframework.data.jpa.repository.JpaRepository;

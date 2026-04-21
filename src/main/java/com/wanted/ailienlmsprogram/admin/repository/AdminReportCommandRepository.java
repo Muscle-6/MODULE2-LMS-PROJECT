@@ -38,7 +38,7 @@ public class AdminReportCommandRepository {
         }
 
         if (!post.isPostIsDeleted()) {
-            post.setPostIsDeleted(true);
+            post.delete();
         }
     }
 

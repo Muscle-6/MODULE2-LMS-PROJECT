@@ -21,7 +21,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
@@ -84,20 +83,12 @@ public class PaymentService {
                 + "-"
                 + UUID.randomUUID().toString().replace("-", "").substring(0, 8).toUpperCase();
 
-        Payment payment = new Payment();
-        payment.setMember(member);
-        payment.setPaymentOrderNo(orderNo);
-        payment.setPaymentTotalPrice(totalPrice);
-        payment.setPaymentCompletedAt(LocalDateTime.now());
+        Payment payment = Payment.create(member, orderNo, totalPrice);
         paymentRepository.save(payment);
 
-        List<PaymentItem> items = cartItems.stream().map(cart -> {
-            PaymentItem item = new PaymentItem();
-            item.setPayment(payment);
-            item.setCourse(cart.getCourse());
-            item.setItemPriceAtPurchase(cart.getCourse().getCoursePrice());
-            return item;
-        }).toList();
+        List<PaymentItem> items = cartItems.stream()
+                .map(cart -> PaymentItem.create(payment, cart.getCourse()))
+                .toList();
         paymentItemRepository.saveAll(items);
 
         for (Cart cart : cartItems) {
@@ -157,24 +148,13 @@ public class PaymentService {
 
 
         // 4. Payment 생성
-        Payment payment = new Payment();
-        payment.setMember(member);
-        payment.setPaymentOrderNo(orderId);
-        payment.setTossPaymentKey(paymentKey);
-        payment.setPaymentTotalPrice(expectedAmount);
-        payment.setPaymentCompletedAt(LocalDateTime.now());
+        Payment payment = Payment.createToss(member, orderId, paymentKey, expectedAmount);
         paymentRepository.save(payment);
 
-
-
         // 5. PaymentItem 생성 + 수강 등록
-        List<PaymentItem> items = cartItems.stream().map(cart -> {
-            PaymentItem item = new PaymentItem();
-            item.setPayment(payment);
-            item.setCourse(cart.getCourse());
-            item.setItemPriceAtPurchase(cart.getCourse().getCoursePrice());
-            return item;
-        }).toList();
+        List<PaymentItem> items = cartItems.stream()
+                .map(cart -> PaymentItem.create(payment, cart.getCourse()))
+                .toList();
         paymentItemRepository.saveAll(items);
 
         for (Cart cart : cartItems) {
@@ -199,13 +179,7 @@ public class PaymentService {
             throw new BusinessException(ErrorCode.BAD_REQUEST, "이미 환불이 요청되었거나 처리된 결제입니다.");
         }
 
-        Refund refund = new Refund();
-        refund.setPayment(payment);
-        refund.setMember(member);
-        refund.setRefundReason(refundReason);
-        refund.setRefundStatus(Refund.RefundStatus.REQUESTED);
-        refund.setRefundRequestedAt(LocalDateTime.now());
-
+        Refund refund = Refund.create(payment, member, refundReason);
         refundRepository.save(refund);
     }
 }

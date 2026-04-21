@@ -2,7 +2,7 @@ package com.wanted.ailienlmsprogram.coursecommand.service;
 
 import com.wanted.ailienlmsprogram.continent.entity.Continent;
 import com.wanted.ailienlmsprogram.continent.repository.ContinentRepository;
-import com.wanted.ailienlmsprogram.coursecommand.dao.CourseRepository;
+import com.wanted.ailienlmsprogram.coursecommand.repository.CourseRepository;
 import com.wanted.ailienlmsprogram.coursecommand.dto.CourseDetailResponseDTO;
 import com.wanted.ailienlmsprogram.coursecommand.dto.CourseFindResponseDTO;
 import com.wanted.ailienlmsprogram.coursecommand.dto.CourseApplyDTO;
@@ -13,7 +13,7 @@ import com.wanted.ailienlmsprogram.user.entity.User;
 import com.wanted.ailienlmsprogram.user.repository.UserRepository;
 import com.wanted.ailienlmsprogram.global.exception.BusinessException;
 import com.wanted.ailienlmsprogram.global.exception.ErrorCode;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -28,7 +28,8 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class CourseCommandService {
 
     private final CourseRepository courseRepository;

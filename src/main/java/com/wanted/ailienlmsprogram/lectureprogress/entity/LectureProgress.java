@@ -3,12 +3,10 @@ package com.wanted.ailienlmsprogram.lectureprogress.entity;
 import com.wanted.ailienlmsprogram.lecture.entity.Lecture;
 import com.wanted.ailienlmsprogram.member.entity.Member;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
-@AllArgsConstructor
 @Getter
 @Entity
 @Table(name = "lecture_progress")

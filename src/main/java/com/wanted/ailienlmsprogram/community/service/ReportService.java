@@ -13,13 +13,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
+@Transactional(readOnly = true)
 public class ReportService {
 
     private final ReportRepository reportRepository;
     private final PostRepository postRepository;       // 게시글 조회를 위해 추가
     private final CommentRepository commentRepository; // 댓글 조회를 위해 추가
 
+    @Transactional
     public void createReport(Long reporterNo, String targetType, Long targetNo, String reason) {
         String reportedTitle = null;
         String reportedContent = null;

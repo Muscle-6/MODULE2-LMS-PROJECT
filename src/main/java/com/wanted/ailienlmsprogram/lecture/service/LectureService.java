@@ -1,8 +1,8 @@
 package com.wanted.ailienlmsprogram.lecture.service;
 
-import com.wanted.ailienlmsprogram.coursecommand.dao.CourseRepository;
+import com.wanted.ailienlmsprogram.coursecommand.repository.CourseRepository;
 import com.wanted.ailienlmsprogram.coursecommand.entity.Course;
-import com.wanted.ailienlmsprogram.lecture.dao.LectureRepository;
+import com.wanted.ailienlmsprogram.lecture.repository.LectureRepository;
 import com.wanted.ailienlmsprogram.lecture.dto.LectureAddDTO;
 import com.wanted.ailienlmsprogram.lecture.dto.LectureFindDTO;
 import com.wanted.ailienlmsprogram.lecture.dto.LectureResponseDTO;
