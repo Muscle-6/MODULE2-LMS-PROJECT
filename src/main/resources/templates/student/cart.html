@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Module02 LMS - 수강 바구니</title>
+    <title>Module02 LMS - 장바구니 프로토콜</title>
 
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
     <script src="https://js.tosspayments.com/v2/standard"></script>
 
@@ -16,14 +16,20 @@
             theme: {
                 extend: {
                     colors: {
-                        "ow-orange": "#FF9C00",
-                        "ow-orange-hover": "#FFB84D",
-                        "ow-blue": "#00B4FF",
-                        "ow-dark": "#1D2127",
+                        "surface-container-low": "#10131a",
+                        "primary": "#99f7ff",
+                        "on-primary-container": "#00555a",
+                        "surface-container": "#161a21",
+                        "surface-container-high": "#1c2028",
+                        "outline-variant": "#45484f",
+                        "secondary": "#c97cff",
+                        "on-surface": "#ecedf6",
+                        "on-surface-variant": "#a9abb3"
                     },
                     fontFamily: {
-                        "ow": ["Oswald", "sans-serif"],
-                        "body": ["Noto Sans KR", "sans-serif"],
+                        "headline": ["Space Grotesk"],
+                        "body": ["Inter"],
+                        "label": ["Space Grotesk"]
                     }
                 },
             },
@@ -31,346 +37,210 @@
     </script>
 
     <style>
-        body { font-family: 'Noto Sans KR', sans-serif; background-color: #0b0e14; color: #F0F0F0; }
-        .bg-sci-fi {
-            position: fixed; inset: 0; z-index: -3;
-            background-image: radial-gradient(circle at 30% 50%, rgba(0,0,0,.2) 0%, rgba(0,0,0,.9) 100%),
-            url("https://images.unsplash.com/photo-1541701494587-cb58502866ab?q=80&w=2070&auto=format&fit=crop");
-            background-size: cover; background-position: center;
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0b0e14;
+            color: #ecedf6;
+            background-image: radial-gradient(circle at 50% 50%, rgba(153, 247, 255, 0.05) 0%, transparent 50%);
         }
-        .bg-overlay {
-            position: fixed; inset: 0; z-index: -2;
-            background: linear-gradient(90deg, rgba(11,14,20,1) 0%, rgba(11,14,20,.8) 30%, transparent 100%);
-        }
-        .ow-font-italic { font-family: 'Oswald', sans-serif; font-style: italic; text-transform: uppercase; }
-        .material-symbols-outlined { font-variation-settings: 'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24; vertical-align: middle; }
-
-        /* ── 공통 카드 ── */
-        .ow-card {
-            background: rgba(29,33,39,.75); backdrop-filter: blur(16px);
-            border: 1px solid rgba(255,255,255,.08); border-radius: 4px;
-        }
-
-        /* ── 2단 레이아웃 ── */
-        .cart-layout {
-            display: grid;
-            grid-template-columns: 1fr 300px;
-            gap: 20px;
-            align-items: start;
-        }
-
-        /* ── 강좌 목록 ── */
-        .select-all-bar {
-            display: flex; align-items: center; gap: 10px;
-            padding: 13px 20px;
-            border-bottom: 1px solid rgba(255,255,255,.06);
-            background: rgba(0,0,0,.15);
-        }
-        .course-item {
-            display: flex; align-items: center; gap: 14px;
-            padding: 16px 20px;
-            border-bottom: 1px solid rgba(255,255,255,.05);
-            border-left: 3px solid transparent;
-            transition: background .15s, border-left-color .15s;
-        }
-        .course-item:last-child { border-bottom: none; }
-        .course-item:hover { background: rgba(255,255,255,.02); }
-        .course-item.selected { background: rgba(255,156,0,.04); border-left-color: #FF9C00; }
-
-        .course-thumb {
-            width: 76px; height: 52px; border-radius: 3px; flex-shrink: 0;
-            background: rgba(255,255,255,.05);
-            border: 1px solid rgba(255,255,255,.07);
-            display: flex; align-items: center; justify-content: center;
-        }
-        .course-title {
-            font-size: 14px; font-weight: 600; color: #e5e7eb;
-            margin-bottom: 4px; line-height: 1.4;
-        }
-        .course-instructor { font-size: 12px; color: #6b7280; }
-        .course-price {
-            font-family: 'Oswald', sans-serif; font-style: italic;
-            font-size: 17px; color: #00B4FF; font-weight: 700;
-            white-space: nowrap; flex-shrink: 0;
-        }
-        .delete-btn {
-            flex-shrink: 0; background: none; border: none;
-            color: rgba(255,255,255,.18); cursor: pointer;
-            transition: color .15s; display: flex; align-items: center; padding: 4px;
-        }
-        .delete-btn:hover { color: #ef4444; }
-
-        /* ── 체크박스 ── */
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; vertical-align: middle; }
         .cart-checkbox {
-            appearance: none; -webkit-appearance: none;
-            width: 18px; height: 18px; flex-shrink: 0;
-            border: 2px solid rgba(255,255,255,.2); border-radius: 3px;
-            cursor: pointer; transition: all .15s; position: relative;
+            appearance: none; width: 18px; height: 18px;
+            border: 2px solid rgba(153, 247, 255, 0.3); border-radius: 4px;
+            cursor: pointer; transition: all 0.2s; position: relative;
         }
-        .cart-checkbox:checked { background: #FF9C00; border-color: #FF9C00; }
+        .cart-checkbox:checked { background: #99f7ff; border-color: #99f7ff; }
         .cart-checkbox:checked::after {
-            content: ''; position: absolute;
-            left: 4px; top: 1px; width: 5px; height: 9px;
-            border: 2px solid #000; border-top: none; border-left: none;
-            transform: rotate(45deg);
+            content: 'check'; font-family: 'Material Symbols Outlined';
+            position: absolute; color: #005f64; font-size: 14px; left: 0; top: 0; font-weight: bold;
         }
-        .cart-checkbox:hover { border-color: #FF9C00; }
-
-        /* ── 결제 패널 ── */
-        .payment-panel { position: sticky; top: 100px; }
-        .panel-section {
-            padding: 16px 18px;
-            border-bottom: 1px solid rgba(255,255,255,.06);
-        }
-        .panel-section:last-child { border-bottom: none; }
-        .panel-section-title {
-            font-family: 'Oswald', sans-serif; font-style: italic;
-            font-size: 11px; color: #4b5563; letter-spacing: 1.5px;
-            text-transform: uppercase; margin-bottom: 12px;
-        }
-        .discount-row {
-            display: flex; justify-content: space-between; align-items: center;
-            font-size: 13px; color: #6b7280; margin-bottom: 9px;
-        }
-        .discount-row:last-child { margin-bottom: 0; }
-        .discount-tag {
-            font-size: 10px; padding: 1px 5px; border-radius: 2px;
-            background: rgba(255,255,255,.06); color: #4b5563; margin-left: 5px;
-        }
-        .summary-row {
-            display: flex; justify-content: space-between;
-            font-size: 13px; color: #6b7280; margin-bottom: 7px;
-        }
-        .summary-row:last-child { margin-bottom: 0; }
-        .summary-val { color: #9ca3af; font-weight: 500; }
-        .total-row {
-            display: flex; justify-content: space-between; align-items: center;
-            padding-top: 12px; margin-top: 2px;
-            border-top: 1px solid rgba(255,255,255,.07);
-        }
-        .total-label { font-family: 'Oswald', sans-serif; font-style: italic; font-size: 12px; color: #6b7280; letter-spacing: 1px; text-transform: uppercase; }
-        .total-amount { font-family: 'Oswald', sans-serif; font-style: italic; font-size: 24px; font-weight: 700; color: #FF9C00; }
-
-        .checkout-btn {
-            display: block; width: 100%; padding: 14px;
-            background: #FF9C00; color: #000;
-            font-family: 'Oswald', sans-serif; font-style: italic;
-            font-size: 14px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
-            border: none; cursor: pointer; transition: background .15s;
-            clip-path: polygon(0 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%);
-        }
-        .checkout-btn:hover:not(:disabled) { background: #FFB84D; }
-        .checkout-btn:disabled {
-            background: rgba(255,255,255,.08); color: rgba(255,255,255,.2);
-            cursor: not-allowed; clip-path: none;
-        }
-
-        /* 알림 */
-        .alert-success { background: rgba(34,197,94,.08); border: 1px solid rgba(34,197,94,.25); color: #86efac; padding: 13px 16px; border-radius: 4px; font-size: 13px; margin-bottom: 16px; }
-        .alert-error   { background: rgba(239,68,68,.08); border: 1px solid rgba(239,68,68,.25); color: #fca5a5; padding: 13px 16px; border-radius: 4px; font-size: 13px; margin-bottom: 16px; }
     </style>
 </head>
 
-<body class="min-h-screen relative">
-<div class="bg-sci-fi"></div>
-<div class="bg-overlay"></div>
+<body class="min-h-screen">
 
-<!-- ── 헤더 ── -->
-<header class="fixed top-0 left-0 right-0 z-50 flex justify-between items-start p-6 pointer-events-none">
-    <div class="pointer-events-auto">
-        <h1 class="ow-font-italic text-5xl font-bold text-white tracking-wider drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">
-            <span class="text-ow-orange">MODULE02</span> LMS
-        </h1>
-        <p class="font-body text-xs text-gray-400 tracking-widest mt-1">ALIEN UNIVERSE LEARNING PLATFORM</p>
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-6 h-16 bg-slate-950/40 backdrop-blur-xl shadow-[0_0_20px_rgba(153,247,255,0.1)]">
+    <div class="flex items-center gap-8">
+        <span class="text-2xl font-bold tracking-tighter text-cyan-400 drop-shadow-[0_0_8px_rgba(153,247,255,0.6)] font-headline uppercase">MODULE02 LMS</span>
     </div>
-    <div class="pointer-events-auto flex items-stretch bg-white text-black rounded-sm shadow-[0_5px_20px_rgba(0,0,0,0.6)] overflow-hidden" th:if="${loginMember != null}">
-        <div class="bg-gray-200 px-4 py-2 flex items-center justify-center border-r border-gray-300">
-            <span class="material-symbols-outlined text-gray-700 text-4xl">account_circle</span>
+    <div class="flex items-center gap-4" th:if="${loginMember != null}">
+        <div class="text-right hidden sm:block mr-2">
+            <span class="text-xs font-label tracking-widest text-cyan-400" th:text="|${loginMember.name} 님|"></span>
+            <span class="text-[10px] text-slate-500 font-label tracking-tight ml-1" th:text="|(${loginMember.role})|"></span>
         </div>
-        <div class="px-5 py-1 flex flex-col justify-center min-w-[140px]">
-            <span class="ow-font-italic font-bold text-xl leading-tight uppercase" th:text="${loginMember.name}">PLAYER</span>
-            <span class="font-body text-[11px] text-gray-600 font-bold tracking-wider" th:text="|RANK: ${loginMember.role}|">RANK</span>
-        </div>
-        <a th:href="@{/logout}" class="bg-ow-orange hover:bg-ow-orange-hover px-5 flex items-center justify-center transition-colors group cursor-pointer border-l border-orange-400">
-            <span class="material-symbols-outlined text-white group-hover:scale-110 transition-transform text-2xl">logout</span>
+        <a th:href="@{/logout}" class="flex items-center gap-1 text-slate-400 hover:text-red-400 transition-colors text-xs font-label">
+            <span class="material-symbols-outlined text-sm">power_settings_new</span> 로그아웃
         </a>
     </div>
 </header>
 
-<!-- ── 메인 ── -->
-<main class="min-h-screen max-w-6xl mx-auto px-6 pt-36 pb-16">
-    <div class="mb-8 flex items-center justify-between">
-        <h2 class="ow-font-italic text-4xl font-bold text-white tracking-wide flex items-center gap-3">
-            <span class="text-ow-orange">></span>
-            CART <span class="text-gray-600 text-xl font-normal">// 수강 바구니</span>
-        </h2>
-        <a th:href="@{/student}" class="font-body text-sm text-gray-400 hover:text-ow-orange transition-colors">← 학생 홈</a>
-    </div>
+<aside class="fixed left-0 top-16 bottom-0 flex flex-col z-40 bg-slate-950/80 backdrop-blur-lg w-64 shadow-[4px_0_24px_rgba(0,0,0,0.5)] border-r border-white/5 transition-all duration-300">
 
-    <div th:if="${successMsg}" class="alert-success" th:text="${successMsg}"></div>
-    <div th:if="${errorMsg}"   class="alert-error"   th:text="${errorMsg}"></div>
-
-    <!-- 빈 바구니 -->
-    <div th:if="${#lists.isEmpty(cartItems)}" class="ow-card" style="padding:80px 24px; text-align:center;">
-        <span class="material-symbols-outlined text-6xl text-gray-600 mb-4 block">shopping_cart</span>
-        <p class="ow-font-italic text-2xl text-gray-500">CART IS EMPTY</p>
-        <p class="font-body text-sm text-gray-600 mt-2">대륙 탐색에서 강좌를 담아보십시오.</p>
-    </div>
-
-    <!-- 2단 레이아웃 -->
-    <div th:if="${!#lists.isEmpty(cartItems)}" class="cart-layout">
-
-        <!-- 좌측: 강좌 목록 -->
-        <div>
-            <div class="ow-card" style="overflow:hidden;">
-                <div class="select-all-bar">
-                    <input type="checkbox" id="select-all" class="cart-checkbox"/>
-                    <label for="select-all" class="font-body text-sm text-gray-400 cursor-pointer select-none">전체 선택</label>
-                    <span class="font-body text-xs text-gray-600 ml-1" id="select-count-text"></span>
-                </div>
-                <div id="cart-list">
-                    <div th:each="item : ${cartItems}"
-                         class="course-item cart-item-row"
-                         th:data-cart-id="${item.cartId}"
-                         th:data-price="${item.price}">
-
-                        <input type="checkbox" class="cart-checkbox item-checkbox"
-                               th:data-cart-id="${item.cartId}" th:data-price="${item.price}"/>
-
-                        <div class="course-thumb">
-                            <span class="material-symbols-outlined text-gray-600" style="font-size:26px; font-variation-settings:'FILL' 0,'wght' 200,'GRAD' 0,'opsz' 24;">school</span>
-                        </div>
-
-                        <div style="flex:1; min-width:0;">
-                            <p class="course-title" th:text="${item.courseTitle}">강좌명</p>
-                            <p class="course-instructor">
-                                <span class="material-symbols-outlined" style="font-size:11px;">person</span>
-                                <span th:text="${item.instructorName}">강사명</span>
-                            </p>
-                        </div>
-
-                        <p class="course-price" th:text="${#numbers.formatInteger(item.price, 3, 'COMMA')} + '원'">0원</p>
-
-                        <form th:action="@{/student/cart/{id}/delete(id=${item.cartId})}" method="post">
-                            <button type="submit" class="delete-btn" title="삭제">
-                                <span class="material-symbols-outlined" style="font-size:17px; font-variation-settings:'FILL' 0,'wght' 300,'GRAD' 0,'opsz' 24;">close</span>
-                            </button>
-                        </form>
-                    </div>
+    <div class="p-6 border-b border-white/5" th:if="${loginMember != null}">
+        <div class="flex items-center gap-4 group">
+            <div class="h-11 w-11 rounded-xl bg-cyan-400/10 flex items-center justify-center border border-cyan-400/20 shadow-[0_0_15px_rgba(153,247,255,0.1)] group-hover:border-cyan-400/40 transition-all">
+                <span class="material-symbols-outlined text-cyan-400 text-2xl" style="font-variation-settings: 'FILL' 1;">military_tech</span>
+            </div>
+            <div class="flex flex-col">
+                <p class="text-xs font-headline font-black text-cyan-400 tracking-tight leading-none mb-1 uppercase" th:text="${loginMember.name}">OPERATIVE</p>
+                <div class="flex items-center gap-1">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <p class="text-[10px] font-label text-slate-500 font-bold tracking-tighter uppercase" th:text="|RANK: ${loginMember.role}|">RANK</p>
                 </div>
             </div>
-            <div style="margin-top:10px;">
-                <a th:href="@{/student}" class="font-body text-xs text-gray-600 hover:text-ow-orange transition-colors">← 강좌 더 보기</a>
+        </div>
+    </div>
+
+    <nav class="flex-1 py-6 space-y-1">
+        <div class="px-6 mb-4">
+            <span class="text-[9px] font-label font-black text-slate-600 uppercase tracking-[0.3em]">Main Protocol</span>
+        </div>
+
+        <a href="/"
+           class="flex items-center gap-4 py-3.5 px-6 transition-all duration-200 group text-slate-500 hover:bg-white/5 hover:text-slate-300">
+            <span class="material-symbols-outlined text-xl group-hover:scale-110 transition-transform">public</span>
+            <span class="text-sm font-label font-bold tracking-wide">대륙 탐색</span>
+        </a>
+
+        <a th:href="@{/student}"
+           class="flex items-center gap-4 py-3.5 px-6 transition-all duration-200 group text-cyan-400 bg-cyan-400/10 border-r-4 border-cyan-400">
+            <span class="material-symbols-outlined text-xl group-hover:scale-110 transition-transform">rocket_launch</span>
+            <span class="text-sm font-label font-bold tracking-wide">학생 홈</span>
+        </a>
+    </nav>
+
+    <div class="p-6 mt-auto">
+        <div class="relative group cursor-help">
+            <div class="absolute -inset-1 bg-gradient-to-r from-cyan-500/20 to-purple-500/20 rounded-xl blur opacity-25 group-hover:opacity-50 transition duration-1000"></div>
+
+            <div class="relative w-full bg-slate-900/50 border border-white/10 p-4 rounded-xl">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-[9px] font-label font-black text-slate-500 uppercase tracking-widest">Network Status</span>
+                    <span class="flex h-2 w-2">
+                        <span class="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-cyan-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
+                    </span>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <span class="material-symbols-outlined text-primary text-sm animate-pulse">radar</span>
+                    <div class="flex-1">
+                        <div class="h-1 w-full bg-white/5 rounded-full overflow-hidden">
+                            <div class="h-full bg-primary w-[85%] shadow-[0_0_8px_#99f7ff]"></div>
+                        </div>
+                    </div>
+                </div>
+                <p class="mt-2 text-[9px] font-label text-primary/60 text-center uppercase tracking-[0.2em]">System Online</p>
+            </div>
+        </div>
+    </div>
+</aside>
+
+<main class="ml-64 pt-24 px-8 pb-12">
+    <div class="mb-10">
+        <h1 class="text-4xl font-headline font-bold text-on-surface tracking-tight mb-2 uppercase">Cart Storage</h1>
+        <p class="text-on-surface-variant font-body">확보한 교육 물자를 확인하고 결제 프로토콜을 시작하십시오.</p>
+    </div>
+
+    <div th:if="${#lists.isEmpty(cartItems)}" class="flex flex-col items-center justify-center border-2 border-dashed border-outline-variant/20 rounded-2xl min-h-[300px] bg-surface-container-low">
+        <span class="material-symbols-outlined text-5xl text-outline-variant mb-4">inventory_2</span>
+        <p class="font-label text-sm tracking-widest text-slate-500">바구니가 비어 있습니다.</p>
+    </div>
+
+    <div th:unless="${#lists.isEmpty(cartItems)}" class="grid grid-cols-1 xl:grid-cols-3 gap-8 items-start">
+        <div class="xl:col-span-2 space-y-4">
+            <div class="bg-surface-container border border-outline-variant/10 rounded-xl overflow-hidden">
+                <div class="px-6 py-4 bg-surface-container-high border-b border-outline-variant/10 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <input type="checkbox" id="select-all" class="cart-checkbox"/>
+                        <label for="select-all" class="text-xs font-label tracking-widest text-on-surface-variant cursor-pointer uppercase">Select All Units</label>
+                    </div>
+                    <span id="select-count-text" class="text-[10px] font-label text-primary tracking-widest"></span>
+                </div>
+                <div id="cart-list">
+                    <div th:each="item : ${cartItems}" class="flex items-center gap-6 px-6 py-5 border-b border-outline-variant/5 last:border-none hover:bg-white/[0.02] transition-colors" th:data-cart-id="${item.cartId}" th:data-price="${item.price}">
+                        <input type="checkbox" class="cart-checkbox item-checkbox" th:data-cart-id="${item.cartId}" th:data-price="${item.price}"/>
+                        <div class="flex-1 min-w-0">
+                            <h4 class="text-base font-bold text-on-surface truncate" th:text="${item.courseTitle}">강좌명</h4>
+                            <p class="text-xs text-on-surface-variant font-label tracking-tighter" th:text="|Instructor: ${item.instructorName}|">강사명</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-lg font-headline font-bold text-primary" th:text="${#numbers.formatInteger(item.price, 3, 'COMMA')} + '원'">0원</p>
+                            <form th:action="@{/student/cart/{id}/delete(id=${item.cartId})}" method="post">
+                                <button type="submit" class="text-outline hover:text-red-400 transition-colors mt-1"><span class="material-symbols-outlined text-lg">close</span></button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- 우측: 결제 패널 -->
-        <div class="payment-panel">
-            <div class="ow-card" style="overflow:hidden;">
-
-                <div class="panel-section">
-                    <div class="summary-row">
-                        <span>강좌 금액</span>
-                        <span class="summary-val" id="panel-subtotal">0원</span>
-                    </div>
-                    <div class="total-row">
-                        <span class="total-label">결제 금액</span>
-                        <span class="total-amount" id="panel-total">0원</span>
-                    </div>
+        <div class="bg-surface-container border border-outline-variant/20 rounded-xl p-6 sticky top-24 shadow-xl">
+            <h3 class="text-xs font-label tracking-[0.2em] text-outline mb-6 uppercase">Order Summary</h3>
+            <div class="space-y-4 mb-8">
+                <div class="flex justify-between items-center">
+                    <span class="text-sm text-on-surface-variant">선택된 항목</span>
+                    <span id="selected-count" class="text-sm font-bold text-on-surface">0개</span>
                 </div>
-
-                <div class="panel-section">
-                    <div class="font-body text-xs text-gray-600 mb-3">
-                        선택된 강좌: <span id="selected-count" class="text-gray-400 font-bold">0개</span>
-                    </div>
-                    <button id="toss-checkout-btn" class="checkout-btn" disabled>결제하기 &gt;</button>
-                    <p class="font-body text-xs text-gray-700 text-center mt-3 leading-relaxed">
-                        주문 내용을 확인하였으며 결제에 동의합니다.
-                    </p>
+                <div class="flex justify-between items-end pt-4 border-t border-outline-variant/10">
+                    <span class="text-xs font-label text-outline uppercase tracking-widest">Total Amount</span>
+                    <span id="panel-total" class="text-3xl font-headline font-bold text-primary tracking-tighter">0원</span>
                 </div>
-
             </div>
+            <button id="toss-checkout-btn" class="w-full py-4 rounded-lg bg-primary text-on-primary-container font-label text-xs tracking-[0.2em] font-bold hover:scale-[1.02] active:scale-95 transition-all shadow-[0_0_20px_rgba(153,247,255,0.15)] disabled:opacity-20 uppercase" disabled>
+                Initiate Payment
+            </button>
+            <p class="text-[10px] text-center text-outline mt-4 font-body leading-relaxed">상기 결제 내용을 확인하였으며,<br>구매 조건 및 개인정보 처리방침에 동의합니다.</p>
         </div>
     </div>
 </main>
 
 <script th:inline="javascript">
     const TOSS_CLIENT_KEY = /*[[${tossClientKey}]]*/ '';
-    const CUSTOMER_KEY    = /*[[|member_${loginMember.memberId}|]]*/ '';
     const CUSTOMER_NAME   = /*[[${loginMember.name}]]*/ '';
     const CUSTOMER_EMAIL  = /*[[${loginMember.email}]]*/ '';
-    function getCsrfToken() {
-        const m = document.cookie.match(/(?:^|;\s*)XSRF-TOKEN=([^;]+)/);
-        return m ? decodeURIComponent(m[1]) : '';
-    }
-</script>
+    function getCsrfToken() { const m = document.cookie.match(/(?:^|;\s*)XSRF-TOKEN=([^;]+)/); return m ? decodeURIComponent(m[1]) : ''; }
 
-<script>
     const allCheckboxes = document.querySelectorAll('.item-checkbox');
-    function getSelected() { return Array.from(document.querySelectorAll('.item-checkbox:checked')); }
-    function fmt(n) { return n.toLocaleString('ko-KR') + '원'; }
-
     function updateSummary() {
-        const checked = getSelected();
-        const total   = checked.reduce((s, cb) => s + parseInt(cb.dataset.price, 10), 0);
-        const count   = checked.length;
-
-        document.getElementById('selected-count').textContent  = count + '개';
-        document.getElementById('panel-subtotal').textContent  = fmt(total);
-        document.getElementById('panel-total').textContent     = fmt(total);
-
-        const ct = document.getElementById('select-count-text');
-        if (ct) ct.textContent = count + ' / ' + allCheckboxes.length;
-
-        document.querySelectorAll('.cart-item-row').forEach(row => {
-            row.classList.toggle('selected', row.querySelector('.item-checkbox').checked);
-        });
-
-        const all = document.querySelectorAll('.item-checkbox');
-        document.getElementById('select-all').checked = count === all.length && all.length > 0;
-
-        const btn = document.getElementById('toss-checkout-btn');
-        btn.disabled = count === 0;
+        const checked = Array.from(document.querySelectorAll('.item-checkbox:checked'));
+        const total = checked.reduce((s, cb) => s + parseInt(cb.dataset.price, 10), 0);
+        document.getElementById('panel-total').textContent = total.toLocaleString('ko-KR') + '원';
+        document.getElementById('selected-count').textContent = checked.length + '개';
+        document.getElementById('select-count-text').textContent = `${checked.length} / ${allCheckboxes.length} UNITS`;
+        document.getElementById('select-all').checked = checked.length === allCheckboxes.length && allCheckboxes.length > 0;
+        document.getElementById('toss-checkout-btn').disabled = checked.length === 0;
     }
 
-    document.getElementById('select-all').addEventListener('change', function () {
-        allCheckboxes.forEach(cb => cb.checked = this.checked); updateSummary();
-    });
+    document.getElementById('select-all').addEventListener('change', function () { allCheckboxes.forEach(cb => cb.checked = this.checked); updateSummary(); });
     allCheckboxes.forEach(cb => cb.addEventListener('change', updateSummary));
     updateSummary();
 
     document.getElementById('toss-checkout-btn').addEventListener('click', async function () {
-        const cartIds = getSelected().map(cb => parseInt(cb.dataset.cartId, 10));
-        if (!cartIds.length) return;
-        this.textContent = '결제 준비 중...'; this.disabled = true;
+        const cartIds = Array.from(document.querySelectorAll('.item-checkbox:checked')).map(cb => parseInt(cb.dataset.cartId, 10));
+        this.textContent = 'PREPARING...'; this.disabled = true;
         try {
             const prepRes = await fetch('/student/cart/toss/prepare', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'X-XSRF-TOKEN': getCsrfToken() },
                 body: JSON.stringify({ cartIds })
             });
-            if (!prepRes.ok) {
-                const err = await prepRes.json().catch(() => ({}));
-                alert(err.error ?? '결제 준비 중 오류가 발생했습니다.');
-                this.textContent = '결제하기 >'; this.disabled = false; return;
-            }
+            if (!prepRes.ok) throw new Error('결제 준비 실패');
             const { orderId, amount, orderName } = await prepRes.json();
             const tossPayments = TossPayments(TOSS_CLIENT_KEY);
             const payment = tossPayments.payment({ customerKey: TossPayments.ANONYMOUS });
             await payment.requestPayment({
-                method: 'CARD',
-                amount: { currency: 'KRW', value: amount },
+                method: 'CARD', amount: { currency: 'KRW', value: amount },
                 orderId, orderName,
                 successUrl: window.location.origin + '/student/cart/payment/success',
-                failUrl:    window.location.origin + '/student/cart/payment/fail',
+                failUrl: window.location.origin + '/student/cart/payment/fail',
                 customerEmail: CUSTOMER_EMAIL, customerName: CUSTOMER_NAME,
             });
         } catch (e) {
-            console.error('[Toss Error]', e);
-            if (e.code !== 'USER_CANCEL') alert('결제 오류: ' + (e.code ?? '') + ' ' + (e.message ?? e));
-            this.textContent = '결제하기 >'; this.disabled = getSelected().length === 0;
+            alert('오류가 발생했습니다.'); this.textContent = 'Initiate Payment'; this.disabled = false;
         }
     });
 </script>
+
 </body>
 </html>

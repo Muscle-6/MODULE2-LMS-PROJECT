@@ -1,263 +1,516 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html class="dark" lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
   <meta charset="UTF-8">
-  <title th:text="${course.courseTitle} + ' - 상세 조회'">강좌 상세</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title th:text="${course.courseTitle} + ' - Mission Detail'">강좌 상세</title>
 
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-  <style>
-    body { background: #0b1020; color: #f5f7ff; font-family: Arial, sans-serif; margin: 0; }
-    .container { width: 1100px; margin: 0 auto; padding: 40px 20px; }
-    .course-header { background: linear-gradient(135deg, #1a2447, #25336b); padding: 40px; border-radius: 18px; margin-bottom: 30px; border: 1px solid rgba(126, 224, 255, 0.2); }
-    .grid-container { display: grid; grid-template-columns: 2fr 1fr; gap: 30px; }
-    .section { background: #121a35; padding: 28px; border-radius: 18px; margin-bottom: 24px; }
-    .curriculum-card { background: #1a2447; padding: 18px; border-radius: 14px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; border: 1px solid transparent; transition: 0.2s; }
-    .curriculum-card:hover { border-color: #5f7cff; }
-    .sticky-side { position: sticky; top: 20px; }
-    .price-tag { font-size: 28px; color: #7ee0ff; font-weight: bold; margin-bottom: 20px; }
-    .btn-apply { display: block; width: 100%; box-sizing: border-box; padding: 18px; background: #5f7cff; color: white; border: none; border-radius: 12px; font-size: 18px; font-weight: bold; cursor: pointer; text-decoration: none; text-align: center; line-height: 1; }
-    .btn-watch { padding: 8px 16px; background: #5f7cff; color: white; border-radius: 8px; text-decoration: none; font-size: 14px; font-weight: bold; transition: 0.3s; }
-    .btn-watch:hover { background: #4a63ff; transform: scale(1.05); }
-    .instructor-badge { display: inline-block; padding: 4px 12px; background: rgba(126, 224, 255, 0.1); color: #7ee0ff; border-radius: 999px; font-size: 14px; margin-top: 10px; }
-    .rounded-back-btn { display: inline-block; padding: 12px 24px; background: rgba(95, 124, 255, 0.1); color: #7ee0ff; text-decoration: none; border-radius: 999px; font-size: 14px; font-weight: 500; border: 1px solid rgba(126, 224, 255, 0.2); transition: 0.3s; }
-    .rounded-back-btn:hover { background: rgba(95, 124, 255, 0.2); border-color: #5f7cff; transform: translateY(-2px); }
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#99f7ff",
+            "secondary": "#c97cff",
+            "surface-container": "#161a21",
+            "surface-container-high": "#1c2028",
+            "on-surface": "#ecedf6",
+            "on-surface-variant": "#a9abb3",
+            "outline-variant": "#45484f",
+            "error": "#ff716c"
+          },
+          fontFamily: {
+            "headline": ["Space Grotesk"],
+            "body": ["Inter"],
+            "label": ["Space Grotesk"]
+          }
+        },
+      },
+    }
+  </script>
 
-    /* QnA 섹션 */
-    .qna-banner {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: #1a2447;
-      border: 1px solid rgba(126, 224, 255, 0.15);
-      border-radius: 14px;
-      padding: 20px 24px;
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #0b0e14;
+      color: #ecedf6;
+      background-image: radial-gradient(circle at 50% 50%, rgba(153, 247, 255, 0.05) 0%, transparent 50%);
     }
-    .qna-banner-left {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
-    .qna-icon {
-      width: 42px;
-      height: 42px;
-      border-radius: 10px;
-      background: rgba(126, 224, 255, 0.1);
-      border: 1px solid rgba(126, 224, 255, 0.2);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 20px;
-    }
-    .qna-banner-text h4 {
-      margin: 0 0 4px;
-      font-size: 15px;
-      color: #f5f7ff;
-      font-weight: bold;
-    }
-    .qna-banner-text p {
-      margin: 0;
-      font-size: 12px;
-      color: #7a8ab8;
-    }
-    .btn-qna {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 10px 20px;
-      background: rgba(126, 224, 255, 0.08);
-      color: #7ee0ff;
-      border: 1px solid rgba(126, 224, 255, 0.3);
-      border-radius: 8px;
-      text-decoration: none;
-      font-size: 13px;
-      font-weight: bold;
-      letter-spacing: 0.5px;
-      transition: 0.2s;
-      white-space: nowrap;
-    }
-    .btn-qna:hover {
-      background: rgba(126, 224, 255, 0.15);
-      border-color: #7ee0ff;
-      transform: translateY(-1px);
-    }
+    .material-symbols-outlined { vertical-align: middle; }
+    .btn-glow:hover { box-shadow: 0 0 20px rgba(153, 247, 255, 0.3); }
+
+    /* 랭크별 애니메이션 유지 */
+    @keyframes minRingRotate { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+    @keyframes minRingRev { from{transform:rotate(0deg)} to{transform:rotate(-360deg)} }
+    @keyframes minScan { 0%{top:-4px;opacity:0} 5%{opacity:.5} 90%{opacity:.3} 100%{top:calc(100% + 4px);opacity:0} }
+    @keyframes minBlink { 0%,49%{opacity:1} 50%,100%{opacity:0} }
+    @keyframes shieldFloat { 0%,100%{transform:translateY(0) rotate(-5deg)} 50%{transform:translateY(-4px) rotate(5deg)} }
+    @keyframes novRingRotate { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+    @keyframes novBlink { 0%,49%{opacity:1} 50%,100%{opacity:0} }
+    @keyframes chainShake { 0%,100%{transform:rotate(-3deg)} 50%{transform:rotate(3deg)} }
+    @keyframes repRingRotate { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+    @keyframes repRingRev { from{transform:rotate(0deg)} to{transform:rotate(-360deg)} }
+    @keyframes repSlitPulse { 0%,100%{transform:translate(-50%,-50%) scaleX(1)} 50%{transform:translate(-50%,-50%) scaleX(0.12)} }
+    @keyframes repIrisBreathe { 0%,100%{opacity:.7} 50%{opacity:1} }
   </style>
 </head>
-<body>
-<div class="container">
-  <div style="margin-bottom: 25px;">
-    <a th:href="@{/student/enrollments}" class="rounded-back-btn">← 목록으로 돌아가기</a>
+
+<body class="min-h-screen">
+
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-6 h-16 bg-slate-950/40 backdrop-blur-xl border-b border-white/5">
+  <div class="flex items-center gap-8">
+    <a th:href="@{/}" class="text-2xl font-bold tracking-tighter text-cyan-400 font-headline uppercase drop-shadow-[0_0_8px_rgba(153,247,255,0.4)]">Module02 LMS</a>
   </div>
 
-  <section class="course-header">
-    <h1 th:text="${course.courseTitle}">강좌 제목</h1>
-    <p th:text="${course.courseDescription}">강좌 상세 설명</p>
-    <div class="instructor-badge">
-      강사 : <span th:text="${course.instructorName}">강사명</span>
+  <div class="flex items-center gap-4">
+    <div sec:authorize="isAnonymous()">
+      <a th:href="@{/login}" class="text-xs font-label tracking-widest text-slate-400 hover:text-primary transition-all uppercase">Login Required</a>
     </div>
-  </section>
-
-  <div class="grid-container">
-    <div class="main-content">
-
-      <!-- 강의 커리큘럼 -->
-      <section class="section">
-        <h2>강의 커리큘럼</h2>
-        <div class="curriculum-list" th:if="${!#lists.isEmpty(lectures)}">
-          <div class="curriculum-card" th:each="lecture : ${lectures}">
-            <div>
-              <span style="color: #7ee0ff; margin-right: 10px;" th:text="${lecture.lectureOrderIndex} + '.'">1.</span>
-              <span th:text="${lecture.lectureTitle}">강의 제목</span>
-            </div>
-            <div th:if="${isEnrolled}">
-              <a th:href="@{/student/lectures/{id}(id=${lecture.lectureId})}" class="btn-watch">강의 시청 →</a>
-            </div>
-            <span th:unless="${isEnrolled}" style="font-size: 12px; color: #a9b6ec;">침공 시 공개</span>
-          </div>
-        </div>
-        <p class="empty" th:if="${#lists.isEmpty(lectures)}">등록된 강의가 없습니다.</p>
-      </section>
-
-      <section class="section">
-        <h2 style="margin-top: 0; margin-bottom: 16px;">TACTICAL NOTICES</h2>
-        <div class="qna-banner" style="border-color: rgba(201, 124, 255, 0.2); background: #1e1b3a;"> <div class="qna-banner-left">
-          <div class="qna-icon" style="background: rgba(201, 124, 255, 0.1); border-color: rgba(201, 124, 255, 0.3);">📢</div>
-          <div class="qna-banner-text">
-            <h4>강좌 공지사항</h4>
-            <p>사령부에서 하달된 최신 전술 지침을 확인하세요.</p>
-          </div>
-        </div>
-          <a th:href="@{/student/courses/{id}/notices(id=${course.courseId})}"
-             class="btn-qna"
-             style="color: #c97cff; border-color: rgba(201, 124, 255, 0.4);">
-            VIEW NOTICES →
-          </a>
-        </div>
-      </section>
-
-      <!-- QnA 게시판 이동 (수강생만 노출) -->
-      <section class="section" th:if="${isEnrolled}">
-        <h2 style="margin-top: 0; margin-bottom: 16px;">COMMUNICATION LOGS</h2>
-        <div class="qna-banner">
-          <div class="qna-banner-left">
-            <div class="qna-icon">📡</div>
-            <div class="qna-banner-text">
-              <h4>QnA 게시판</h4>
-              <p>강의에 대한 질문을 남기고 답변을 받아보세요.</p>
-            </div>
-          </div>
-          <a th:href="@{/student/course/{id}/qna(id=${course.courseId})}" class="btn-qna">
-            Q&A LOGS →
-          </a>
-        </div>
-      </section>
-
+    <div sec:authorize="isAuthenticated()" class="flex items-center gap-4" th:if="${loginMember != null}">
+      <div class="text-right hidden sm:block mr-2">
+        <span class="text-xs font-label tracking-widest text-cyan-400" th:text="|${loginMember.name} 님|"></span>
+        <span class="text-[10px] text-slate-500 font-label tracking-tight ml-1" th:text="|(${loginMember.role})|"></span>
+      </div>
+      <a th:href="@{/logout}" class="flex items-center gap-1 text-slate-400 hover:text-error transition-colors text-xs font-label uppercase tracking-widest">
+        <span class="material-symbols-outlined text-sm">power_settings_new</span> 로그아웃
+      </a>
     </div>
+  </div>
+</header>
 
-    <div class="sticky-side">
-      <div class="section">
-        <h3 style="margin-top: 0;">프로토콜 상태</h3>
+<aside class="fixed left-0 top-16 bottom-0 flex flex-col z-40 bg-slate-950/80 backdrop-blur-lg w-64 shadow-[4px_0_24px_rgba(0,0,0,0.5)] border-r border-white/5 transition-all duration-300">
 
-        <div th:if="${isEnrolled}">
-          <!-- 진척도 바 -->
-          <div style="margin-bottom: 20px;">
-            <div style="display: flex; justify-content: space-between; font-size: 13px; color: #a9b6ec; margin-bottom: 8px;">
-              <span>수강 진척도</span>
-              <span th:text="${progressRate != null ? progressRate : 0} + '%'">0%</span>
-            </div>
-            <div style="background: #1e293b; border-radius: 999px; height: 8px; overflow: hidden;">
-              <div th:style="|width: ${progressRate != null ? progressRate : 0}%; background: linear-gradient(90deg, #5f7cff, #7ee0ff); height: 100%; border-radius: 999px; transition: width 0.5s;|"></div>
-            </div>
-          </div>
-
-          <div class="price-tag" style="font-size: 24px;">침공 진행 중 🛸</div>
-          <p style="color: #a9b6ec; font-size: 14px; line-height: 1.6; margin-bottom: 20px;">
-            이미 승인된 프로토콜입니다.<br>커리큘럼을 통해 학습을 이어가세요.
-          </p>
-          <div class="btn-apply" style="background: #25336b; color: #7ee0ff; cursor: default;">승인 완료</div>
-        </div>
-
-        <div th:unless="${isEnrolled}">
-          <div class="price-tag" th:text="${#numbers.formatInteger(course.coursePrice, 1, 'COMMA')} + '원'">가격</div>
-          <a sec:authorize="isAnonymous()" th:href="@{/login}" class="btn-apply">
-            로그인 후 침공하기
-          </a>
-          <form sec:authorize="isAuthenticated()"
-                id="enrollForm"
-                th:action="@{/enroll/{id}(id=${course.courseId})}"
-                method="post">
-            <button type="button" class="btn-apply" onclick="confirmEnroll()">지금 바로 침공하기</button>
-          </form>
-        </div>
-
-        <div style="margin-top: 20px; font-size: 13px; color: #b8c1e7; line-height: 1.6;">
-          <p>✔ 수강 기간: 무제한</p>
-          <p>✔ 상태:
-            <span th:text="${course.courseStatus == 'PUBLISHED' ? '침공 가능' : '대기 중'}" style="color: #5f7cff; font-weight: bold;">상태</span>
-          </p>
+  <div class="p-6 border-b border-white/5" th:if="${loginMember != null}">
+    <div class="flex items-center gap-4 group">
+      <div class="h-11 w-11 rounded-xl bg-cyan-400/10 flex items-center justify-center border border-cyan-400/20 shadow-[0_0_15px_rgba(153,247,255,0.1)] group-hover:border-cyan-400/40 transition-all">
+        <span class="material-symbols-outlined text-cyan-400 text-2xl" style="font-variation-settings: 'FILL' 1;">military_tech</span>
+      </div>
+      <div class="flex flex-col">
+        <p class="text-xs font-headline font-black text-cyan-400 tracking-tight leading-none mb-1 uppercase" th:text="${loginMember.name}">OPERATIVE</p>
+        <div class="flex items-center gap-1">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+          <p class="text-[10px] font-label text-slate-500 font-bold tracking-tighter uppercase" th:text="|RANK: ${loginMember.role}|">RANK</p>
         </div>
       </div>
     </div>
   </div>
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <nav class="flex-1 py-6 space-y-1">
+    <div class="px-6 mb-4">
+      <span class="text-[9px] font-label font-black text-slate-600 uppercase tracking-[0.3em]">Main Protocol</span>
+    </div>
+
+    <a href="/"
+       class="flex items-center gap-4 py-3.5 px-6 transition-all duration-200 group text-slate-500 hover:bg-white/5 hover:text-slate-300">
+      <span class="material-symbols-outlined text-xl group-hover:scale-110 transition-transform">public</span>
+      <span class="text-sm font-label font-bold tracking-wide">대륙 탐색</span>
+    </a>
+
+    <a th:href="@{/student}"
+       class="flex items-center gap-4 py-3.5 px-6 transition-all duration-200 group text-cyan-400 bg-cyan-400/10 border-r-4 border-cyan-400">
+      <span class="material-symbols-outlined text-xl group-hover:scale-110 transition-transform">rocket_launch</span>
+      <span class="text-sm font-label font-bold tracking-wide">학생 홈</span>
+    </a>
+  </nav>
+
+  <div class="p-6 mt-auto">
+    <div class="relative group cursor-help">
+      <div class="absolute -inset-1 bg-gradient-to-r from-cyan-500/20 to-purple-500/20 rounded-xl blur opacity-25 group-hover:opacity-50 transition duration-1000"></div>
+
+      <div class="relative w-full bg-slate-900/50 border border-white/10 p-4 rounded-xl">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-[9px] font-label font-black text-slate-500 uppercase tracking-widest">Network Status</span>
+          <span class="flex h-2 w-2">
+                        <span class="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-cyan-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
+                    </span>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <span class="material-symbols-outlined text-primary text-sm animate-pulse">radar</span>
+          <div class="flex-1">
+            <div class="h-1 w-full bg-white/5 rounded-full overflow-hidden">
+              <div class="h-full bg-primary w-[85%] shadow-[0_0_8px_#99f7ff]"></div>
+            </div>
+          </div>
+        </div>
+        <p class="mt-2 text-[9px] font-label text-primary/60 text-center uppercase tracking-[0.2em]">System Online</p>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<main class="ml-64 pt-24 px-10 pb-16">
+  <div class="max-w-6xl mx-auto">
+
+    <div class="mb-8 flex items-center justify-between">
+      <a th:href="@{/student/enrollments}"
+         class="flex items-center gap-2 text-[10px] font-label tracking-widest text-slate-500 hover:text-primary transition-all uppercase group">
+        <span class="material-symbols-outlined text-sm transition-transform group-hover:-translate-x-1">arrow_back</span>
+        Return to Mission List
+      </a>
+    </div>
+
+    <section class="relative p-10 mb-12 rounded-3xl bg-surface-container/40 border border-white/5 overflow-hidden shadow-2xl backdrop-blur-md">
+      <div class="relative z-10">
+        <div class="flex items-center gap-3 mb-6">
+          <span class="px-2 py-0.5 bg-primary/10 border border-primary/20 text-[10px] font-label text-primary rounded uppercase tracking-widest font-black">Mission Briefing</span>
+        </div>
+        <h1 class="text-5xl font-headline font-black text-white tracking-tighter mb-6 uppercase" th:text="${course.courseTitle}">강좌 제목</h1>
+        <p class="text-on-surface-variant text-lg max-w-3xl font-body leading-relaxed mb-8 border-l-2 border-primary/30 pl-6" th:text="${course.courseDescription}">강좌 상세 설명</p>
+        <div class="inline-flex items-center gap-3 px-5 py-2.5 rounded-xl bg-white/5 border border-white/10 backdrop-blur-sm">
+          <span class="material-symbols-outlined text-primary text-xl">account_circle</span>
+          <span class="text-xs font-label font-bold text-slate-300 uppercase tracking-widest">Instructor: <span class="text-white ml-2" th:text="${course.instructorName}">강사명</span></span>
+        </div>
+      </div>
+      <div class="absolute top-0 right-0 w-80 h-80 bg-primary/10 rounded-full blur-[100px] -mr-40 -mt-40"></div>
+    </section>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+
+      <div class="lg:col-span-2 space-y-10">
+        <section>
+          <h2 class="text-2xl font-headline font-black text-primary mb-8 flex items-center gap-3 uppercase tracking-tight">
+            <span class="material-symbols-outlined text-3xl">account_tree</span> Tactical Curriculum
+          </h2>
+          <div class="space-y-3" th:if="${!#lists.isEmpty(lectures)}">
+            <div th:each="lecture : ${lectures}" class="bg-surface-container/60 border border-white/5 p-5 rounded-2xl flex justify-between items-center group hover:bg-surface-container hover:border-primary/30 transition-all backdrop-blur-sm">
+              <div class="flex items-center gap-5">
+                <span class="w-8 text-primary font-headline font-black text-xl italic" th:text="${lecture.lectureOrderIndex}">1</span>
+                <span class="text-on-surface font-bold tracking-tight" th:text="${lecture.lectureTitle}">강의 제목</span>
+              </div>
+              <div th:if="${isEnrolled}">
+                <a th:href="@{/student/lectures/{id}(id=${lecture.lectureId})}" class="px-5 py-2 rounded-xl bg-primary text-slate-950 text-[10px] font-label font-black hover:bg-white transition-all uppercase tracking-widest">Execute →</a>
+              </div>
+              <div th:unless="${isEnrolled}">
+                <span class="text-[9px] font-label font-black text-slate-500 uppercase tracking-widest border border-white/5 px-3 py-1.5 rounded-lg bg-slate-900/50">Encrypted</span>
+              </div>
+            </div>
+          </div>
+          <div class="py-20 border-2 border-dashed border-white/5 rounded-3xl text-center" th:if="${#lists.isEmpty(lectures)}">
+            <span class="material-symbols-outlined text-5xl text-slate-800 mb-4">analytics</span>
+            <p class="text-xs font-label text-slate-600 uppercase tracking-widest">No Intelligence Data Uploaded</p>
+          </div>
+        </section>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="bg-surface-container/40 p-8 rounded-3xl border border-white/5 backdrop-blur-sm group hover:border-secondary/30 transition-all">
+            <div class="flex items-center gap-4 mb-6">
+              <div class="w-12 h-12 rounded-2xl bg-secondary/10 flex items-center justify-center border border-secondary/20">
+                <span class="material-symbols-outlined text-secondary">campaign</span>
+              </div>
+              <h4 class="font-headline font-bold text-white uppercase tracking-widest text-sm">Tactical Notices</h4>
+            </div>
+            <p class="text-xs text-on-surface-variant mb-8 leading-relaxed">사령부에서 하달된 최신 전술 지침 및 공지사항을 확인하세요.</p>
+            <a th:href="@{/student/courses/{id}/notices(id=${course.courseId})}" class="flex items-center justify-center gap-2 py-3 rounded-xl border border-secondary/30 text-secondary text-[10px] font-label font-black hover:bg-secondary/10 transition-all uppercase tracking-[0.2em]">View Notices</a>
+          </div>
+
+          <div class="bg-surface-container/40 p-8 rounded-3xl border border-white/5 backdrop-blur-sm group hover:border-primary/30 transition-all">
+            <div class="flex items-center gap-4 mb-6">
+              <div class="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20">
+                <span class="material-symbols-outlined text-primary">sensors</span>
+              </div>
+              <h4 class="font-headline font-bold text-white uppercase tracking-widest text-sm">Communication</h4>
+            </div>
+            <p class="text-xs text-on-surface-variant mb-8 leading-relaxed">현장에서 발생하는 변수에 대해 교관과 통신을 시도하십시오.</p>
+            <a th:if="${isEnrolled}" th:href="@{/student/course/{id}/qna(id=${course.courseId})}"
+               class="flex items-center justify-center gap-2 py-3 rounded-xl border border-primary/30 text-primary text-[10px] font-label font-black hover:bg-primary/10 transition-all uppercase tracking-[0.2em]">Q&A Logs</a>
+            <button th:unless="${isEnrolled}" onclick="denyAccess()"
+                    class="w-full flex items-center justify-center gap-2 py-3 rounded-xl border border-primary/30 text-primary text-[10px] font-label font-black hover:bg-primary/10 transition-all uppercase tracking-[0.2em]">Locked Log</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="space-y-8">
+        <div class="sticky top-24 bg-surface-container-high/80 backdrop-blur-xl border border-white/10 rounded-3xl p-8 shadow-2xl">
+          <h3 class="text-xs font-label font-black text-white/40 mb-8 border-b border-white/5 pb-4 tracking-[0.3em] uppercase">Protocol Status</h3>
+
+          <div th:if="${isEnrolled}" class="space-y-8">
+            <div>
+              <div class="flex justify-between text-[10px] font-label font-bold text-slate-500 mb-3 tracking-widest uppercase">
+                <span>Invasion Progress</span>
+                <span class="text-primary" th:text="${progressRate != null ? progressRate : 0} + '%'">0%</span>
+              </div>
+              <div class="h-1.5 bg-slate-900 rounded-full overflow-hidden border border-white/5">
+                <div class="h-full bg-gradient-to-r from-primary to-secondary transition-all duration-1000 shadow-[0_0_10px_rgba(153,247,255,0.3)]" th:style="|width: ${progressRate != null ? progressRate : 0}%|"></div>
+              </div>
+            </div>
+            <div class="p-6 bg-primary/5 rounded-2xl border border-primary/20">
+              <div class="text-lg font-headline font-black text-primary mb-2 uppercase tracking-tighter">Active Invasion 🛸</div>
+              <p class="text-[11px] text-slate-400 leading-relaxed font-medium">이미 승인된 프로토콜입니다. 사령부의 지침에 따라 학습을 지속하십시오.</p>
+            </div>
+          </div>
+
+          <div th:unless="${isEnrolled}" class="space-y-8">
+            <div class="text-5xl font-headline font-black text-primary tracking-tighter drop-shadow-[0_0_10px_rgba(153,247,255,0.2)]" th:text="${#numbers.formatInteger(course.coursePrice, 1, 'COMMA')} + ' 원'">가격</div>
+            <a sec:authorize="isAnonymous()" th:href="@{/login}" class="block w-full py-4 rounded-xl bg-primary text-slate-950 font-label text-xs font-black text-center btn-glow transition-all uppercase tracking-widest shadow-lg shadow-primary/20">Login to Invade</a>
+            <form sec:authorize="isAuthenticated()" id="enrollForm" th:action="@{/enroll/{id}(id=${course.courseId})}" method="post">
+              <button type="button" class="w-full py-4 rounded-xl bg-primary text-slate-950 font-label text-xs font-black text-center btn-glow transition-all uppercase tracking-widest shadow-lg shadow-primary/20" onclick="confirmEnroll()">Initiate Invasion</button>
+            </form>
+          </div>
+
+          <div class="mt-8 pt-8 border-t border-white/5 space-y-4">
+            <div class="flex justify-between text-[10px] font-label font-bold tracking-widest uppercase">
+              <span class="text-slate-600">Access Duration</span>
+              <span class="text-white">Unlimited</span>
+            </div>
+            <div class="flex justify-between text-[10px] font-label font-bold tracking-widest uppercase">
+              <span class="text-slate-600">Deployment Status</span>
+              <span class="text-primary" th:text="${course.courseStatus == 'PUBLISHED' ? 'Invasive' : 'Standby'}">상태</span>
+            </div>
+          </div>
+
+          <div sec:authorize="isAuthenticated()" class="mt-10 pt-10 border-t border-white/10">
+            <h4 class="text-[10px] font-label font-black text-primary tracking-[0.3em] uppercase mb-6">Agent Identity</h4>
+            <div class="flex items-center gap-4 mb-8 bg-white/5 p-4 rounded-2xl border border-white/5">
+              <div class="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/20 text-2xl">👤</div>
+              <div>
+                <div class="text-sm font-headline font-bold text-white tracking-tight" sec:authentication="name">요원명</div>
+                <div class="text-[10px] font-label text-slate-500 uppercase tracking-widest">Rank: <span class="text-secondary" th:text="${#authentication.principal.member.rank}">RANK</span></div>
+              </div>
+            </div>
+
+            <!-- MINERVAL -->
+            <div th:if="${#authentication.principal.member.rank.name() == 'MINERVAL'}"
+                 style="background:#06091a;border:1px solid rgba(95,124,255,0.3);border-radius:16px;padding:16px 14px;position:relative;overflow:hidden;display:grid;grid-template-columns:70px 1fr;gap:14px;align-items:center;margin:16px 0;font-family:'Courier New',monospace;">
+              <style>
+                @keyframes minRingRotate { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+                @keyframes minRingRev { from{transform:rotate(0deg)} to{transform:rotate(-360deg)} }
+                @keyframes minScan { 0%{top:-4px;opacity:0} 5%{opacity:.5} 90%{opacity:.3} 100%{top:calc(100% + 4px);opacity:0} }
+                @keyframes minBlink { 0%,49%{opacity:1} 50%,100%{opacity:0} }
+                @keyframes shieldFloat { 0%,100%{transform:translateY(0) rotate(-5deg)} 50%{transform:translateY(-5px) rotate(5deg)} }
+                @keyframes minDataTick { 0%{opacity:.4} 50%{opacity:1} 100%{opacity:.4} }
+                @keyframes minFlicker { 0%,88%,90%,100%{opacity:1} 89%{opacity:.3} }
+              </style>
+              <div style="position:absolute;left:0;width:100%;height:2px;background:linear-gradient(90deg,transparent,rgba(95,124,255,.4),transparent);animation:minScan 3.5s ease-in-out infinite;pointer-events:none;z-index:1;"></div>
+              <div style="position:absolute;inset:0;opacity:.02;pointer-events:none;background-image:repeating-linear-gradient(0deg,#5f7cff 0,#5f7cff 1px,transparent 1px,transparent 24px),repeating-linear-gradient(60deg,#5f7cff 0,#5f7cff 1px,transparent 1px,transparent 24px);"></div>
+
+              <div style="position:relative;width:70px;height:70px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <div style="position:absolute;width:68px;height:68px;border-radius:50%;border:1px dashed rgba(95,124,255,.2);animation:minRingRotate 18s linear infinite;"></div>
+                <div style="position:absolute;width:52px;height:52px;border-radius:50%;border:1.5px solid transparent;border-top-color:rgba(95,124,255,.65);border-bottom-color:rgba(126,224,255,.2);animation:minRingRev 4s ease-in-out infinite;"></div>
+                <div style="position:absolute;width:38px;height:38px;border-radius:50%;border:1px dotted rgba(95,124,255,.12);animation:minRingRotate 8s linear infinite;"></div>
+                <svg width="26" height="30" viewBox="0 0 26 30" fill="none" style="position:relative;z-index:2;animation:shieldFloat 3s ease-in-out infinite;filter:drop-shadow(0 0 5px rgba(95,124,255,.7));">
+                  <path d="M13 1 L24 5 L24 14 C24 21 13 29 13 29 C13 29 2 21 2 14 L2 5 Z" fill="rgba(95,124,255,.15)" stroke="rgba(95,124,255,.8)" stroke-width="1.2" stroke-linejoin="round"/>
+                  <path d="M13 6 L19 9 L19 14 C19 18 13 22 13 22 C13 22 7 18 7 14 L7 9 Z" fill="rgba(126,224,255,.08)" stroke="rgba(126,224,255,.4)" stroke-width="0.8"/>
+                  <line x1="13" y1="8" x2="13" y2="20" stroke="rgba(126,224,255,.4)" stroke-width="0.8"/>
+                  <line x1="8" y1="13" x2="18" y2="13" stroke="rgba(126,224,255,.4)" stroke-width="0.8"/>
+                </svg>
+              </div>
+
+              <div style="position:relative;z-index:2;min-width:0;">
+                <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
+                  <div style="width:5px;height:5px;border-radius:50%;background:#5f7cff;animation:minBlink 1.4s step-end infinite;"></div>
+                  <span style="font-size:9px;letter-spacing:3px;color:rgba(95,124,255,.6);text-transform:uppercase;">Active Agent</span>
+                </div>
+                <p style="margin:0 0 8px;font-size:13px;color:#dde8ff;font-weight:bold;line-height:1.6;word-break:keep-all;animation:minFlicker 8s infinite;">
+                  미네르발 요원,<br><span style="color:#7ee0ff;">데이터 수집</span> 및 침공을<br>계속하십시오.
+                </p>
+                <div style="background:rgba(0,0,0,.45);border:1px solid rgba(95,124,255,.15);border-radius:6px;padding:6px 10px;font-size:10px;line-height:1.8;color:rgba(95,124,255,.5);">
+                  <span style="color:rgba(126,224,255,.5);">&gt;</span> RANK&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: <span style="color:#7ee0ff;animation:minDataTick 2s infinite;">MINERVAL</span><br>
+                  <span style="color:rgba(126,224,255,.5);">&gt;</span> PROMOTION: <span style="color:#5f7cff;animation:minDataTick 2.5s infinite;">IMMINENT</span>
+                </div>
+              </div>
+            </div>
+
+            <div th:if="${#authentication.principal.member.rank.name() == 'NOVICE'}"
+                 style="background:#06090f;border:1px solid rgba(255,95,95,0.22);border-radius:16px;padding:16px 14px;position:relative;overflow:hidden;margin:16px 0;font-family:'Courier New',monospace;">
+              <style>
+                @keyframes novBlink2 { 0%,49%{opacity:1} 50%,100%{opacity:0} }
+                @keyframes novFlicker2 { 0%,87%,89%,100%{opacity:1} 88%{opacity:.2} }
+                @keyframes novDataTick2 { 0%{opacity:.4} 50%{opacity:1} 100%{opacity:.4} }
+                @keyframes novScan2 { 0%{top:-4px;opacity:0} 5%{opacity:.4} 90%{opacity:.2} 100%{top:calc(100% + 4px);opacity:0} }
+                @keyframes eyeGlow { 0%,100%{opacity:.6} 50%{opacity:1} }
+                @keyframes rayRot { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+                @keyframes weightPress { 0%,100%{transform:scaleX(1)} 50%{transform:scaleX(1.01)} }
+                @keyframes crackPulse { 0%,100%{opacity:.2} 50%{opacity:.5} }
+              </style>
+
+              <div style="position:absolute;inset:0;opacity:.02;pointer-events:none;background-image:repeating-linear-gradient(0deg,#ff5f5f 0,#ff5f5f 1px,transparent 1px,transparent 24px),repeating-linear-gradient(60deg,#ff5f5f 0,#ff5f5f 1px,transparent 1px,transparent 24px);"></div>
+              <div style="position:absolute;left:0;width:100%;height:1.5px;background:linear-gradient(90deg,transparent,rgba(255,95,95,.3),transparent);animation:novScan2 4s ease-in-out infinite;pointer-events:none;z-index:1;"></div>
+
+              <div style="display:flex;align-items:center;gap:6px;margin-bottom:12px;">
+                <div style="width:5px;height:5px;border-radius:50%;background:#ff3a3a;animation:novBlink2 0.9s step-end infinite;"></div>
+                <span style="font-size:9px;letter-spacing:3px;color:rgba(255,95,95,.45);text-transform:uppercase;">Novice — Bottom of Pyramid</span>
+              </div>
+
+              <div style="display:grid;grid-template-columns:90px 1fr;gap:14px;align-items:center;">
+
+                <div style="display:flex;align-items:center;justify-content:center;">
+                  <svg width="86" height="100" viewBox="0 0 86 100" fill="none">
+                    <g style="transform-origin:43px 28px;animation:rayRot 20s linear infinite;opacity:.15;">
+                      <line x1="43" y1="4" x2="43" y2="0" stroke="#ff5f5f" stroke-width="1"/>
+                      <line x1="60" y1="8" x2="64" y2="4" stroke="#ff5f5f" stroke-width="1"/>
+                      <line x1="72" y1="20" x2="76" y2="17" stroke="#ff5f5f" stroke-width="1"/>
+                      <line x1="26" y1="8" x2="22" y2="4" stroke="#ff5f5f" stroke-width="1"/>
+                      <line x1="14" y1="20" x2="10" y2="17" stroke="#ff5f5f" stroke-width="1"/>
+                    </g>
+                    <polygon points="43,4 58,26 28,26" fill="#1a0310" stroke="rgba(255,95,95,.6)" stroke-width="1"/>
+                    <ellipse cx="43" cy="17" rx="6" ry="4" fill="#000" stroke="rgba(255,95,95,.5)" stroke-width=".8" style="animation:eyeGlow 2.5s ease-in-out infinite;"/>
+                    <ellipse cx="43" cy="17" rx="3.5" ry="2.5" fill="#2a0005"/>
+                    <ellipse cx="43" cy="17" rx="1.2" ry="2" fill="#ff2a2a" style="animation:eyeGlow 2s ease-in-out infinite;"/>
+                    <ellipse cx="42.2" cy="16" rx=".5" ry=".6" fill="rgba(255,180,180,.4)"/>
+                    <rect x="28" y="26" width="30" height="3" fill="#06090f"/>
+                    <line x1="27" y1="26" x2="59" y2="26" stroke="rgba(255,95,95,.35)" stroke-width=".8" stroke-dasharray="3,2"/>
+                    <line x1="27" y1="29" x2="59" y2="29" stroke="rgba(255,95,95,.2)" stroke-width=".8" stroke-dasharray="3,2"/>
+                    <polygon points="28,29 62,29 54,50 20,50" fill="#150308" stroke="rgba(255,95,95,.3)" stroke-width="1"/>
+                    <line x1="35" y1="29" x2="29" y2="50" stroke="rgba(255,95,95,.08)" stroke-width=".8"/>
+                    <line x1="43" y1="29" x2="43" y2="50" stroke="rgba(255,95,95,.08)" stroke-width=".8"/>
+                    <line x1="54" y1="29" x2="54" y2="50" stroke="rgba(255,95,95,.08)" stroke-width=".8"/>
+                    <line x1="24" y1="40" x2="60" y2="40" stroke="rgba(255,95,95,.06)" stroke-width=".8"/>
+                    <line x1="43" y1="51" x2="43" y2="57" stroke="rgba(255,95,95,.4)" stroke-width="1" stroke-dasharray="2,1"/>
+                    <polygon points="40,56 43,61 46,56" fill="rgba(255,95,95,.4)"/>
+                    <rect x="8" y="62" width="70" height="18" rx="1" fill="#1a0608" stroke="rgba(255,95,95,.65)" stroke-width="1.2" style="animation:weightPress 3s ease-in-out infinite;"/>
+                    <line x1="28" y1="62" x2="28" y2="80" stroke="rgba(255,95,95,.15)" stroke-width=".8"/>
+                    <line x1="48" y1="62" x2="48" y2="80" stroke="rgba(255,95,95,.15)" stroke-width=".8"/>
+                    <line x1="64" y1="62" x2="64" y2="80" stroke="rgba(255,95,95,.15)" stroke-width=".8"/>
+                    <path d="M30 64 L27 70 L31 72 L28 78" stroke="rgba(255,95,95,.3)" stroke-width=".8" fill="none" stroke-linecap="round" style="animation:crackPulse 2s ease-in-out infinite;"/>
+                    <path d="M55 66 L58 71 L54 74" stroke="rgba(255,95,95,.2)" stroke-width=".7" fill="none" stroke-linecap="round" style="animation:crackPulse 2.5s ease-in-out infinite;"/>
+                    <text x="43" y="74" text-anchor="middle" font-size="7" fill="rgba(255,95,95,.45)" font-family="Courier New" letter-spacing="3" font-weight="bold">NOVICE</text>
+                    <ellipse cx="43" cy="83" rx="36" ry="3" fill="rgba(255,50,50,.06)" style="animation:weightPress 3s ease-in-out infinite;"/>
+                    <line x1="8" y1="83" x2="78" y2="83" stroke="rgba(255,95,95,.12)" stroke-width=".8"/>
+                    <line x1="4" y1="86" x2="82" y2="86" stroke="rgba(255,95,95,.06)" stroke-width=".8"/>
+                  </svg>
+                </div>
+
+                <div style="min-width:0;">
+                  <p style="margin:0 0 10px;font-size:13px;color:#ffe0e0;font-weight:bold;line-height:1.6;word-break:keep-all;animation:novFlicker2 7s infinite;">
+                    피라미드의<br>
+                    <span style="color:#ff5f5f;">가장 아래 돌멩이</span>여,<br>
+                    위를 받쳐라.
+                  </p>
+                  <div style="background:rgba(0,0,0,.5);border:1px solid rgba(255,95,95,.12);border-radius:6px;padding:6px 10px;font-size:10px;line-height:1.9;color:rgba(255,95,95,.4);">
+                    <span style="color:rgba(255,120,120,.5);">&gt;</span> RANK&nbsp;&nbsp;&nbsp;&nbsp;: <span style="color:#ff5f5f;animation:novDataTick2 2s infinite;">NOVICE</span><br>
+                    <span style="color:rgba(255,120,120,.5);">&gt;</span> POSITION : <span style="color:rgba(255,95,95,.6);">BOTTOM_LAYER</span><br>
+                    <span style="color:rgba(255,120,120,.5);">&gt;</span> LOAD&nbsp;&nbsp;&nbsp;&nbsp;: <span style="color:#ff5f5f;animation:novDataTick2 1.5s infinite;">MAXIMUM</span>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <div th:if="${#authentication.principal.member.rank.name() == 'REPTILIAN'}"
+
+                 style="background: linear-gradient(145deg, #0b1020, #1a2238); border: 1px solid rgba(126, 224, 255, 0.3); padding: 16px; border-radius: 16px; margin: 16px 0; position: relative; display: grid; grid-template-columns: 70px 1fr; align-items: center; gap: 14px; overflow: hidden;">
+
+              <style>
+
+                @keyframes repRingRotate { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+
+                @keyframes repRingRev { from{transform:rotate(0deg)} to{transform:rotate(-360deg)} }
+
+                @keyframes repSlitPulse { 0%,100%{transform:translate(-50%,-50%) scaleX(1)} 50%{transform:translate(-50%,-50%) scaleX(0.12)} }
+
+                @keyframes repIrisBreathe { 0%,100%{opacity:.7} 50%{opacity:1} }
+
+              </style>
+
+
+
+              <!-- 눈 (작게) -->
+
+              <div style="position:relative;width:70px;height:70px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+
+                <div style="position:absolute;width:68px;height:68px;border-radius:50%;border:1px dashed rgba(126,224,255,0.2);animation:repRingRotate 20s linear infinite;"></div>
+
+                <div style="position:absolute;width:52px;height:52px;border-radius:50%;border:1.5px solid transparent;border-top-color:rgba(201,124,255,0.6);border-bottom-color:rgba(126,224,255,0.2);animation:repRingRev 5s ease-in-out infinite;"></div>
+
+                <div style="position:relative;width:36px;height:25px;background:#000;border-radius:100%;transform:rotate(35deg);overflow:hidden;border:1.5px solid rgba(0,220,90,.6);">
+
+                  <div style="position:absolute;inset:0;background:radial-gradient(ellipse 60% 80% at 50% 50%, #003a12 0%, #001a08 55%, #000 100%);animation:repIrisBreathe 3.5s ease-in-out infinite;"></div>
+
+                  <div style="position:absolute;top:50%;left:50%;width:6px;height:110%;background:#000;border-radius:4px;transform:translate(-50%,-50%) rotate(-35deg);animation:repSlitPulse 4s ease-in-out infinite;"></div>
+
+                </div>
+
+              </div>
+
+
+
+              <!-- 텍스트 -->
+
+              <div style="position:relative;z-index:2;min-width:0;">
+
+                <p style="margin:0 0 6px;font-size:9px;color:#7ee0ff;letter-spacing:3px;font-weight:900;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">IDENTITY: REPTILIAN</p>
+
+                <p style="margin:0;font-size:13px;color:#ffffff;font-weight:800;line-height:1.5;word-break:keep-all;">
+
+                  인류는 처음부터<br>
+
+                  <span style="color:#7ee0ff;">우리가 심은 씨앗</span>이었다.
+
+                </p>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+</main>
+
 <script th:inline="javascript">
+  /*<![CDATA[*/
+  function denyAccess() {
+    Swal.fire({
+      title: 'ACCESS DENIED',
+      text: "본부 지침에 따라 침공(수강 신청)을 완료한 요원만 통신 로그에 접근할 수 있습니다.",
+      icon: 'warning',
+      background: '#161a21',
+      color: '#ecedf6',
+      confirmButtonColor: '#99f7ff',
+      confirmButtonText: 'UNDERSTOOD'
+    });
+  }
+
   function confirmEnroll() {
-    const courseId = /*[[${course.courseId}]]*/ 0;
+    const courseId = /*[[${course.courseId}]]*/ null;
     const csrfHeader = /*[[${_csrf?.headerName}]]*/ 'X-CSRF-TOKEN';
     const csrfToken = /*[[${_csrf?.token}]]*/ '';
 
     Swal.fire({
-      title: '병력 지원 요청',
-      text: "이 강좌를 장바구니에 담으시겠습니까?",
+      title: 'DEPLOYMENT REQUEST',
+      text: "이 강좌를 보급품 목록(장바구니)에 추가하시겠습니까?",
       icon: 'question',
       showCancelButton: true,
-      confirmButtonColor: '#5f7cff',
-      cancelButtonColor: '#ff5f5f',
-      confirmButtonText: '네, 담아주세요!',
-      cancelButtonText: '아직 고민 중입니다',
-      background: '#121a35',
-      color: '#f5f7ff'
+      confirmButtonColor: '#99f7ff',
+      cancelButtonColor: '#ff716c',
+      confirmButtonText: 'YES, DEPLOY',
+      cancelButtonText: 'ABORT',
+      background: '#161a21',
+      color: '#ecedf6'
     }).then((result) => {
       if (result.isConfirmed) {
         fetch('/student/cart/' + courseId, {
           method: 'POST',
-          headers: {
-            [csrfHeader]: csrfToken,
-            'Content-Type': 'application/json'
-          }
-        })
-                .then(async (response) => {
-                  if (response.ok) {
-                    Swal.fire({
-                      title: '보급 완료!',
-                      text: "장바구니에 담겼습니다. 이동할까요?",
-                      icon: 'success',
-                      showCancelButton: true,
-                      confirmButtonText: '장바구니 이동',
-                      cancelButtonText: '계속 둘러보기',
-                      background: '#121a35',
-                      color: '#f5f7ff'
-                    }).then((navResult) => {
-                      if (navResult.isConfirmed) {
-                        location.href = '/student/cart';
-                      }
-                    });
-                  } else {
-                    const errorMsg = await response.text();
-                    Swal.fire({
-                      title: '침공 중단',
-                      text: errorMsg,
-                      icon: 'warning',
-                      background: '#121a35',
-                      color: '#f5f7ff'
-                    });
-                  }
-                });
+          headers: { [csrfHeader]: csrfToken, 'Content-Type': 'application/json' }
+        }).then(response => {
+          if (response.ok) {
+            Swal.fire({
+              title: 'SUPPLY COMPLETED',
+              text: "장바구니로 이동하여 최종 침공 승인을 받으시겠습니까?",
+              icon: 'success',
+              showCancelButton: true,
+              confirmButtonText: 'GO TO CART',
+              cancelButtonText: 'STAY HERE',
+              background: '#161a21',
+              color: '#ecedf6'
+            }).then((nav) => { if (nav.isConfirmed) location.href = '/student/cart'; });
+          } else { throw new Error(); }
+        }).catch(() => {
+          Swal.fire({ title: 'SIGNAL LOST', text: "사령부와의 통신이 불안정합니다.", icon: 'error', background: '#161a21', color: '#ecedf6' });
+        });
       }
     });
   }
+  /*]]>*/
 </script>
 </body>
 </html>

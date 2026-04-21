@@ -109,48 +109,64 @@
     </div>
 </header>
 
-<aside class="fixed left-0 top-16 bottom-0 flex flex-col z-40 bg-slate-950/80 backdrop-blur-lg w-64 shadow-[4px_0_24px_rgba(0,0,0,0.5)] bg-gradient-to-r from-slate-900 to-slate-950">
+<aside class="fixed left-0 top-16 bottom-0 flex flex-col z-40 bg-slate-950/80 backdrop-blur-lg w-64 shadow-[4px_0_24px_rgba(0,0,0,0.5)] border-r border-white/5 transition-all duration-300">
 
-    <div class="p-6 border-b border-outline-variant/10" th:if="${loginMember != null}">
-        <div class="flex items-center gap-3">
-            <div class="h-10 w-10 rounded-lg bg-cyan-400/10 flex items-center justify-center border border-cyan-400/20">
-                <span class="material-symbols-outlined text-cyan-400" data-weight="fill" style="font-variation-settings: 'FILL' 1;">military_tech</span>
+    <div class="p-6 border-b border-white/5" th:if="${loginMember != null}">
+        <div class="flex items-center gap-4 group">
+            <div class="h-11 w-11 rounded-xl bg-cyan-400/10 flex items-center justify-center border border-cyan-400/20 shadow-[0_0_15px_rgba(153,247,255,0.1)] group-hover:border-cyan-400/40 transition-all">
+                <span class="material-symbols-outlined text-cyan-400 text-2xl" style="font-variation-settings: 'FILL' 1;">military_tech</span>
             </div>
-            <div>
-                <p class="text-xs font-label tracking-widest text-cyan-400" th:text="${loginMember.name}">OPERATIVE</p>
-                <p class="text-[10px] text-slate-500 font-label tracking-tight" th:text="|RANK: ${loginMember.role}|">RANK</p>
+            <div class="flex flex-col">
+                <p class="text-xs font-headline font-black text-cyan-400 tracking-tight leading-none mb-1 uppercase" th:text="${loginMember.name}">OPERATIVE</p>
+                <div class="flex items-center gap-1">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <p class="text-[10px] font-label text-slate-500 font-bold tracking-tighter uppercase" th:text="|RANK: ${loginMember.role}|">RANK</p>
+                </div>
             </div>
         </div>
     </div>
 
+    <nav class="flex-1 py-6 space-y-1">
+        <div class="px-6 mb-4">
+            <span class="text-[9px] font-label font-black text-slate-600 uppercase tracking-[0.3em]">Main Protocol</span>
+        </div>
 
-    <nav class="flex-1 py-4">
-        <a href="/" class="flex items-center gap-4 text-cyan-400 bg-cyan-400/10 border-r-4 border-cyan-400 py-3 px-6 shadow-[inset_0_0_15px_rgba(0,241,254,0.2)] font-label">
-            <span class="material-symbols-outlined">public</span>
-            <span class="text-sm tracking-wide">대륙 탐색</span>
+        <a href="/"
+           class="flex items-center gap-4 py-3.5 px-6 transition-all duration-200 group text-slate-500 hover:bg-white/5 hover:text-slate-300">
+            <span class="material-symbols-outlined text-xl group-hover:scale-110 transition-transform">public</span>
+            <span class="text-sm font-label font-bold tracking-wide">대륙 탐색</span>
         </a>
 
-        <th:block th:if="${loginMember != null}">
-            <a th:if="${loginMember.role.name() == 'STUDENT'}" th:href="@{/student}" class="flex items-center gap-4 text-slate-500 py-3 px-6 hover:bg-slate-800/40 hover:text-cyan-300 transition-all duration-200 font-label group">
-                <span class="material-symbols-outlined">rocket_launch</span>
-                <span class="text-sm tracking-wide">학생 홈</span>
-            </a>
-
-            <a th:if="${loginMember.role.name() == 'INSTRUCTOR'}" th:href="@{/instructor}" class="flex items-center gap-4 text-slate-500 py-3 px-6 hover:bg-slate-800/40 hover:text-cyan-300 transition-all duration-200 font-label group">
-                <span class="material-symbols-outlined">satellite_alt</span>
-                <span class="text-sm tracking-wide">강사 사령부</span>
-            </a>
-
-            <a th:if="${loginMember.role.name() == 'ADMIN'}" th:href="@{/admin}" class="flex items-center gap-4 text-slate-500 py-3 px-6 hover:bg-slate-800/40 hover:text-cyan-300 transition-all duration-200 font-label group">
-                <span class="material-symbols-outlined">admin_panel_settings</span>
-                <span class="text-sm tracking-wide">관리 시스템</span>
-            </a>
-        </th:block>
+        <a th:href="@{/student}"
+           class="flex items-center gap-4 py-3.5 px-6 transition-all duration-200 group text-cyan-400 bg-cyan-400/10 border-r-4 border-cyan-400">
+            <span class="material-symbols-outlined text-xl group-hover:scale-110 transition-transform">rocket_launch</span>
+            <span class="text-sm font-label font-bold tracking-wide">학생 홈</span>
+        </a>
     </nav>
 
-    <div class="p-6 border-t border-outline-variant/10 hidden md:block">
-        <div class="w-full bg-primary/5 border border-primary/20 text-primary/50 py-3 rounded-lg font-label text-xs tracking-widest text-center flex items-center justify-center gap-2">
-            <span class="material-symbols-outlined text-sm animate-pulse">radar</span> SYSTEM ONLINE
+    <div class="p-6 mt-auto">
+        <div class="relative group cursor-help">
+            <div class="absolute -inset-1 bg-gradient-to-r from-cyan-500/20 to-purple-500/20 rounded-xl blur opacity-25 group-hover:opacity-50 transition duration-1000"></div>
+
+            <div class="relative w-full bg-slate-900/50 border border-white/10 p-4 rounded-xl">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-[9px] font-label font-black text-slate-500 uppercase tracking-widest">Network Status</span>
+                    <span class="flex h-2 w-2">
+                        <span class="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-cyan-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
+                    </span>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <span class="material-symbols-outlined text-primary text-sm animate-pulse">radar</span>
+                    <div class="flex-1">
+                        <div class="h-1 w-full bg-white/5 rounded-full overflow-hidden">
+                            <div class="h-full bg-primary w-[85%] shadow-[0_0_8px_#99f7ff]"></div>
+                        </div>
+                    </div>
+                </div>
+                <p class="mt-2 text-[9px] font-label text-primary/60 text-center uppercase tracking-[0.2em]">System Online</p>
+            </div>
         </div>
     </div>
 </aside>

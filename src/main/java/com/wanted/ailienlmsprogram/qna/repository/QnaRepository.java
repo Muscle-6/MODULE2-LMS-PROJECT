@@ -25,4 +25,5 @@ public interface QnaRepository extends JpaRepository<Qna, Long> {
 
     @Query("SELECT COUNT(q) > 0 FROM Qna q WHERE q.parent.qnaId = :qnaId AND q.qnaIsDeleted = false")
     boolean existsReplyByParentId(@Param("qnaId") Long qnaId);
+
 }

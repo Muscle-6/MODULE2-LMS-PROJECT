@@ -6,7 +6,7 @@
     <title>Module02 LMS - STUDENT HUB</title>
 
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 
     <script id="tailwind-config">
@@ -15,16 +15,18 @@
             theme: {
                 extend: {
                     colors: {
-                        "ow-orange": "#FF9C00",
-                        "ow-orange-hover": "#FFB84D",
-                        "ow-blue": "#00B4FF",
-                        "ow-dark": "#1D2127",
-                        "ow-panel": "rgba(29, 33, 39, 0.85)",
-                        "ow-text": "#F0F0F0",
+                        "primary": "#99f7ff",
+                        "secondary": "#c97cff",
+                        "surface-container": "#161a21",
+                        "surface-container-high": "#1c2028",
+                        "on-surface": "#ecedf6",
+                        "on-surface-variant": "#a9abb3",
+                        "outline-variant": "#45484f"
                     },
                     fontFamily: {
-                        "ow": ["Oswald", "sans-serif"],
-                        "body": ["Noto Sans KR", "sans-serif"],
+                        "headline": ["Space Grotesk"],
+                        "body": ["Inter"],
+                        "label": ["Space Grotesk"]
                     }
                 },
             },
@@ -33,196 +35,171 @@
 
     <style>
         body {
-            font-family: 'Noto Sans KR', sans-serif;
+            font-family: 'Inter', sans-serif;
             background-color: #0b0e14;
-            color: #F0F0F0;
-            overflow: hidden; /* 배경 및 캐릭터 고정을 위해 스크롤 숨김 */
+            color: #ecedf6;
+            background-image: radial-gradient(circle at 50% 50%, rgba(153, 247, 255, 0.05) 0%, transparent 50%);
         }
-
-        /* SF 우주 배경 레이어 */
-        .bg-sci-fi {
-            position: fixed;
-            inset: 0;
-            z-index: -3;
-            background-image:
-                    radial-gradient(circle at 30% 50%, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.9) 100%),
-                    url("https://images.unsplash.com/photo-1541701494587-cb58502866ab?q=80&w=2070&auto=format&fit=crop");
-            background-size: cover;
-            background-position: center;
-        }
-
-        /* 가독성을 위한 좌측 그라데이션 오버레이 */
-        .bg-overlay {
-            position: fixed;
-            inset: 0;
-            z-index: -2;
-            background: linear-gradient(90deg, rgba(11, 14, 20, 1) 0%, rgba(11, 14, 20, 0.8) 30%, transparent 100%);
-        }
-
-        /* 오버워치 스타일 기울어진 굵은 텍스트 */
-        .ow-font-italic {
-            font-family: 'Oswald', sans-serif;
-            font-style: italic;
-            text-transform: uppercase;
-        }
-
-        /* 좌측 메뉴 호버 애니메이션 */
-        .ow-menu-item {
-            transition: all 0.2s ease-out;
-            transform-origin: left center;
-        }
-        .ow-menu-item:hover {
-            color: #FF9C00;
-            transform: scale(1.08) translateX(15px);
-            text-shadow: 0 0 20px rgba(255, 156, 0, 0.5);
-        }
-
-        /* 모서리가 사선으로 깎인 패널 (게임 UI 느낌) */
-        .ow-card {
-            background: rgba(29, 33, 39, 0.6);
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-left: 6px solid rgba(255, 255, 255, 0.2);
-            clip-path: polygon(0 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%);
-            transition: all 0.25s ease;
-        }
-        .ow-card:hover {
-            background: rgba(40, 45, 55, 0.95);
-            border-left-color: #FF9C00;
-            transform: translateY(-8px) scale(1.02);
-            box-shadow: 0 15px 40px -10px rgba(255, 156, 0, 0.3);
-        }
-
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-            vertical-align: middle;
-        }
+        .material-symbols-outlined { vertical-align: middle; }
     </style>
 </head>
 
-<body class="min-h-screen relative">
+<body class="min-h-screen">
 
-<div class="bg-sci-fi"></div>
-<div class="bg-overlay"></div>
-
-<<img th:src="@{/images/3d-illustration-reptilian-humanoid-prominent-600w-2149102759.webp}"
-      alt="Reptilian Operative"
-      class="fixed right-[-2%] bottom-[-5vh] h-[105vh] z-[-1] pointer-events-none opacity-80 object-contain"
-      style="filter: drop-shadow(0 0 30px rgba(0, 180, 255, 0.6)); mix-blend-mode: screen;">
-
-<header class="fixed top-0 left-0 right-0 z-50 flex justify-between items-start p-6 pointer-events-none">
-    <div class="pointer-events-auto">
-        <h1 class="ow-font-italic text-5xl font-bold text-white tracking-wider drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">
-            <span class="text-ow-orange">MODULE02</span> LMS
-        </h1>
-        <p class="font-body text-xs text-gray-400 tracking-widest mt-1">ALIEN UNIVERSE LEARNING PLATFORM</p>
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-6 h-16 bg-slate-950/40 backdrop-blur-xl border-b border-white/5">
+    <div class="flex items-center gap-8">
+        <span class="text-2xl font-bold tracking-tighter text-cyan-400 font-headline uppercase">Module02 LMS</span>
     </div>
 
-    <div class="pointer-events-auto flex items-stretch bg-white text-black rounded-sm shadow-[0_5px_20px_rgba(0,0,0,0.6)] overflow-hidden" th:if="${loginMember != null}">
-        <div class="bg-gray-200 px-4 py-2 flex items-center justify-center border-r border-gray-300">
-            <span class="material-symbols-outlined text-gray-700 text-4xl">account_circle</span>
+    <div class="flex items-center gap-4" th:if="${loginMember != null}">
+        <div class="text-right hidden sm:block mr-2">
+            <span class="text-xs font-label tracking-widest text-cyan-400" th:text="|${loginMember.name} 님|"></span>
+            <span class="text-[10px] text-slate-500 font-label tracking-tight ml-1" th:text="|(${loginMember.role})|"></span>
         </div>
-        <div class="px-5 py-1 flex flex-col justify-center min-w-[140px]">
-            <span class="ow-font-italic font-bold text-xl leading-tight uppercase" th:text="${loginMember.name}">PLAYER</span>
-            <span class="font-body text-[11px] text-gray-600 font-bold tracking-wider" th:text="|RANK: ${loginMember.role}|">RANK</span>
-        </div>
-        <a th:href="@{/logout}" class="bg-ow-orange hover:bg-ow-orange-hover px-5 flex items-center justify-center transition-colors group cursor-pointer border-l border-orange-400 logout-btn">
-            <span class="material-symbols-outlined text-white group-hover:scale-110 transition-transform text-2xl">logout</span>
+        <a th:href="@{/logout}" class="flex items-center gap-1 text-slate-400 hover:text-red-400 text-xs">
+            <span class="material-symbols-outlined text-sm">power_settings_new</span> 로그아웃
         </a>
     </div>
 </header>
 
-<main class="h-screen w-full max-w-[1800px] mx-auto px-6 md:px-12 z-10 relative flex flex-col md:flex-row items-center pt-32 pb-16">
+<aside class="fixed left-0 top-16 bottom-0 flex flex-col z-40 bg-slate-950/80 backdrop-blur-lg w-64 shadow-[4px_0_24px_rgba(0,0,0,0.5)] border-r border-white/5 transition-all duration-300">
 
-    <aside class="w-full md:w-[450px] flex-shrink-0 mb-12 md:mb-0 md:mr-16 flex flex-col justify-center items-start">
-        <nav class="flex flex-col gap-8 w-full">
-            <a th:href="@{/}" class="ow-menu-item ow-font-italic text-6xl font-bold text-white flex items-center gap-5 group w-full">
-                <span class="text-gray-600 group-hover:text-ow-orange transition-colors text-4xl">/</span>
-                <span class="flex-1">대륙 탐색</span>
-            </a>
-
-            <a th:href="@{/student}" class="ow-menu-item ow-font-italic text-6xl font-bold text-ow-orange flex items-center gap-5 transform scale-[1.05] translate-x-3 w-full">
-                <span class="text-white text-4xl">></span>
-                <span class="flex-1">학생 홈</span>
-            </a>
-        </nav>
-
-        <div class="mt-20 pt-10 border-t border-white/10 w-full" th:if="${loginMember != null}">
-            <h2 class="ow-font-italic text-2xl text-white tracking-wide mb-3">OPERATIVE STATUS</h2>
-            <div class="flex items-center gap-3 font-body text-sm text-gray-400">
-                <span>상태: <span class="text-ow-blue font-bold">온라인</span></span>
-                <span class="text-white/20">|</span>
-                <span>섹터: <span class="text-white">7G (용자리)</span></span>
+    <div class="p-6 border-b border-white/5" th:if="${loginMember != null}">
+        <div class="flex items-center gap-4 group">
+            <div class="h-11 w-11 rounded-xl bg-cyan-400/10 flex items-center justify-center border border-cyan-400/20 shadow-[0_0_15px_rgba(153,247,255,0.1)] group-hover:border-cyan-400/40 transition-all">
+                <span class="material-symbols-outlined text-cyan-400 text-2xl" style="font-variation-settings: 'FILL' 1;">military_tech</span>
+            </div>
+            <div class="flex flex-col">
+                <p class="text-xs font-headline font-black text-cyan-400 tracking-tight leading-none mb-1 uppercase" th:text="${loginMember.name}">OPERATIVE</p>
+                <div class="flex items-center gap-1">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <p class="text-[10px] font-label text-slate-500 font-bold tracking-tighter uppercase" th:text="|RANK: ${loginMember.role}|">RANK</p>
+                </div>
             </div>
         </div>
-    </aside>
+    </div>
 
-    <section class="flex-1 flex flex-col justify-center w-full h-full overflow-y-auto pr-4">
-        <div class="mb-10">
-            <h2 class="ow-font-italic text-3xl font-bold text-white tracking-wide flex items-center gap-3">
-                <span class="text-ow-orange">></span>
-                DASHBOARD <span class="text-gray-600 text-xl font-normal tracking-tight">// SELECT PROTOCOL</span>
-            </h2>
+    <nav class="flex-1 py-6 space-y-1">
+        <div class="px-6 mb-4">
+            <span class="text-[9px] font-label font-black text-slate-600 uppercase tracking-[0.3em]">Main Protocol</span>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl">
+        <a href="/"
+           class="flex items-center gap-4 py-3.5 px-6 transition-all duration-200 group text-slate-500 hover:bg-white/5 hover:text-slate-300">
+            <span class="material-symbols-outlined text-xl group-hover:scale-110 transition-transform">public</span>
+            <span class="text-sm font-label font-bold tracking-wide">대륙 탐색</span>
+        </a>
 
-            <a th:href="@{/student/profile}" class="ow-card p-7 flex flex-col group cursor-pointer h-52">
-                <div class="flex items-center gap-4 mb-5 pb-4 border-b border-white/5">
-                    <span class="material-symbols-outlined text-4xl text-gray-500 group-hover:text-ow-orange transition-colors">badge</span>
-                    <h3 class="ow-font-italic text-2xl font-bold text-white group-hover:text-ow-orange transition-colors flex-1">내 정보</h3>
+        <a th:href="@{/student}"
+           class="flex items-center gap-4 py-3.5 px-6 transition-all duration-200 group text-cyan-400 bg-cyan-400/10 border-r-4 border-cyan-400">
+            <span class="material-symbols-outlined text-xl group-hover:scale-110 transition-transform">rocket_launch</span>
+            <span class="text-sm font-label font-bold tracking-wide">학생 홈</span>
+        </a>
+    </nav>
+
+    <div class="p-6 mt-auto">
+        <div class="relative group cursor-help">
+            <div class="absolute -inset-1 bg-gradient-to-r from-cyan-500/20 to-purple-500/20 rounded-xl blur opacity-25 group-hover:opacity-50 transition duration-1000"></div>
+
+            <div class="relative w-full bg-slate-900/50 border border-white/10 p-4 rounded-xl">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-[9px] font-label font-black text-slate-500 uppercase tracking-widest">Network Status</span>
+                    <span class="flex h-2 w-2">
+                        <span class="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-cyan-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
+                    </span>
                 </div>
-                <p class="font-body text-sm text-gray-400 flex-1 leading-relaxed">
-                    회원 정보 조회 및 수정. 보안 코드를 최신 상태로 유지하십시오.
-                </p>
-                <div class="mt-auto flex justify-end">
-                    <span class="ow-font-italic text-gray-600 group-hover:text-ow-orange text-xl font-bold transition-colors">ACCESS ></span>
+
+                <div class="flex items-center gap-3">
+                    <span class="material-symbols-outlined text-primary text-sm animate-pulse">radar</span>
+                    <div class="flex-1">
+                        <div class="h-1 w-full bg-white/5 rounded-full overflow-hidden">
+                            <div class="h-full bg-primary w-[85%] shadow-[0_0_8px_#99f7ff]"></div>
+                        </div>
+                    </div>
+                </div>
+                <p class="mt-2 text-[9px] font-label text-primary/60 text-center uppercase tracking-[0.2em]">System Online</p>
+            </div>
+        </div>
+    </div>
+</aside>
+
+<main class="ml-64 pt-24 px-10 pb-12">
+    <div class="max-w-5xl mx-auto">
+
+        <div class="mb-12">
+            <h1 class="text-5xl font-headline font-bold text-on-surface tracking-tighter mb-3 uppercase">Student Hub</h1>
+            <p class="text-on-surface-variant font-body text-sm max-w-2xl leading-relaxed">
+                학생 사령부입니다. 학습 데이터 동기화, 수강 대륙 관리 및 결제 기록 확인 등 시스템의 모든 기능을 이곳에서 제어할 수 있습니다.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+            <a th:href="@{/student/profile}"
+               class="group relative bg-surface-container/60 backdrop-blur-xl p-8 rounded-2xl border border-outline-variant/10 hover:bg-surface-container-high hover:border-primary/40 transition-all duration-300 h-44 flex flex-col justify-between overflow-hidden shadow-xl">
+                <div class="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity">
+                    <span class="material-symbols-outlined text-7xl text-primary">person</span>
+                </div>
+                <div>
+                    <h3 class="text-xl font-headline font-bold text-primary mb-2 uppercase tracking-tight">내 정보 / Profile</h3>
+                    <p class="text-xs text-on-surface-variant font-body leading-relaxed">회원 정보 조회 및 보안 프로토콜 업데이트</p>
+                </div>
+                <div class="flex items-center gap-2 text-[10px] font-label font-bold text-primary tracking-widest uppercase opacity-0 group-hover:opacity-100 transition-opacity">
+                    Access System <span class="material-symbols-outlined text-sm">arrow_forward</span>
                 </div>
             </a>
 
-            <a th:href="@{/student/enrollments}" class="ow-card p-7 flex flex-col group cursor-pointer h-52">
-                <div class="flex items-center gap-4 mb-5 pb-4 border-b border-white/5">
-                    <span class="material-symbols-outlined text-4xl text-gray-500 group-hover:text-ow-orange transition-colors">terminal</span>
-                    <h3 class="ow-font-italic text-2xl font-bold text-white group-hover:text-ow-orange transition-colors flex-1">수강 중 강좌</h3>
+            <a th:href="@{/student/enrollments}"
+               class="group relative bg-surface-container/60 backdrop-blur-xl p-8 rounded-2xl border border-outline-variant/10 hover:bg-surface-container-high hover:border-primary/40 transition-all duration-300 h-44 flex flex-col justify-between overflow-hidden shadow-xl">
+                <div class="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity">
+                    <span class="material-symbols-outlined text-7xl text-primary">school</span>
                 </div>
-                <p class="font-body text-sm text-gray-400 flex-1 leading-relaxed">
-                    현재 진행 중인 학습 프로토콜과 진척도를 분석합니다.
-                </p>
-                <div class="mt-auto flex justify-end">
-                    <span class="ow-font-italic text-gray-600 group-hover:text-ow-orange text-xl font-bold transition-colors">ACCESS ></span>
+                <div>
+                    <h3 class="text-xl font-headline font-bold text-primary mb-2 uppercase tracking-tight">수강 강좌 / Missions</h3>
+                    <p class="text-xs text-on-surface-variant font-body leading-relaxed">현재 진행 중인 수강 모듈 및 학습 진도 확인</p>
                 </div>
-            </a>
-
-            <a th:href="@{/student/payments}" class="ow-card p-7 flex flex-col group cursor-pointer h-52">
-                <div class="flex items-center gap-4 mb-5 pb-4 border-b border-white/5">
-                    <span class="material-symbols-outlined text-4xl text-gray-500 group-hover:text-ow-orange transition-colors">receipt_long</span>
-                    <h3 class="ow-font-italic text-2xl font-bold text-white group-hover:text-ow-orange transition-colors flex-1">결제 내역</h3>
-                </div>
-                <p class="font-body text-sm text-gray-400 flex-1 leading-relaxed">
-                    자원 소모 기록 및 크레딧 환불 처리 내역을 조회합니다.
-                </p>
-                <div class="mt-auto flex justify-end">
-                    <span class="ow-font-italic text-gray-600 group-hover:text-ow-orange text-xl font-bold transition-colors">ACCESS ></span>
+                <div class="flex items-center gap-2 text-[10px] font-label font-bold text-primary tracking-widest uppercase opacity-0 group-hover:opacity-100 transition-opacity">
+                    Access System <span class="material-symbols-outlined text-sm">arrow_forward</span>
                 </div>
             </a>
 
-            <a th:href="@{/student/cart}" class="ow-card p-7 flex flex-col group cursor-pointer h-52">
-                <div class="flex items-center gap-4 mb-5 pb-4 border-b border-white/5">
-                    <span class="material-symbols-outlined text-4xl text-gray-500 group-hover:text-ow-orange transition-colors">shopping_cart</span>
-                    <h3 class="ow-font-italic text-2xl font-bold text-white group-hover:text-ow-orange transition-colors flex-1">수강 바구니</h3>
+            <a th:href="@{/student/payments}"
+               class="group relative bg-surface-container/60 backdrop-blur-xl p-8 rounded-2xl border border-outline-variant/10 hover:bg-surface-container-high hover:border-primary/40 transition-all duration-300 h-44 flex flex-col justify-between overflow-hidden shadow-xl">
+                <div class="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity">
+                    <span class="material-symbols-outlined text-7xl text-primary">receipt_long</span>
                 </div>
-                <p class="font-body text-sm text-gray-400 flex-1 leading-relaxed">
-                    결제 전 대기 중인 프로토콜 목록을 확인하고 승인합니다.
-                </p>
-                <div class="mt-auto flex justify-end">
-                    <span class="ow-font-italic text-gray-600 group-hover:text-ow-orange text-xl font-bold transition-colors">ACCESS ></span>
+                <div>
+                    <h3 class="text-xl font-headline font-bold text-primary mb-2 uppercase tracking-tight">결제 내역 / Logs</h3>
+                    <p class="text-xs text-on-surface-variant font-body leading-relaxed">자원 소모 기록 및 결제 증명서 발급</p>
+                </div>
+                <div class="flex items-center gap-2 text-[10px] font-label font-bold text-primary tracking-widest uppercase opacity-0 group-hover:opacity-100 transition-opacity">
+                    Access System <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                </div>
+            </a>
+
+            <a th:href="@{/student/cart}"
+               class="group relative bg-surface-container/60 backdrop-blur-xl p-8 rounded-2xl border border-outline-variant/10 hover:bg-surface-container-high hover:border-primary/40 transition-all duration-300 h-44 flex flex-col justify-between overflow-hidden shadow-xl">
+                <div class="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity">
+                    <span class="material-symbols-outlined text-7xl text-primary">shopping_cart</span>
+                </div>
+                <div>
+                    <h3 class="text-xl font-headline font-bold text-primary mb-2 uppercase tracking-tight">장바구니 / Hangar</h3>
+                    <p class="text-xs text-on-surface-variant font-body leading-relaxed">탐색 예정인 강좌 모듈 임시 보관소</p>
+                </div>
+                <div class="flex items-center gap-2 text-[10px] font-label font-bold text-primary tracking-widest uppercase opacity-0 group-hover:opacity-100 transition-opacity">
+                    Access System <span class="material-symbols-outlined text-sm">arrow_forward</span>
                 </div>
             </a>
 
         </div>
-    </section>
-
+    </div>
 </main>
+
+<div class="fixed inset-0 pointer-events-none -z-10">
+    <div class="absolute top-[30%] left-[60%] translate-x-[-50%] translate-y-[-50%] w-[800px] h-[800px] bg-primary/5 rounded-full blur-[150px]"></div>
+    <div class="absolute bottom-[20%] left-[30%] w-[500px] h-[500px] bg-secondary/5 rounded-full blur-[120px]"></div>
+</div>
 
 </body>
 </html>

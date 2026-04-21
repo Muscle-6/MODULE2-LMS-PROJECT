@@ -1,54 +1,210 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html class="dark" lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>게시글 수정</title>
-    <style>
-        /* 상세 페이지(post_detail) 스타일 그대로 복사 */
-        body { margin: 0; font-family: Arial, sans-serif; background: #0b1020; color: #f5f7ff; }
-        .container { width: 800px; margin: 0 auto; padding: 60px 20px; }
-        .post-card { background: #121a35; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .post-header { border-bottom: 1px solid #1a2447; margin-bottom: 20px; padding-bottom: 20px; }
-        /* input과 textarea에 box-sizing 추가해서 레이아웃 깨짐 방지 */
-        .post-title { font-size: 28px; color: #7ee0ff; margin: 0 0 10px 0; width: 100%; background: #1a2447; border: 1px solid #5f7cff; border-radius: 8px; padding: 10px; color: #7ee0ff; box-sizing: border-box; }
-        .post-content { line-height: 1.8; font-size: 16px; min-height: 300px; width: 100%; background: #1a2447; border: 1px solid #5f7cff; border-radius: 8px; padding: 15px; color: #f5f7ff; resize: none; box-sizing: border-box; }
-        .btn-area { margin-top: 30px; text-align: center; }
-        .btn { display: inline-block; padding: 12px 25px; border-radius: 8px; background: #5f7cff; color: white; text-decoration: none; font-weight: bold; margin: 0 5px; border: none; cursor: pointer; }
-        .btn-list { background: #1d295f; }
-        label { display: block; margin-bottom: 10px; color: #b8c1e7; font-weight: bold; }
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EDIT TRANSMISSION | MODULE02 LMS</title>
 
-        /* ★ 에러 메시지 박스 스타일 추가 ★ */
-        .error-box {
-            margin-bottom: 20px; padding: 12px 16px;
-            background: #2a1212; border: 1px solid #ff6b6b;
-            color: #ffb4b4; border-radius: 8px; font-size: 14px;
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#99f7ff",
+                        "secondary": "#c97cff",
+                        "surface-container": "#161a21",
+                        "surface-container-high": "#1c2028",
+                        "on-surface": "#ecedf6",
+                        "outline-variant": "#2a2f3a",
+                    },
+                    fontFamily: {
+                        "headline": ["Space Grotesk"],
+                        "body": ["Inter"],
+                        "label": ["Space Grotesk"]
+                    }
+                },
+            },
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0b0e14;
+            color: #ecedf6;
+            background-image: radial-gradient(circle at 50% 50%, rgba(153, 247, 255, 0.05) 0%, transparent 50%);
+            overflow-x: hidden;
+        }
+
+        /* 10년차 개발자의 눈 보호를 위한 다크 인풋 */
+        .cyber-input {
+            width: 100%;
+            background: rgba(15, 23, 42, 0.6) !important;
+            border: 1px solid rgba(255, 255, 255, 0.05) !important;
+            border-radius: 12px;
+            padding: 12px 16px 12px 52px; /* 40px → 52px */
+            color: #99f7ff !important;
+            transition: all 0.3s ease;
+        }
+        .cyber-input:focus {
+            outline: none;
+            background: rgba(15, 23, 42, 0.9) !important;
+            border-color: #99f7ff !important;
+            box-shadow: 0 0 20px rgba(153, 247, 255, 0.15);
+            color: #ffffff !important;
         }
     </style>
 </head>
-<body>
-<div class="container">
-    <div th:if="${errorMessage}" class="error-box" th:text="${errorMessage}">
-        비속어가 포함되어 있습니다.
+
+<body class="min-h-screen">
+
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-6 h-16 bg-slate-950/40 backdrop-blur-xl border-b border-white/5">
+    <div class="flex items-center gap-8">
+        <a href="/" class="text-2xl font-bold tracking-tighter text-cyan-400 font-headline uppercase">Module02 LMS</a>
+    </div>
+    <div class="flex items-center gap-4" th:if="${loginMember != null}">
+        <div class="text-right hidden sm:block mr-2">
+            <span class="text-xs font-label tracking-widest text-cyan-400" th:text="|${loginMember.name} 님|"></span>
+        </div>
+        <a th:href="@{/logout}" class="flex items-center gap-1 text-slate-400 hover:text-red-400 transition-colors text-xs font-label uppercase tracking-widest">
+            <span class="material-symbols-outlined text-sm">power_settings_new</span> 로그아웃
+        </a>
+    </div>
+</header>
+
+<aside class="fixed left-0 top-16 bottom-0 flex flex-col z-40 bg-slate-950/80 backdrop-blur-lg w-64 shadow-[4px_0_24px_rgba(0,0,0,0.5)] border-r border-white/5 transition-all duration-300">
+
+    <div class="p-6 border-b border-white/5" th:if="${loginMember != null}">
+        <div class="flex items-center gap-4 group">
+            <div class="h-11 w-11 rounded-xl bg-cyan-400/10 flex items-center justify-center border border-cyan-400/20 shadow-[0_0_15px_rgba(153,247,255,0.1)] group-hover:border-cyan-400/40 transition-all">
+                <span class="material-symbols-outlined text-cyan-400 text-2xl" style="font-variation-settings: 'FILL' 1;">military_tech</span>
+            </div>
+            <div class="flex flex-col">
+                <p class="text-xs font-headline font-black text-cyan-400 tracking-tight leading-none mb-1 uppercase" th:text="${loginMember.name}">OPERATIVE</p>
+                <div class="flex items-center gap-1">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <p class="text-[10px] font-label text-slate-500 font-bold tracking-tighter uppercase" th:text="|RANK: ${loginMember.role}|">RANK</p>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div class="post-card">
-        <form th:action="@{/continents/posts/edit/{id}(id=${postId})}" method="post">
-            <div class="post-header">
-                <label>게시글 제목 수정</label>
-                <input type="text" name="postTitle" th:value="${post.title}" class="post-title">
+    <nav class="flex-1 py-6 space-y-1">
+        <div class="px-6 mb-4">
+            <span class="text-[9px] font-label font-black text-slate-600 uppercase tracking-[0.3em]">Main Protocol</span>
+        </div>
+
+        <a href="/"
+           class="flex items-center gap-4 py-3.5 px-6 transition-all duration-200 group text-slate-500 hover:bg-white/5 hover:text-slate-300">
+            <span class="material-symbols-outlined text-xl group-hover:scale-110 transition-transform">public</span>
+            <span class="text-sm font-label font-bold tracking-wide">대륙 탐색</span>
+        </a>
+
+        <a th:href="@{/student}"
+           class="flex items-center gap-4 py-3.5 px-6 transition-all duration-200 group text-cyan-400 bg-cyan-400/10 border-r-4 border-cyan-400">
+            <span class="material-symbols-outlined text-xl group-hover:scale-110 transition-transform">rocket_launch</span>
+            <span class="text-sm font-label font-bold tracking-wide">학생 홈</span>
+        </a>
+    </nav>
+
+    <div class="p-6 mt-auto">
+        <div class="relative group cursor-help">
+            <div class="absolute -inset-1 bg-gradient-to-r from-cyan-500/20 to-purple-500/20 rounded-xl blur opacity-25 group-hover:opacity-50 transition duration-1000"></div>
+
+            <div class="relative w-full bg-slate-900/50 border border-white/10 p-4 rounded-xl">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-[9px] font-label font-black text-slate-500 uppercase tracking-widest">Network Status</span>
+                    <span class="flex h-2 w-2">
+                        <span class="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-cyan-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
+                    </span>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <span class="material-symbols-outlined text-primary text-sm animate-pulse">radar</span>
+                    <div class="flex-1">
+                        <div class="h-1 w-full bg-white/5 rounded-full overflow-hidden">
+                            <div class="h-full bg-primary w-[85%] shadow-[0_0_8px_#99f7ff]"></div>
+                        </div>
+                    </div>
+                </div>
+                <p class="mt-2 text-[9px] font-label text-primary/60 text-center uppercase tracking-[0.2em]">System Online</p>
+            </div>
+        </div>
+    </div>
+</aside>
+
+<main class="ml-64 pt-28 px-10 pb-16">
+    <div class="max-w-4xl mx-auto">
+
+        <div class="mb-10">
+            <a th:href="@{/posts/{id}(id=${post.postId})}"
+               class="flex items-center gap-2 text-[10px] font-label tracking-widest text-slate-500 hover:text-primary transition-all uppercase group mb-6">
+                <span class="material-symbols-outlined text-sm transition-transform group-hover:-translate-x-1">arrow_back</span>
+                Abort Changes
+            </a>
+            <div class="flex items-center gap-3 mb-2">
+                <span class="h-[1px] w-8 bg-primary/40"></span>
+                <span class="text-[10px] font-label tracking-[0.3em] text-primary uppercase">Data Reconstruction</span>
+            </div>
+            <h1 class="text-4xl font-headline font-black text-on-surface tracking-tight uppercase leading-none">
+                Modify <span class="text-primary/50">Post</span>
+            </h1>
+        </div>
+
+        <form th:action="@{/continents/posts/edit/{id}(id=${post.postId})}"
+              method="post"
+              class="bg-surface-container/60 backdrop-blur-xl border border-white/5 p-10 rounded-3xl shadow-2xl space-y-8 relative overflow-hidden">
+
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary/30 to-transparent"></div>
+
+            <div class="space-y-3">
+                <label class="flex items-center gap-2 text-[10px] font-label font-black text-slate-500 uppercase tracking-widest ml-1">
+                    <span class="material-symbols-outlined text-sm">edit_note</span> Update Subject
+                </label>
+                <input type="text" name="postTitle" th:value="${post.title}"
+                       class="cyber-input text-xl font-bold"
+                       placeholder="Enter new subject...">
             </div>
 
-            <div class="post-content-area">
-                <label>게시글 내용 수정</label>
-                <textarea name="postContent" th:text="${post.content}" class="post-content"></textarea>
+            <div class="space-y-3">
+                <label class="flex items-center gap-2 text-[10px] font-label font-black text-slate-500 uppercase tracking-widest ml-1">
+                    <span class="material-symbols-outlined text-sm">segment</span> Refine Content
+                </label>
+                <textarea name="postContent" th:text="${post.content}"
+                          class="cyber-input min-h-[450px] text-sm leading-relaxed"
+                          placeholder="Refine the transmission data..."></textarea>
             </div>
 
-            <div class="btn-area">
-                <button type="submit" class="btn">수정완료</button>
-                <a th:href="@{/posts/{id}(id=${postId})}" class="btn btn-list">취소</a>
+            <div class="flex items-center justify-end gap-6 pt-8 border-t border-white/5">
+                <a th:href="@{/posts/{id}(id=${post.postId})}"
+                   class="text-[10px] font-label font-black text-slate-500 uppercase tracking-[0.2em] hover:text-white transition-all">
+                    Discard
+                </a>
+                <button type="submit"
+                        class="px-12 py-4 bg-primary text-slate-950 font-label text-[10px] font-black rounded-xl hover:bg-white hover:scale-105 active:scale-95 transition-all shadow-[0_0_25px_rgba(153,247,255,0.2)] uppercase tracking-[0.2em] flex items-center gap-2">
+                    <span class="material-symbols-outlined text-sm">save_as</span> Commit Update
+                </button>
             </div>
         </form>
+
     </div>
-</div>
+</main>
+
+<style>
+    @keyframes spin-slow {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+    .animate-spin-slow {
+        animation: spin-slow 8s linear infinite;
+    }
+</style>
+
 </body>
 </html>
