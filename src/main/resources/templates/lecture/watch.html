@@ -226,7 +226,7 @@
     <div class="video-container">
         <div class="skip-warning" id="skipWarning">⚠ 건너뛰기는 허용되지 않습니다</div>
 
-        <video th:if="${lecture.videoUrl != null}"
+        <video th:if="${lecture.videoStatus.name() == 'READY'}"
                id="lectureVideo"
                controls
                controlsList="nodownload"
@@ -235,7 +235,11 @@
             브라우저가 video 태그를 지원하지 않습니다.
         </video>
 
-        <div th:if="${lecture.videoUrl == null}" class="no-video">
+        <div th:if="${lecture.videoStatus.name() == 'UPLOADING'}" class="no-video">
+            <p style="color: #f5c542;">⏳ 영상을 업로드하는 중입니다. 잠시 후 다시 확인해주세요.</p>
+        </div>
+
+        <div th:if="${lecture.videoStatus.name() == 'NONE'}" class="no-video">
             <p>등록된 영상이 없습니다.</p>
         </div>
     </div>

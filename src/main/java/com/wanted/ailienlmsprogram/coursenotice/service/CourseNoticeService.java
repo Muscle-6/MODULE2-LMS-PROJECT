@@ -11,13 +11,13 @@ import com.wanted.ailienlmsprogram.enrollment.entity.Enrollment;
 import com.wanted.ailienlmsprogram.enrollment.repository.EnrollmentRepository;
 import com.wanted.ailienlmsprogram.member.entity.Member;
 import com.wanted.ailienlmsprogram.member.repository.MemberRepository;
+import com.wanted.ailienlmsprogram.global.exception.BusinessException;
+import com.wanted.ailienlmsprogram.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -37,7 +37,7 @@ public class CourseNoticeService {
     public List<CourseNoticeFindDTO> findNotices(Long courseId, Long memberId) {
 
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new RuntimeException("Member not found"));
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "존재하지 않는 회원입니다."));
 
         boolean isEnrolled = enrollmentRepository.existsByMember_LoginIdAndCourse_CourseIdAndStatus(
                 member.getLoginId(),
@@ -47,11 +47,11 @@ public class CourseNoticeService {
         boolean isInstructor = courseRepository.existsByCourseIdAndInstructor_MemberId(courseId, memberId);
 
         if (!isEnrolled && !isInstructor) {
-            throw new AccessDeniedException("비인가 요원 감지! 수강생만 접근 가능한 구역입니다. 오호이야~!");
+            throw new BusinessException(ErrorCode.FORBIDDEN, "수강생만 접근 가능한 구역입니다.");
         }
 
         List<CourseNotice> notices = courseNoticeRepository
-                .findByCourse_CourseIdOrderByCreatedAtDesc(courseId);
+                .findByCourseIdWithFetchJoin(courseId);
 
         return notices.stream()
                 .map(notice -> {
@@ -66,7 +66,7 @@ public class CourseNoticeService {
     public CourseNoticeFindDTO findNoticeById(Long noticeId) {
 
         CourseNotice notice = courseNoticeRepository.findById(noticeId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 공지사항입니다."));
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "존재하지 않는 공지사항입니다."));
 
         CourseNoticeFindDTO dto = modelMapper.map(notice, CourseNoticeFindDTO.class);
         dto.setAuthorName(notice.getAuthor().getName());
@@ -98,7 +98,7 @@ public class CourseNoticeService {
 
         // 1. 공지사항 조회
         CourseNotice notice = courseNoticeRepository.findById(noticeId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 공지사항입니다."));
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "존재하지 않는 공지사항입니다."));
 
         // 2. 엔티티 수정 메서드 호출
         //    → @Transactional + 더티체킹으로 save() 없이 자동 UPDATE
@@ -116,7 +116,7 @@ public class CourseNoticeService {
 
         // 1. 공지사항 조회
         CourseNotice notice = courseNoticeRepository.findById(noticeId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 공지사항입니다."));
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "존재하지 않는 공지사항입니다."));
 
         // 2. DB에서 삭제
         courseNoticeRepository.delete(notice);
@@ -126,7 +126,7 @@ public class CourseNoticeService {
     public CourseNoticeDetailDTO detailNotice(Long noticeId) {
 
         CourseNotice notice = courseNoticeRepository.findById(noticeId)
-                .orElseThrow(()-> new IllegalArgumentException("존재하지 않는 공지사항입니다."));
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "존재하지 않는 공지사항입니다."));
 
         CourseNoticeDetailDTO detail = modelMapper.map(notice, CourseNoticeDetailDTO.class);
 

@@ -14,6 +14,8 @@ import com.wanted.ailienlmsprogram.payment.repository.CartRepository;
 import com.wanted.ailienlmsprogram.payment.repository.PaymentItemRepository;
 import com.wanted.ailienlmsprogram.payment.repository.PaymentRepository;
 import com.wanted.ailienlmsprogram.payment.repository.RefundRepository;
+import com.wanted.ailienlmsprogram.global.exception.BusinessException;
+import com.wanted.ailienlmsprogram.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,7 +44,7 @@ public class PaymentService {
 
     public PaymentDetailResponse getPaymentDetail(Long paymentId, Member member) {
         Payment payment = paymentRepository.findByPaymentIdAndMemberMemberId(paymentId, member.getMemberId())
-                .orElseThrow(() -> new IllegalArgumentException("결제 내역이 존재하지 않거나 접근 권한이 없습니다."));
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "결제 내역이 존재하지 않거나 접근 권한이 없습니다."));
 
         return new PaymentDetailResponse(
                 payment,
@@ -55,7 +57,7 @@ public class PaymentService {
     public Payment checkoutAll(Member member) {
         List<Cart> cartItems = cartRepository.findByMemberMemberId(member.getMemberId());
         if (cartItems.isEmpty()) {
-            throw new IllegalArgumentException("장바구니가 비어 있습니다.");
+            throw new BusinessException(ErrorCode.BAD_REQUEST, "장바구니가 비어 있습니다.");
         }
         return processCheckout(cartItems, member);
     }
@@ -63,10 +65,10 @@ public class PaymentService {
     @Transactional
     public Payment checkoutSingle(Long cartId, Member member) {
         Cart cart = cartRepository.findById(cartId)
-                .orElseThrow(() -> new IllegalArgumentException("장바구니 항목이 존재하지 않습니다."));
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "장바구니 항목이 존재하지 않습니다."));
 
         if (!cart.getMember().getMemberId().equals(member.getMemberId())) {
-            throw new IllegalArgumentException("본인의 장바구니 항목만 결제할 수 있습니다.");
+            throw new BusinessException(ErrorCode.FORBIDDEN, "본인의 장바구니 항목만 결제할 수 있습니다.");
         }
 
         return processCheckout(List.of(cart), member);
@@ -89,13 +91,16 @@ public class PaymentService {
         payment.setPaymentCompletedAt(LocalDateTime.now());
         paymentRepository.save(payment);
 
-        for (Cart cart : cartItems) {
+        List<PaymentItem> items = cartItems.stream().map(cart -> {
             PaymentItem item = new PaymentItem();
             item.setPayment(payment);
             item.setCourse(cart.getCourse());
             item.setItemPriceAtPurchase(cart.getCourse().getCoursePrice());
-            paymentItemRepository.save(item);
+            return item;
+        }).toList();
+        paymentItemRepository.saveAll(items);
 
+        for (Cart cart : cartItems) {
             enrollmentService.enroll(member, cart.getCourse());
         }
 
@@ -115,19 +120,19 @@ public class PaymentService {
         // 1. 장바구니 항목 로드 및 소유권 검증
         List<Cart> cartItems = cartRepository.findAllById(cartIds);
         if (cartItems.isEmpty()) {
-            throw new IllegalArgumentException("결제할 강좌를 찾을 수 없습니다.");
+            throw new BusinessException(ErrorCode.NOT_FOUND, "결제할 강좌를 찾을 수 없습니다.");
         }
 
         boolean allBelongToMember = cartItems.stream()
                 .allMatch(c -> c.getMember().getMemberId().equals(member.getMemberId()));
         if (!allBelongToMember) {
-            throw new IllegalArgumentException("접근 권한이 없는 항목이 포함되어 있습니다.");
+            throw new BusinessException(ErrorCode.FORBIDDEN, "접근 권한이 없는 항목이 포함되어 있습니다.");
         }
 
         // 2. 금액 위변조 검증 — DB 기준 가격 합산과 클라이언트 전달 금액 비교
         int expectedAmount = cartItems.stream().mapToInt(c -> c.getCourse().getCoursePrice()).sum();
         if (expectedAmount != (int) amount) {
-            throw new IllegalArgumentException(
+            throw new BusinessException(ErrorCode.BAD_REQUEST,
                     "결제 금액이 일치하지 않습니다. (예상: " + expectedAmount + "원, 수신: " + amount + "원)");
         }
 
@@ -136,16 +141,16 @@ public class PaymentService {
         TossPaymentResponse response = tossPaymentClient.confirm(paymentKey, orderId, amount);
 
         if (response == null) {
-            throw new IllegalArgumentException("토스페이먼츠 응답을 받지 못했습니다.");
+            throw new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR, "토스페이먼츠 응답을 받지 못했습니다.");
         }
         if (!"DONE".equals(response.getStatus())) {
-            throw new IllegalArgumentException("결제가 완료되지 않았습니다. (status: " + response.getStatus() + ")");
+            throw new BusinessException(ErrorCode.BAD_REQUEST, "결제가 완료되지 않았습니다. (status: " + response.getStatus() + ")");
         }
         if (response.getTotalAmount() != expectedAmount) {
-            throw new IllegalArgumentException("Toss 응답 금액이 일치하지 않습니다.");
+            throw new BusinessException(ErrorCode.BAD_REQUEST, "Toss 응답 금액이 일치하지 않습니다.");
         }
         if (!response.getOrderId().equals(orderId)) {
-            throw new IllegalArgumentException("Toss 응답 주문번호가 일치하지 않습니다.");
+            throw new BusinessException(ErrorCode.BAD_REQUEST, "Toss 응답 주문번호가 일치하지 않습니다.");
         }
 
 
@@ -163,13 +168,16 @@ public class PaymentService {
 
 
         // 5. PaymentItem 생성 + 수강 등록
-        for (Cart cart : cartItems) {
+        List<PaymentItem> items = cartItems.stream().map(cart -> {
             PaymentItem item = new PaymentItem();
             item.setPayment(payment);
             item.setCourse(cart.getCourse());
             item.setItemPriceAtPurchase(cart.getCourse().getCoursePrice());
-            paymentItemRepository.save(item);
+            return item;
+        }).toList();
+        paymentItemRepository.saveAll(items);
 
+        for (Cart cart : cartItems) {
             enrollmentService.enroll(member, cart.getCourse());
         }
 
@@ -185,10 +193,10 @@ public class PaymentService {
     @Transactional
     public void requestRefund(Long paymentId, String refundReason, Member member) {
         Payment payment = paymentRepository.findByPaymentIdAndMemberMemberId(paymentId, member.getMemberId())
-                .orElseThrow(() -> new IllegalArgumentException("결제 내역이 존재하지 않거나 접근 권한이 없습니다."));
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "결제 내역이 존재하지 않거나 접근 권한이 없습니다."));
 
         if (refundRepository.findByPaymentPaymentId(paymentId).isPresent()) {
-            throw new IllegalArgumentException("이미 환불이 요청되었거나 처리된 결제입니다.");
+            throw new BusinessException(ErrorCode.BAD_REQUEST, "이미 환불이 요청되었거나 처리된 결제입니다.");
         }
 
         Refund refund = new Refund();

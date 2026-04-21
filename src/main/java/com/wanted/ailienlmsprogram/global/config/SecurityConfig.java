@@ -51,7 +51,18 @@ public class SecurityConfig {
                 .authenticationProvider(authenticationProvider())
                 //사용자별 접근 권한
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/login", "/signup", "/access-denied", "/continents", "/continents/*").permitAll()
+                        .requestMatchers(
+                                "/",
+                                "/login",
+                                "/signup",
+                                "/access-denied",
+                                "/continents",
+                                "/continents/*",
+                                "/images/**",
+                                "/css/**",
+                                "/js/**",
+                                "/favicon.ico"
+                        ).permitAll()
                         .requestMatchers("/continents/*/posts", "/courses/*").authenticated()
                         .requestMatchers("/main").hasRole("STUDENT")
                         .requestMatchers("/student/**").hasRole("STUDENT")

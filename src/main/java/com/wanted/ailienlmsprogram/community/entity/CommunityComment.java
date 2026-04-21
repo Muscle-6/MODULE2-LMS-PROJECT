@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 //@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "continent_comment") // 1. 테이블 이름 연결
+@Table(name = "continent_comment")
 public class CommunityComment {
 
     @Id
@@ -20,7 +20,7 @@ public class CommunityComment {
     @Column(name = "comment_id")
     private Long commentId;
 
-    @Column(name = "comment_content", columnDefinition = "TEXT", nullable = false) // 2. 컬럼 이름 연결
+    @Column(name = "comment_content", columnDefinition = "TEXT", nullable = false)
     private String content;
 
     @Column(name = "comment_is_deleted")
@@ -30,7 +30,7 @@ public class CommunityComment {
     private CommunityPost post;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "author_id") // 3. 작성자 ID 컬럼 연결
+    @JoinColumn(name = "author_id")
     private Member member;
 
     @Column(name = "created_at", nullable = false, updatable = false)

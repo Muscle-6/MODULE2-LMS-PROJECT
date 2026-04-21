@@ -3,6 +3,8 @@ package com.wanted.ailienlmsprogram.member.service;
 import com.wanted.ailienlmsprogram.member.dto.SignupRequest;
 import com.wanted.ailienlmsprogram.member.entity.Member;
 import com.wanted.ailienlmsprogram.member.repository.MemberRepository;
+import com.wanted.ailienlmsprogram.global.exception.BusinessException;
+import com.wanted.ailienlmsprogram.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -28,11 +30,11 @@ public class MemberService {
     @Transactional
     public void signup(SignupRequest request) {
         if (memberRepository.existsByLoginId(request.getLoginId())) {
-            throw new IllegalArgumentException("이미 사용 중인 아이디입니다.");
+            throw new BusinessException(ErrorCode.BAD_REQUEST, "이미 사용 중인 아이디입니다.");
         }
 
         if (memberRepository.existsByEmail(request.getEmail())) {
-            throw new IllegalArgumentException("이미 사용 중인 이메일입니다.");
+            throw new BusinessException(ErrorCode.BAD_REQUEST, "이미 사용 중인 이메일입니다.");
         }
 
         Member member = Member.create(
@@ -58,7 +60,7 @@ public class MemberService {
     @Transactional
     public void handleLoginSuccess(Long memberId) {
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new IllegalArgumentException("회원이 존재하지 않습니다."));
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "회원이 존재하지 않습니다."));
 
         LocalDateTime now = LocalDateTime.now();
 

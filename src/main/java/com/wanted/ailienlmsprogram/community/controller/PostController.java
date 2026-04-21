@@ -1,6 +1,6 @@
 package com.wanted.ailienlmsprogram.community.controller;
 
-import com.wanted.ailienlmsprogram.community.dto.CommentRequestDTO; // 1. 댓글 요청 DTO 임포트 추가
+import com.wanted.ailienlmsprogram.community.dto.CommentRequestDTO;
 import com.wanted.ailienlmsprogram.community.dto.PostCreateRequestDTO;
 import com.wanted.ailienlmsprogram.community.dto.PostDTO;
 import com.wanted.ailienlmsprogram.community.dto.CommentResponseDTO;
@@ -18,7 +18,9 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
@@ -36,7 +38,7 @@ public class PostController {
         return "community/posts";
     }
 
-    // 상세 페이지 이동 (수정됨)
+    // 상세 페이지 이동
     @GetMapping("/posts/{postId}")
     public String findPostDetail(@PathVariable Long postId,
                                  Model model,
@@ -48,8 +50,6 @@ public class PostController {
         List<CommentResponseDTO> comments = commentService.findComments(postId);
         model.addAttribute("comments", comments);
 
-        // ★ 핵심: 상세 페이지를 처음 열 때 빈 댓글 DTO를 모델에 담아줍니다.
-        // 이래야 html의 th:object="${commentRequestDTO}" 가 에러 없이 작동합니다.
         model.addAttribute("commentRequestDTO", new CommentRequestDTO());
 
         if (userDetails != null) {
@@ -98,7 +98,7 @@ public class PostController {
         return "community/post_update";
     }
 
-    // 수정 처리
+    // ★ 수정 처리 (보완 완료) ★
     @PostMapping("/continents/posts/edit/{postId}")
     public String updatePost(@PathVariable Long postId,
                              @ModelAttribute PostCreateRequestDTO request,
@@ -108,9 +108,19 @@ public class PostController {
             return "redirect:/posts/" + postId;
 
         } catch (BadWordDetectedException e) {
-            model.addAttribute("postId", postId);
-            model.addAttribute("post", request);
+            // 1. 에러 메시지 전달
             model.addAttribute("errorMessage", e.getMessage());
+            model.addAttribute("postId", postId);
+
+            // 2. 핵심 방어 로직: HTML은 ${post.title}을 원하고, DTO는 postTitle을 가지고 있음.
+            // 이름을 맞춰주기 위해 Map을 생성해 "post"라는 이름으로 던져줍니다.
+            Map<String, Object> errorPost = new HashMap<>();
+            errorPost.put("postId", postId);
+            errorPost.put("title", request.getPostTitle());   // postTitle -> title 로 매핑
+            errorPost.put("content", request.getPostContent()); // postContent -> content 로 매핑
+
+            model.addAttribute("post", errorPost);
+
             return "community/post_update";
         }
     }

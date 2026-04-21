@@ -10,7 +10,16 @@ import java.util.List;
 
 public interface QnaRepository extends JpaRepository<Qna, Long> {
 
-    List<Qna> findAllByCourse_CourseIdAndParentIsNullAndQnaIsDeletedFalse(Long courseId);
+    //List<Qna> findAllByCourse_CourseIdAndParentIsNullAndQnaIsDeletedFalse(Long courseId);
+
+    @Query("select q, " +
+            "(select count(r) > 0 from Qna r where r.parent = q and r.qnaIsDeleted = false) " +
+            "from Qna q " +
+            "join fetch q.author " + // 작성자 한 방에 가져오기 (Fetch Join)
+            "where q.course.courseId = :courseId " +
+            "and q.parent is null " +
+            "and q.qnaIsDeleted = false")
+    List<Object[]> findAllByCourseIdWithAuthorAndReplyStatus(@Param("courseId") Long courseId);
 
     List<Qna> findAllByParent_QnaIdAndQnaIsDeletedFalse(Long qnaId);
 
