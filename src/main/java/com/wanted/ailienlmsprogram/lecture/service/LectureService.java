@@ -117,6 +117,11 @@ public class LectureService {
         Lecture lecture = lectureRepository.findById(lectureId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "존재하지 않는 강의입니다."));
 
+        // 2. 본인 소유 강좌의 강의인지 확인
+        if (!lecture.getCourse().getInstructor().getMemberId().equals(memberId)) {
+            throw new BusinessException(ErrorCode.FORBIDDEN, "본인의 강의만 수정할 수 있습니다.");
+        }
+
         // 2. 제목/설명 먼저 DB 업데이트 (더티체킹)
         //    videoUrl은 비동기 완료 후 업데이트되므로 여기선 건드리지 않음
         lecture.editLectureInfo(
@@ -150,13 +155,18 @@ public class LectureService {
     }
 
     @Transactional
-    public void deleteLecture(Long lectureId) {
+    public void deleteLecture(Long lectureId, Long memberId) {
 
         // 1. 강의 조회
         Lecture lecture = lectureRepository.findById(lectureId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "존재하지 않는 강의입니다."));
 
-        // 2. GCS 영상 삭제 (영상이 있을 때만) → LectureAsyncService에 위임
+        // 2. 본인 소유 강좌의 강의인지 확인
+        if (!lecture.getCourse().getInstructor().getMemberId().equals(memberId)) {
+            throw new BusinessException(ErrorCode.FORBIDDEN, "본인의 강의만 삭제할 수 있습니다.");
+        }
+
+        // 3. GCS 영상 삭제 (영상이 있을 때만) → LectureAsyncService에 위임
         lectureAsyncService.deleteVideoFile(lecture.getVideoUrl());
 
         lectureRepository.deleteById(lectureId);

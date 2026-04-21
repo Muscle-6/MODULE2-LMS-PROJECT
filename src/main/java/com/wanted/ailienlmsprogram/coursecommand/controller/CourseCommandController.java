@@ -116,9 +116,11 @@ public class CourseCommandController {
     @PostMapping("/instructor/courses/{courseId}/edit")
     public String editMyCourse(@RequestParam(value = "thumbnailFile", required = false) MultipartFile thumbnailFile,
                                @PathVariable Long courseId,
-                               @ModelAttribute CourseApplyDTO request) throws IOException {
+                               @ModelAttribute CourseApplyDTO request,
+                               @AuthenticationPrincipal CustomUserDetails userDetails) throws IOException {
 
-        courseCommandService.editMyCourse(thumbnailFile, courseId,request);
+        Long memberId = userDetails.getMember().getMemberId();
+        courseCommandService.editMyCourse(thumbnailFile, courseId, memberId, request);
 
         return "redirect:/instructor/courses/PUBLISHED";
     }

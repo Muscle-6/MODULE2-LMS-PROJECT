@@ -137,8 +137,10 @@ public class LectureController {
 
     @GetMapping("/instructor/courses/{courseId}/lectures/{lectureId}/delete")
     public String deleteLecture(@PathVariable Long courseId,
-                                @PathVariable Long lectureId) {
-        lectureService.deleteLecture(lectureId);
+                                @PathVariable Long lectureId,
+                                @AuthenticationPrincipal CustomUserDetails userDetails) {
+        Long memberId = userDetails.getMember().getMemberId();
+        lectureService.deleteLecture(lectureId, memberId);
 
         return "redirect:/instructor/courses/" + courseId + "/lectures";
     }
