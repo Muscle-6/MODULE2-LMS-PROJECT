@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Module02 LMS - 답변 수정</title>
+    <title>CALIBRATE REPLY | MODULE02 LMS</title>
 
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
@@ -18,9 +18,8 @@
                         "primary": "#99f7ff",
                         "secondary": "#c97cff",
                         "error": "#ff716c",
-                        "on-surface": "#ecedf6",
                         "surface-container": "#161a21",
-                        "outline-variant": "#45484f",
+                        "on-surface": "#ecedf6",
                     },
                     fontFamily: {
                         "headline": ["Space Grotesk"],
@@ -37,65 +36,122 @@
             font-family: 'Inter', sans-serif;
             background-color: #0b0e14;
             color: #ecedf6;
+            background-image:
+                    radial-gradient(circle at 50% 0%, rgba(153, 247, 255, 0.05) 0%, transparent 70%),
+                    linear-gradient(rgba(153, 247, 255, 0.02) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(153, 247, 255, 0.02) 1px, transparent 1px);
+            background-size: 100% 100%, 40px 40px, 40px 40px;
         }
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-            vertical-align: middle;
+
+        .edit-card {
+            background: rgba(22, 26, 33, 0.4);
+            backdrop-filter: blur(24px);
+            border: 1px solid rgba(153, 247, 255, 0.1);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .cy-textarea {
+            background: rgba(13, 17, 23, 0.8) !important;
+            border: 1px solid rgba(255, 255, 255, 0.05) !important;
+            color: #ecedf6 !important;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .cy-textarea:focus {
+            border-color: #99f7ff !important;
+            background: rgba(153, 247, 255, 0.03) !important;
+            box-shadow: 0 0 20px rgba(153, 247, 255, 0.1) !important;
+        }
+
+        .field-label {
+            font-size: 9px;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            font-weight: 900;
+            color: rgba(153, 247, 255, 0.5);
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
     </style>
 </head>
 
 <body class="min-h-screen">
 
-<!-- ===== HEADER ===== -->
-<header class="fixed top-0 w-full z-50 flex justify-between items-center px-6 h-16 bg-slate-950/40 backdrop-blur-xl border-b border-cyan-400/10">
-    <span class="text-2xl font-bold tracking-tighter text-cyan-400 font-headline">MODULE02 LMS</span>
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-8 h-16 bg-slate-950/20 backdrop-blur-md border-b border-white/5">
+    <div class="flex items-center gap-6">
+        <span class="text-2xl font-black tracking-tighter text-cyan-400 font-headline italic uppercase">MODULE02</span>
+        <div class="h-4 w-[1px] bg-white/10"></div>
+        <span class="text-[10px] font-label tracking-[0.3em] text-slate-500 uppercase">Data Correction Unit</span>
+    </div>
 </header>
 
-<!-- ===== MAIN ===== -->
-<main class="pt-24 px-6 md:px-12 pb-12 max-w-4xl mx-auto">
+<main class="pt-32 px-6">
+    <div class="max-w-4xl mx-auto">
 
-    <!-- 뒤로가기 -->
-    <div class="mb-6">
-        <a th:href="@{/instructor/courses/{courseId}/qna/{qnaId}(courseId=${courseId}, qnaId=${qnaId})}"
-           class="flex items-center gap-1 text-slate-500 hover:text-cyan-400 transition-colors text-xs font-label">
-            <span class="material-symbols-outlined text-sm">arrow_back</span>
-            질문으로 돌아가기
-        </a>
-    </div>
+        <div class="mb-10 px-2">
+            <a th:href="@{/instructor/courses/{courseId}/qna/{qnaId}(courseId=${courseId}, qnaId=${qnaId})}"
+               class="group flex items-center gap-2 text-[10px] font-label text-slate-500 uppercase tracking-widest hover:text-primary transition-all">
+                <span class="material-symbols-outlined text-xs group-hover:-translate-x-1 transition-transform">arrow_back</span> Return to Signal Inquiry
+            </a>
+        </div>
 
-    <!-- 수정 폼 -->
-    <div class="bg-surface-container/60 backdrop-blur-xl rounded-2xl border border-outline-variant/20 p-8">
-
-        <h1 class="text-2xl font-headline font-bold text-on-surface mb-6">답변 수정</h1>
-
-        <form th:action="@{/instructor/courses/{courseId}/qna/{qnaId}/reply/{replyId}/modify(courseId=${courseId}, qnaId=${qnaId}, replyId=${qna.qnaId})}"
-              method="post">
-
-            <div class="mb-8">
-                <label class="block text-xs font-label text-slate-400 mb-2">내용</label>
-                <textarea name="qnaContent"
-                          rows="8"
-                          th:text="${qna.qnaContent}"
-                          class="w-full bg-slate-800/50 border border-outline-variant/30 rounded-xl px-4 py-3 text-sm text-on-surface focus:outline-none focus:border-primary/50 transition-all resize-none"></textarea>
+        <div class="edit-card rounded-[2.5rem] p-10 relative overflow-hidden">
+            <div class="absolute top-0 right-0 p-8 opacity-5">
+                <span class="material-symbols-outlined text-8xl">edit_note</span>
             </div>
 
-            <div class="flex gap-3 justify-end">
-                <a th:href="@{/instructor/courses/{courseId}/qna/{qnaId}(courseId=${courseId}, qnaId=${qnaId})}"
-                   class="px-5 py-2.5 rounded-xl bg-slate-800/50 border border-slate-700/40 text-slate-400 hover:text-white transition-all text-sm font-label">
-                    취소
-                </a>
-                <button type="submit"
-                        class="px-5 py-2.5 rounded-xl border border-primary/30 bg-primary/10 text-primary hover:bg-primary/20 hover:border-primary/50 transition-all text-sm font-label">
-                    수정 완료
-                </button>
-            </div>
-        </form>
-    </div>
+            <header class="mb-10 relative z-10">
+                <div class="flex items-center gap-3 mb-2">
+                    <span class="h-1 w-1 bg-secondary rounded-full animate-pulse"></span>
+                    <span class="text-[10px] font-label tracking-[0.4em] text-secondary uppercase font-black">Transmission Calibration</span>
+                </div>
+                <h1 class="text-4xl font-headline font-black text-on-surface tracking-tighter uppercase italic">
+                    Edit <span class="text-secondary/50">Response</span>
+                </h1>
+            </header>
 
+            <form th:action="@{/instructor/courses/{courseId}/qna/{qnaId}/reply/{replyId}/modify(courseId=${courseId}, qnaId=${qnaId}, replyId=${qna.qnaId})}"
+                  method="post" class="relative z-10 space-y-8">
+
+                <div class="space-y-4">
+                    <label class="field-label">
+                        <span class="w-1.5 h-1.5 bg-primary rounded-full"></span>
+                        Instruction Content
+                    </label>
+                    <textarea name="qnaContent"
+                              rows="10"
+                              th:text="${qna.qnaContent}"
+                              class="cy-textarea w-full px-8 py-6 rounded-[2rem] text-sm font-body leading-relaxed focus:ring-0 outline-none resize-none"
+                              placeholder="Redefining the solution payload..."></textarea>
+                </div>
+
+                <div class="flex items-center justify-end gap-4 pt-4">
+                    <a th:href="@{/instructor/courses/{courseId}/qna/{qnaId}(courseId=${courseId}, qnaId=${qnaId})}"
+                       class="px-8 py-4 rounded-2xl text-[10px] font-label font-black uppercase tracking-[0.2em] text-slate-500 hover:text-white hover:bg-white/5 transition-all">
+                        Abort
+                    </a>
+                    <button type="submit"
+                            class="group flex items-center gap-3 px-10 py-4 rounded-2xl bg-secondary text-on-secondary-container font-label text-[10px] font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-[0_15px_40px_rgba(201,124,255,0.2)]">
+                        <span class="material-symbols-outlined text-lg">published_with_changes</span>
+                        Apply Correction
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div class="mt-8 px-10 flex items-center gap-6">
+            <div class="flex items-center gap-2">
+                <span class="w-1 h-1 bg-white/20 rounded-full"></span>
+                <span class="text-[9px] font-label text-slate-600 uppercase tracking-widest">Calibration Mode Active</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="w-1 h-1 bg-white/20 rounded-full"></span>
+                <span class="text-[9px] font-label text-slate-600 uppercase tracking-widest" th:text="|Source ID: #${qna.qnaId}|">#ID</span>
+            </div>
+        </div>
+    </div>
 </main>
 
-<!-- 배경 그라디언트 -->
 <div class="fixed inset-0 pointer-events-none -z-10">
     <div class="absolute top-1/4 left-1/4 w-[400px] h-[400px] bg-primary/5 rounded-full blur-[120px]"></div>
     <div class="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-secondary/5 rounded-full blur-[150px]"></div>

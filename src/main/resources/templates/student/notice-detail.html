@@ -66,14 +66,14 @@
       <span class="text-[9px] font-label font-black text-slate-600 uppercase tracking-[0.3em]">Main Protocol</span>
     </div>
 
-    <a href="/"
-       class="flex items-center gap-4 py-3.5 px-6 transition-all duration-200 group text-slate-500 hover:bg-white/5 hover:text-slate-300">
+    <a th:href="@{/}" data-menu="continent"
+       class="menu-item flex items-center gap-4 py-3.5 px-6 transition-all duration-200 group text-slate-500 hover:bg-white/5 hover:text-slate-300">
       <span class="material-symbols-outlined text-xl group-hover:scale-110 transition-transform">public</span>
       <span class="text-sm font-label font-bold tracking-wide">대륙 탐색</span>
     </a>
 
-    <a th:href="@{/student}"
-       class="flex items-center gap-4 py-3.5 px-6 transition-all duration-200 group text-cyan-400 bg-cyan-400/10 border-r-4 border-cyan-400">
+    <a th:href="@{/student}" data-menu="student"
+       class="menu-item flex items-center gap-4 py-3.5 px-6 transition-all duration-200 group text-slate-500 hover:bg-white/5 hover:text-slate-300">
       <span class="material-symbols-outlined text-xl group-hover:scale-110 transition-transform">rocket_launch</span>
       <span class="text-sm font-label font-bold tracking-wide">학생 홈</span>
     </a>
@@ -160,6 +160,28 @@
   </div>
 
 </main>
+<script th:inline="javascript">
+  document.addEventListener("DOMContentLoaded", function() {
+    const path = window.location.pathname;
+    const activeClass = "text-cyan-400 bg-cyan-400/10 border-r-4 border-cyan-400";
+    const inactiveClass = "text-slate-500 hover:bg-white/5 hover:text-slate-300";
 
+    const continentMenu = document.querySelector('[data-menu="continent"]');
+    const studentMenu = document.querySelector('[data-menu="student"]');
+
+    // 모든 메뉴 초기화
+    document.querySelectorAll('.menu-item').forEach(el => {
+      el.className = el.className.replace(activeClass, "").trim() + " " + inactiveClass;
+    });
+
+    // 경로에 따라 불 켜기
+    if (path.startsWith('/student')) {
+      studentMenu.className = studentMenu.className.replace(inactiveClass, "").trim() + " " + activeClass;
+    } else {
+      // 루트(/), /continents, /posts 등은 모두 대륙 탐색 활성화
+      continentMenu.className = continentMenu.className.replace(inactiveClass, "").trim() + " " + activeClass;
+    }
+  });
+</script>
 </body>
 </html>

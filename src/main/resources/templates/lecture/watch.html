@@ -1,301 +1,160 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html class="dark" lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="${lecture.lectureTitle} + ' - 강의 시청'">강의 시청</title>
+    <title th:text="${lecture.lectureTitle} + ' - LINKING...'">강의 시청</title>
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#99f7ff",
+                        "secondary": "#c97cff",
+                        "surface-container": "#161a21",
+                        "on-surface": "#ecedf6",
+                        "success": "#34d399",
+                        "error": "#ff716c",
+                    },
+                    fontFamily: {
+                        "headline": ["Space Grotesk"],
+                        "body": ["Inter"],
+                        "label": ["Space Grotesk"]
+                    }
+                },
+            },
+        }
+    </script>
 
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
         body {
-            background: #0b1020;
-            color: #f5f7ff;
-            font-family: 'Segoe UI', Roboto, sans-serif;
-            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+            background-color: #0b0e14;
+            color: #ecedf6;
+            background-image: radial-gradient(circle at 50% 0%, rgba(153, 247, 255, 0.05) 0%, transparent 70%);
         }
 
-        /* ===== 헤더 ===== */
-        .header {
-            display: flex;
-            align-items: center;
-            padding: 16px 32px;
-            background: #0d1117;
-            border-bottom: 1px solid rgba(95, 124, 255, 0.15);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            gap: 16px;
-        }
-
-        .lecture-title-header {
-            font-size: 1rem;
-            font-weight: 600;
-            color: #f5f7ff;
-            max-width: 600px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        /* ===== 메인 레이아웃 ===== */
-        .main-container {
-            max-width: 1100px;
-            margin: 0 auto;
-            padding: 32px 24px;
-        }
-
-        /* ===== 영상 플레이어 ===== */
-        .video-container {
-            background: #000;
-            border-radius: 16px;
-            overflow: hidden;
-            border: 1px solid rgba(95, 124, 255, 0.15);
-            margin-bottom: 24px;
+        .video-cockpit {
             position: relative;
+            background: #000;
+            border: 1px solid rgba(153, 247, 255, 0.1);
+            border-radius: 2.5rem;
+            overflow: hidden;
+            box-shadow: 0 40px 100px -20px rgba(0, 0, 0, 0.8);
         }
 
-        .video-container video {
-            width: 100%;
-            display: block;
-            max-height: 600px;
+        /* 프로그레스 바 커스텀 스타일 (필요시) */
+        video::-webkit-media-controls-panel {
+            background-image: linear-gradient(transparent, rgba(0,0,0,0.8)) !important;
         }
 
-        .no-video {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 400px;
-            background: #121a35;
-            color: #626e9f;
-            gap: 12px;
+        .warning-overlay {
+            background: rgba(255, 113, 108, 0.15);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 113, 108, 0.3);
+            animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
         }
 
-        /* ===== 강의 정보 카드 ===== */
-        .info-card {
-            background: #121a35;
-            border-radius: 16px;
-            padding: 28px;
-            border: 1px solid rgba(95, 124, 255, 0.1);
-            margin-bottom: 24px;
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-1px, 0, 0); }
+            20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+            40%, 60% { transform: translate3d(4px, 0, 0); }
         }
 
-        .info-card h1 {
-            font-size: 1.6rem;
-            font-weight: 700;
-            color: #f5f7ff;
-            margin-bottom: 20px;
-        }
-
-        /* ===== 버튼 영역 ===== */
-        .action-area {
-            display: flex;
-            justify-content: flex-end;
-            gap: 12px;
-        }
-
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 12px 28px;
-            border-radius: 10px;
-            font-size: 0.95rem;
-            font-weight: 600;
-            cursor: pointer;
-            border: none;
-            text-decoration: none;
-            transition: all 0.2s;
-        }
-
-        .btn-complete {
-            background: linear-gradient(135deg, #5f7cff, #7ee0ff);
-            color: #0b1020;
-        }
-
-        .btn-complete:hover { opacity: 0.85; transform: translateY(-1px); }
-
-        .btn-complete:disabled {
-            background: #2a3a5c;
-            color: #626e9f;
-            cursor: not-allowed;
-            transform: none;
-            opacity: 1;
-        }
-
-        .btn-exit {
-            background: rgba(239, 68, 68, 0.1);
-            color: #ef4444;
-            border: 1px solid rgba(239, 68, 68, 0.2);
-        }
-
-        .btn-exit:hover { background: rgba(239, 68, 68, 0.2); }
-
-        /* ===== 완료 상태 배지 ===== */
-        .badge-completed {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 10px 20px;
-            background: rgba(52, 211, 153, 0.1);
-            border: 1px solid rgba(52, 211, 153, 0.3);
-            border-radius: 10px;
-            color: #34d399;
-            font-size: 0.9rem;
-            font-weight: 600;
-        }
-
-        /* ===== 건너뛰기 경고 ===== */
-        .skip-warning {
-            display: none;
-            position: absolute;
-            top: 16px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(239, 68, 68, 0.9);
-            color: white;
-            padding: 8px 20px;
-            border-radius: 8px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            z-index: 10;
-            white-space: nowrap;
-        }
-
-        /* ===== 종료 확인 모달 ===== */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.7);
-            z-index: 200;
-            justify-content: center;
-            align-items: center;
-            backdrop-filter: blur(4px);
-        }
-
-        .modal-overlay.active { display: flex; }
-
-        .modal-card {
-            background: #121a35;
-            border-radius: 16px;
-            padding: 40px;
-            border: 1px solid rgba(239, 68, 68, 0.2);
-            max-width: 400px;
-            width: 90%;
-            text-align: center;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-        }
-
-        .modal-icon { font-size: 2.5rem; margin-bottom: 16px; }
-
-        .modal-title {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: #f5f7ff;
-            margin-bottom: 8px;
-        }
-
-        .modal-desc {
-            font-size: 0.9rem;
-            color: #a9b6ec;
-            margin-bottom: 28px;
-            line-height: 1.6;
-        }
-
-        .modal-actions {
-            display: flex;
-            gap: 12px;
-            justify-content: center;
+        .modal-blur {
+            backdrop-filter: blur(12px) saturate(180%);
+            background-color: rgba(11, 14, 20, 0.8);
         }
     </style>
 </head>
 
-<body>
+<body class="min-h-screen overflow-x-hidden">
 
-<!-- ===== 헤더 ===== -->
-<header class="header">
-    <span class="lecture-title-header" th:text="${lecture.lectureTitle}">강의 제목</span>
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-8 h-16 bg-slate-950/20 backdrop-blur-md border-b border-white/5">
+    <div class="flex items-center gap-4">
+        <div class="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
+        <span class="text-[10px] font-label tracking-[0.3em] text-primary uppercase font-black">Neural Link Active</span>
+        <div class="h-4 w-[1px] bg-white/10 mx-2"></div>
+        <h1 class="text-xs font-label text-slate-400 tracking-widest uppercase truncate max-w-sm" th:text="${lecture.lectureTitle}">Lecture Title</h1>
+    </div>
+    <button onclick="openExitModal()" class="group flex items-center gap-2 text-slate-500 hover:text-error transition-all">
+        <span class="text-[10px] font-label font-black uppercase tracking-widest group-hover:mr-1 transition-all">Disconnect</span>
+        <span class="material-symbols-outlined text-lg">logout</span>
+    </button>
 </header>
 
-<!-- ===== MAIN ===== -->
-<div class="main-container">
+<main class="pt-24 pb-20 px-6">
+    <div class="max-w-6xl mx-auto">
 
-    <!-- 영상 플레이어 -->
-    <div class="video-container">
-        <div class="skip-warning" id="skipWarning">⚠ 건너뛰기는 허용되지 않습니다</div>
+        <div class="video-cockpit aspect-video mb-10">
 
-        <video th:if="${lecture.videoStatus.name() == 'READY'}"
-               id="lectureVideo"
-               controls
-               controlsList="nodownload"
-               oncontextmenu="return false;">
-            <source th:src="${lecture.videoUrl}" type="video/mp4"/>
-            브라우저가 video 태그를 지원하지 않습니다.
-        </video>
+            <div id="skipWarning" class="hidden absolute top-8 left-1/2 -translate-x-1/2 z-50 warning-overlay px-6 py-3 rounded-2xl flex items-center gap-3">
+                <span class="material-symbols-outlined text-error">warning</span>
+                <span class="text-[10px] font-label font-black text-error uppercase tracking-widest text-white">Temporal jump detected: Unauthorized</span>
+            </div>
 
-        <div th:if="${lecture.videoStatus.name() == 'UPLOADING'}" class="no-video">
-            <p style="color: #f5c542;">⏳ 영상을 업로드하는 중입니다. 잠시 후 다시 확인해주세요.</p>
+            <video th:if="${lecture.videoStatus.name() == 'READY'}"
+                   id="lectureVideo"
+                   class="w-full h-full object-contain"
+                   controls controlsList="nodownload" oncontextmenu="return false;">
+                <source th:src="${lecture.videoUrl}" type="video/mp4"/>
+            </video>
+
+            <div th:if="${lecture.videoStatus.name() == 'UPLOADING'}" class="w-full h-full flex flex-col items-center justify-center bg-slate-950">
+                <span class="material-symbols-outlined text-primary text-5xl animate-spin mb-4">settings_backup_restore</span>
+                <p class="text-[10px] font-label text-primary tracking-[0.3em] uppercase">Data Stream Synchronizing...</p>
+            </div>
         </div>
 
-        <div th:if="${lecture.videoStatus.name() == 'NONE'}" class="no-video">
-            <p>등록된 영상이 없습니다.</p>
-        </div>
-    </div>
+        <div class="bg-surface-container/30 border border-white/5 p-8 rounded-[2.5rem] flex flex-col md:flex-row items-center justify-between gap-8">
+            <div class="flex-1">
+                <div class="flex items-center gap-3 mb-2">
+                    <span class="px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-[8px] font-label text-slate-500 uppercase">Unit Information</span>
+                </div>
+                <h2 class="text-2xl font-headline font-black text-on-surface tracking-tight uppercase" th:text="${lecture.lectureTitle}">강의 제목</h2>
+            </div>
 
-    <!-- 강의 정보 + 버튼 -->
-    <div class="info-card">
-        <h1 th:text="${lecture.lectureTitle}">강의 제목</h1>
-        <div class="action-area">
+            <div class="flex items-center gap-4">
+                <div th:if="${isCompleted}" class="flex items-center gap-3 px-6 py-3 rounded-2xl bg-success/10 border border-success/20 text-success">
+                    <span class="material-symbols-outlined text-xl">verified</span>
+                    <span class="text-[10px] font-label font-black uppercase tracking-[0.2em]">Synchronization Complete</span>
+                </div>
 
-            <!-- 이미 완료된 경우 -->
-            <span th:if="${isCompleted}" class="badge-completed">✔ 수강 완료</span>
-
-            <!-- 수강 완료 버튼 — form POST 방식 (진척도 기능 연결 예정) -->
-            <form th:unless="${isCompleted}"
-                  th:action="@{/student/lectures/{lectureId}/complete(lectureId=${lecture.lectureId})}"
-                  method="post"
-                  id="completeForm">
-                <button type="submit"
-                        id="completeBtn"
-                        class="btn btn-complete"
-                        disabled>
-                    수강 완료
-                </button>
-            </form>
-
-            <!-- 종료 버튼 -->
-            <button type="button"
-                    class="btn btn-exit"
-                    onclick="openExitModal()">
-                종료
-            </button>
+                <form th:unless="${isCompleted}"
+                      th:action="@{/student/lectures/{lectureId}/complete(lectureId=${lecture.lectureId})}"
+                      method="post" id="completeForm">
+                    <button type="submit" id="completeBtn" disabled
+                            class="px-10 py-4 rounded-2xl bg-primary text-slate-950 font-label text-[10px] font-black uppercase tracking-widest disabled:opacity-20 disabled:grayscale transition-all shadow-[0_10px_30px_rgba(153,247,255,0.2)] enabled:hover:scale-105 active:scale-95">
+                        Finalize Sync
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
+</main>
 
-</div>
-
-<!-- ===== 종료 확인 모달 ===== -->
-<div class="modal-overlay" id="exitModal">
-    <div class="modal-card">
-        <div class="modal-icon">🚀</div>
-        <p class="modal-title">강의를 종료하시겠습니까?</p>
-        <p class="modal-desc">
-            현재까지의 시청 위치가 저장됩니다.<br>
-            다음에 이어서 시청할 수 있습니다.
+<div id="exitModal" class="fixed inset-0 z-[100] modal-blur hidden items-center justify-center p-6 transition-all">
+    <div class="bg-slate-950 border border-white/10 w-full max-w-md rounded-[3rem] p-10 text-center shadow-2xl">
+        <div class="w-20 h-20 bg-error/10 text-error rounded-full flex items-center justify-center mx-auto mb-6 border border-error/20">
+            <span class="material-symbols-outlined text-4xl">sensors_off</span>
+        </div>
+        <h3 class="text-xl font-headline font-black text-on-surface uppercase italic mb-2">Terminate Connection?</h3>
+        <p class="text-[11px] font-body text-slate-500 leading-relaxed uppercase tracking-widest mb-8">
+            Your current synchronization progress<br/>will be saved in the local cache.
         </p>
-        <div class="modal-actions">
-            <button type="button"
-                    class="btn btn-exit"
-                    onclick="confirmExit()">
-                예, 종료합니다
+        <div class="flex flex-col gap-3">
+            <button onclick="confirmExit()" class="w-full py-4 rounded-2xl bg-error/10 border border-error/20 text-error font-label text-[10px] font-black uppercase tracking-widest hover:bg-error hover:text-white transition-all">
+                Confirm Disconnection
             </button>
-            <button type="button"
-                    class="btn"
-                    style="background: rgba(95,124,255,0.1); color: #a9b6ec; border: 1px solid rgba(95,124,255,0.2);"
-                    onclick="closeExitModal()">
-                계속 시청
+            <button onclick="closeExitModal()" class="w-full py-4 rounded-2xl text-slate-500 font-label text-[10px] font-black uppercase tracking-widest">
+                Resume Linking
             </button>
         </div>
     </div>
@@ -303,7 +162,6 @@
 
 <script th:inline="javascript">
     const lectureId = /*[[${lecture.lectureId}]]*/ 0;
-
     const video = document.getElementById('lectureVideo');
     const completeBtn = document.getElementById('completeBtn');
     const skipWarning = document.getElementById('skipWarning');
@@ -311,31 +169,33 @@
     if (video) {
         let maxWatchedTime = 0;
 
-        // 이어보기 — 페이지 로드 시 저장된 위치로 이동
+        // 이어보기 로직
         const savedPosition = localStorage.getItem('lecture_pos_' + lectureId);
         if (savedPosition) {
             video.currentTime = parseInt(savedPosition);
             maxWatchedTime = parseInt(savedPosition);
         }
 
-        // 건너뛰기 방지
-        video.addEventListener('timeupdate', function () {
+        // 건너뛰기 방지 (치밀한 감시 프로토콜)
+        video.addEventListener('timeupdate', () => {
             if (video.currentTime > maxWatchedTime + 3) {
                 video.currentTime = maxWatchedTime;
-                skipWarning.style.display = 'block';
-                setTimeout(() => { skipWarning.style.display = 'none'; }, 2000);
+                skipWarning.classList.remove('hidden');
+                setTimeout(() => skipWarning.classList.add('hidden'), 2500);
             } else {
                 maxWatchedTime = Math.max(maxWatchedTime, video.currentTime);
             }
         });
 
-        // 30초마다 현재 위치 저장
+        // 위치 자동 저장 (30초 주기)
         setInterval(() => {
-            localStorage.setItem('lecture_pos_' + lectureId, Math.floor(video.currentTime));
+            if (!video.paused) {
+                localStorage.setItem('lecture_pos_' + lectureId, Math.floor(video.currentTime));
+            }
         }, 30000);
 
-        // 영상 끝까지 재생 완료 시 수강 완료 버튼 활성화
-        video.addEventListener('ended', function () {
+        // 완료 조건 충족 시
+        video.addEventListener('ended', () => {
             if (completeBtn) {
                 completeBtn.disabled = false;
                 localStorage.removeItem('lecture_pos_' + lectureId);
@@ -343,27 +203,21 @@
         });
     }
 
-    // ===== 종료 모달 =====
+    // 모달 핸들러
     function openExitModal() {
-        // 모달 열기 전 현재 위치 저장
-        if (video) {
-            localStorage.setItem('lecture_pos_' + lectureId, Math.floor(video.currentTime));
-        }
-        document.getElementById('exitModal').classList.add('active');
+        if (video) localStorage.setItem('lecture_pos_' + lectureId, Math.floor(video.currentTime));
+        document.getElementById('exitModal').classList.remove('hidden');
+        document.getElementById('exitModal').classList.add('flex');
     }
 
     function closeExitModal() {
-        document.getElementById('exitModal').classList.remove('active');
+        document.getElementById('exitModal').classList.add('hidden');
+        document.getElementById('exitModal').classList.remove('flex');
     }
 
     function confirmExit() {
         history.back();
     }
-
-    // 모달 바깥 클릭 시 닫기
-    document.getElementById('exitModal').addEventListener('click', function (e) {
-        if (e.target === this) closeExitModal();
-    });
 </script>
 
 </body>
