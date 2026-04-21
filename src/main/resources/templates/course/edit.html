@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Module02 LMS - 강좌 수정</title>
+    <title>RE-CONFIG | MODULE02 LMS</title>
 
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 
@@ -17,10 +17,8 @@
                     colors: {
                         "primary": "#99f7ff",
                         "secondary": "#c97cff",
-                        "error": "#ff716c",
-                        "on-surface": "#ecedf6",
                         "surface-container": "#161a21",
-                        "outline-variant": "#45484f",
+                        "on-surface": "#ecedf6",
                     },
                     fontFamily: {
                         "headline": ["Space Grotesk"],
@@ -37,314 +35,208 @@
             font-family: 'Inter', sans-serif;
             background-color: #0b0e14;
             color: #ecedf6;
-            background-image:
-                radial-gradient(circle at 50% 50%, rgba(153, 247, 255, 0.05) 0%, transparent 50%),
-                url("data:image/svg+xml,%3Csvg width='400' height='400' viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M10 10L50 50M350 350L390 390' stroke='rgba(153, 247, 255, 0.1)' stroke-width='0.5'/%3E%3Ccircle cx='100' cy='100' r='1' fill='rgba(255,255,255,0.2)'/%3E%3Ccircle cx='300' cy='200' r='1' fill='rgba(255,255,255,0.3)'/%3E%3C/svg%3E");
+            background-image: radial-gradient(circle at 50% 50%, rgba(153, 247, 255, 0.05) 0%, transparent 50%);
         }
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-            vertical-align: middle;
-        }
-        .cy-input {
-            background: #0d1117 !important;
-            border: 1px solid rgba(153, 247, 255, 0.2) !important;
-            border-radius: 8px !important;
+
+        /* 인풋 필드 스타일 */
+        .config-input {
+            background: rgba(15, 23, 42, 0.6) !important;
+            border: 1px solid rgba(153, 247, 255, 0.1) !important;
+            border-radius: 12px !important;
             color: #ecedf6 !important;
-            transition: all 0.2s;
-            width: 100%;
-            padding: 10px 14px;
-            font-size: 0.95rem;
-            font-family: 'Inter', sans-serif;
+            padding: 12px 16px !important;
+            transition: all 0.3s ease;
         }
-        .cy-input:focus {
-            outline: none !important;
+        .config-input:focus {
             border-color: #99f7ff !important;
-            box-shadow: 0 0 0 2px rgba(153, 247, 255, 0.15) !important;
-        }
-        .cy-input::placeholder {
-            color: rgba(236, 237, 246, 0.3) !important;
-        }
-        .cy-select {
-            background: #0d1117 !important;
-            border: 1px solid rgba(153, 247, 255, 0.2) !important;
-            border-radius: 8px !important;
-            color: #ecedf6 !important;
-            width: 100%;
-            padding: 10px 14px;
-            font-size: 0.95rem;
-            font-family: 'Inter', sans-serif;
-            cursor: pointer;
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2399f7ff' d='M6 8L1 3h10z'/%3E%3C/svg%3E") !important;
-            background-repeat: no-repeat !important;
-            background-position: right 14px center !important;
-        }
-        .cy-select:focus {
+            background: rgba(15, 23, 42, 0.8) !important;
+            box-shadow: 0 0 15px rgba(153, 247, 255, 0.1) !important;
             outline: none !important;
-            border-color: #99f7ff !important;
-            box-shadow: 0 0 0 2px rgba(153, 247, 255, 0.15) !important;
         }
-        .cy-select option {
-            background: #161a21;
-            color: #ecedf6;
-        }
-        .required-dot::after {
-            content: " *";
+
+        .required-label::after {
+            content: ' [REQ]';
             color: #99f7ff;
-            font-size: 0.75rem;
+            font-size: 8px;
+            vertical-align: top;
         }
     </style>
 </head>
 
 <body class="min-h-screen">
 
-<!-- 헤더 -->
-<header class="fixed top-0 w-full z-50 flex justify-between items-center px-6 h-16 bg-slate-950/40 backdrop-blur-xl shadow-[0_0_20px_rgba(153,247,255,0.1)] border-b border-cyan-400/10">
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-6 h-16 bg-slate-950/40 backdrop-blur-xl shadow-[0_0_20px_rgba(153,247,255,0.1)]">
     <div class="flex items-center gap-8">
-        <span class="text-2xl font-bold tracking-tighter text-cyan-400 drop-shadow-[0_0_8px_rgba(153,247,255,0.6)] font-headline">
-            MODULE02 LMS
-        </span>
-        <span class="hidden md:inline text-xs font-label text-slate-400 tracking-widest uppercase">
-            우주/외계인 세계관 학습 플랫폼 (강사 사령부)
-        </span>
+        <span class="text-2xl font-bold tracking-tighter text-cyan-400 drop-shadow-[0_0_8px_rgba(153,247,255,0.6)] font-headline">MODULE02 LMS</span>
+        <span class="hidden md:inline text-xs font-label text-slate-400 tracking-widest uppercase">우주/외계인 세계관 학습 플랫폼</span>
     </div>
+
     <div class="flex items-center gap-4">
+        <div class="flex items-center gap-4" th:if="${loginMember == null}">
+            <a th:href="@{/login}" class="text-slate-300 hover:text-cyan-300 font-label text-xs tracking-widest transition-colors">로그인</a>
+            <a th:href="@{/signup}" class="bg-primary/10 border border-primary/30 text-primary px-4 py-1.5 rounded text-xs font-label tracking-widest hover:bg-primary/20 transition-all shadow-[0_0_10px_rgba(153,247,255,0.1)]">회원가입</a>
+        </div>
+
         <div class="flex items-center gap-4" th:if="${loginMember != null}">
             <div class="text-right hidden sm:block mr-2">
-                <span class="text-xs font-label tracking-widest text-cyan-400"
-                      th:text="|${loginMember.name} 님|"></span>
-                <span class="text-[10px] text-slate-500 font-label tracking-tight ml-1"
-                      th:text="|(${loginMember.role})|"></span>
+                <span class="text-xs font-label tracking-widest text-cyan-400" th:text="|${loginMember.name} 님|"></span>
+                <span class="text-[10px] text-slate-500 font-label tracking-tight ml-1" th:text="|(${loginMember.role})|"></span>
             </div>
-            <div class="w-px h-4 bg-slate-700 hidden sm:block"></div>
-            <a th:href="@{/logout}"
-               class="flex items-center gap-1 text-slate-400 hover:text-error transition-colors text-xs font-label">
-                <span class="material-symbols-outlined text-sm">power_settings_new</span>
-                로그아웃
+            <a th:href="@{/logout}" class="flex items-center gap-1 text-slate-400 hover:text-error transition-colors text-xs font-label">
+                <span class="material-symbols-outlined text-sm">power_settings_new</span> 로그아웃
             </a>
         </div>
     </div>
 </header>
 
-<!-- 사이드바 -->
-<aside class="fixed left-0 top-16 bottom-0 flex flex-col z-40 bg-slate-950/80 backdrop-blur-lg w-64 shadow-[4px_0_24px_rgba(0,0,0,0.5)] bg-gradient-to-r from-slate-900 to-slate-950 hidden md:flex border-r border-cyan-400/5">
-
-    <div class="p-6 border-b border-slate-800/50" th:if="${loginMember != null}">
-        <div class="flex items-center gap-3">
-            <div class="h-10 w-10 rounded-lg bg-cyan-400/10 flex items-center justify-center border border-cyan-400/20">
-                <span class="material-symbols-outlined text-cyan-400"
-                      style="font-variation-settings: 'FILL' 1;">satellite_alt</span>
-            </div>
-            <div>
-                <p class="text-xs font-label tracking-widest text-cyan-400"
-                   th:text="${loginMember.name}">OPERATIVE</p>
-                <p class="text-[10px] text-slate-500 font-label tracking-tight"
-                   th:text="|ROLE: ${loginMember.role}|">ROLE</p>
-            </div>
+<aside class="fixed left-0 top-16 bottom-0 flex flex-col z-40 bg-slate-950/80 backdrop-blur-lg w-64 border-r border-white/5">
+    <nav class="flex-1 py-6">
+        <a th:href="@{/instructor/courses/PUBLISHED}" class="flex items-center gap-4 text-slate-400 hover:text-cyan-400 hover:bg-cyan-400/5 py-3.5 px-6 transition-all font-label">
+            <span class="material-symbols-outlined">arrow_back</span>
+            <span class="text-sm tracking-wide uppercase">Back to Assets</span>
+        </a>
+        <div class="flex items-center gap-4 text-secondary bg-secondary/10 border-r-4 border-secondary py-3.5 px-6 font-label">
+            <span class="material-symbols-outlined">settings_suggest</span>
+            <span class="text-sm tracking-wide tracking-widest uppercase font-bold">Re-Config</span>
         </div>
-    </div>
-
-    <nav class="flex-1 py-4">
-        <a th:href="@{/instructor/courses/PUBLISHED}"
-           class="flex items-center gap-4 text-slate-400 hover:text-cyan-400 hover:bg-cyan-400/5 py-3 px-6 transition-colors font-label">
-            <span class="material-symbols-outlined text-sm">arrow_back</span>
-            <span class="text-sm tracking-wide">내 강좌로 돌아가기</span>
-        </a>
-        <a th:href="@{/instructor/profile}"
-           class="flex items-center gap-4 text-slate-400 hover:text-cyan-400 hover:bg-cyan-400/5 py-3 px-6 transition-colors font-label">
+        <a th:href="@{/instructor/profile}" class="flex items-center gap-4 text-slate-400 hover:text-cyan-400 hover:bg-cyan-400/5 py-3.5 px-6 transition-all font-label">
             <span class="material-symbols-outlined">person</span>
-            <span class="text-sm tracking-wide">내 정보</span>
-        </a>
-        <a href="#"
-           class="flex items-center gap-4 text-cyan-400 bg-cyan-400/10 border-r-4 border-cyan-400 py-3 px-6 shadow-[inset_0_0_15px_rgba(0,241,254,0.2)] font-label">
-            <span class="material-symbols-outlined">edit</span>
-            <span class="text-sm tracking-wide">강좌 수정</span>
-        </a>
-        <a th:href="@{/instructor/courses/apply}"
-           class="flex items-center gap-4 text-slate-400 hover:text-cyan-400 hover:bg-cyan-400/5 py-3 px-6 transition-colors font-label">
-            <span class="material-symbols-outlined">add_box</span>
-            <span class="text-sm tracking-wide">강좌 신청</span>
+            <span class="text-sm tracking-wide uppercase">Profile Intel</span>
         </a>
     </nav>
 
-    <div class="p-6 border-t border-slate-800/50 hidden md:block">
-        <div class="w-full bg-primary/5 border border-primary/20 text-primary/50 py-3 rounded-lg font-label text-xs tracking-widest text-center flex items-center justify-center gap-2">
-            <span class="material-symbols-outlined text-sm animate-pulse">radar</span>
-            COMMAND ONLINE
+    <div class="p-6 mt-auto">
+        <div class="relative group cursor-help">
+            <div class="absolute -inset-1 bg-gradient-to-r from-cyan-500/20 to-purple-500/20 rounded-xl blur opacity-25 group-hover:opacity-50 transition duration-1000"></div>
+
+            <div class="relative w-full bg-slate-900/50 border border-white/10 p-4 rounded-xl">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-[9px] font-label font-black text-slate-500 uppercase tracking-widest">Network Status</span>
+                    <span class="flex h-2 w-2">
+                        <span class="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-cyan-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
+                    </span>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <span class="material-symbols-outlined text-primary text-sm animate-pulse">radar</span>
+                    <div class="flex-1">
+                        <div class="h-1 w-full bg-white/5 rounded-full overflow-hidden">
+                            <div class="h-full bg-primary w-[85%] shadow-[0_0_8px_#99f7ff]"></div>
+                        </div>
+                    </div>
+                </div>
+                <p class="mt-2 text-[9px] font-label text-primary/60 text-center uppercase tracking-[0.2em]">System Online</p>
+            </div>
         </div>
     </div>
 </aside>
 
-<!-- 메인 -->
-<main class="md:ml-64 pt-24 px-6 md:px-12 pb-12">
-    <div class="max-w-6xl">
+<main class="ml-64 pt-32 px-10 pb-16">
+    <div class="max-w-5xl mx-auto">
 
-        <!-- 페이지 타이틀 -->
-        <div class="mb-8">
-            <h1 class="text-3xl md:text-4xl font-headline font-bold text-on-surface tracking-tight mb-2">
-                강좌 수정
+        <div class="mb-10">
+            <div class="flex items-center gap-3 mb-2">
+                <span class="h-[1px] w-8 bg-secondary/40"></span>
+                <span class="text-[10px] font-label tracking-[0.3em] text-secondary uppercase">Configuration Mode</span>
+            </div>
+            <h1 class="text-4xl font-headline font-black text-on-surface tracking-tighter uppercase italic leading-none">
+                Adjust <span class="text-secondary/50">Parameters</span>
             </h1>
-            <p class="text-slate-400 text-sm font-body">
-                강좌 정보를 수정하고 저장하세요.
+        </div>
+
+        <div class="bg-secondary/5 border border-secondary/10 p-4 rounded-2xl mb-8 flex items-center gap-4">
+            <span class="material-symbols-outlined text-secondary">verified</span>
+            <p class="text-[11px] font-label text-slate-400 tracking-wide uppercase">
+                Note: Course visibility is subject to final <span class="text-secondary">Command Authorization</span>.
             </p>
         </div>
 
-        <!-- 안내 배너 -->
-        <div class="flex items-center gap-3 bg-secondary/5 border border-secondary/20 rounded-xl px-5 py-4 mb-8">
-            <span class="material-symbols-outlined text-secondary text-xl"
-                  style="font-variation-settings: 'FILL' 1;">info</span>
-            <p class="text-sm font-body text-slate-300">
-                수정 후에도 강좌 공개 상태는 <span class="text-secondary font-semibold">관리자가 결정</span>합니다.
-                썸네일을 변경하지 않으면 기존 이미지가 유지됩니다.
-            </p>
-        </div>
-
-        <!-- 수정 폼 -->
         <form th:action="@{/instructor/courses/{courseId}/edit(courseId=${course.courseId})}"
-              method="post"
-              enctype="multipart/form-data">
+              method="post" enctype="multipart/form-data">
 
-            <div class="bg-surface-container/60 backdrop-blur-xl rounded-2xl border border-outline-variant/20 p-6 md:p-8 shadow-lg shadow-cyan-500/5 overflow-hidden relative">
-                <div class="absolute -top-10 -right-10 w-40 h-40 bg-secondary/10 rounded-full blur-3xl"></div>
-                <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-primary/10 rounded-full blur-3xl"></div>
+            <div class="bg-surface-container/60 backdrop-blur-xl border border-white/5 p-10 rounded-[2.5rem] shadow-2xl relative overflow-hidden">
+                <div class="flex flex-col lg:flex-row gap-12">
 
-                <div class="relative z-10 flex flex-col md:flex-row gap-8">
+                    <div class="w-full lg:w-72 space-y-4">
+                        <label class="text-[9px] font-label font-black text-slate-600 uppercase tracking-widest block px-1">Visual Identifier</label>
 
-                    <!-- 왼쪽: 썸네일 -->
-                    <div class="flex flex-col items-center gap-3 flex-shrink-0 w-full md:w-72">
-                        <label class="text-[11px] font-label tracking-widest text-cyan-400 self-start">강좌 썸네일</label>
+                        <div id="thumbnailWrap" onclick="document.getElementById('thumbnailFile').click()"
+                             class="group relative aspect-[3/4] rounded-3xl bg-slate-950 border border-white/5 overflow-hidden cursor-pointer shadow-inner">
 
-                        <div id="thumbnailWrap"
-                             class="w-full aspect-[3/4] rounded-xl bg-slate-900/80 border-2 border-dashed border-cyan-400/30 flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-cyan-400/60 hover:bg-slate-900 transition-all relative overflow-hidden"
-                             onclick="document.getElementById('thumbnailFile').click()">
+                            <img id="thumbnailPreview" th:src="${course.courseThumbnailUrl}"
+                                 th:class="${course.courseThumbnailUrl != null} ? 'w-full h-full object-cover' : 'hidden w-full h-full object-cover'"/>
 
-                            <!-- 기존 썸네일 있으면 표시, 없으면 placeholder -->
-                            <img id="thumbnailPreview"
-                                 th:src="${course.courseThumbnailUrl}"
-                                 th:class="${course.courseThumbnailUrl != null} ? 'w-full h-full object-cover absolute inset-0' : 'hidden w-full h-full object-cover absolute inset-0'"/>
-
-                            <div id="thumbnailPlaceholder"
-                                 th:class="${course.courseThumbnailUrl != null} ? 'hidden flex flex-col items-center gap-2' : 'flex flex-col items-center gap-2'">
-                                <span class="material-symbols-outlined text-cyan-400/50 text-4xl"
-                                      style="font-variation-settings: 'FILL' 1;">add_photo_alternate</span>
-                                <p class="text-[11px] font-label text-slate-500 text-center tracking-wide">클릭하여<br/>썸네일 등록</p>
+                            <div id="thumbnailPlaceholder" th:class="${course.courseThumbnailUrl == null} ? 'absolute inset-0 flex flex-col items-center justify-center gap-2 text-slate-800' : 'hidden'">
+                                <span class="material-symbols-outlined text-5xl">add_a_photo</span>
+                                <span class="text-[9px] font-label tracking-widest uppercase">Upload Media</span>
                             </div>
 
-                            <!-- 호버 오버레이 -->
-                            <div id="thumbnailOverlay"
-                                 th:class="${course.courseThumbnailUrl != null} ? 'absolute inset-0 bg-black/60 flex flex-col items-center justify-center gap-1 opacity-0 hover:opacity-100 transition-opacity' : 'hidden absolute inset-0 bg-black/60 flex flex-col items-center justify-center gap-1'"
-                                 style="transition: opacity 0.2s;">
-                                <span class="material-symbols-outlined text-cyan-400 text-2xl">photo_camera</span>
-                                <p class="text-[10px] font-label text-cyan-400">변경하기</p>
+                            <div class="absolute inset-0 bg-secondary/80 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2 backdrop-blur-sm">
+                                <span class="material-symbols-outlined text-slate-950 text-3xl">sync</span>
+                                <span class="text-slate-950 font-label text-[10px] font-black uppercase tracking-tighter">Update Graphic</span>
                             </div>
                         </div>
-
-                        <input type="file"
-                               id="thumbnailFile"
-                               name="thumbnailFile"
-                               accept="image/*"
-                               class="hidden"
-                               onchange="previewThumbnail(event)"/>
-
-                        <p class="text-[10px] font-body text-slate-600 text-center">
-                            변경 시에만 선택하세요<br/>JPG, PNG, WEBP
-                        </p>
+                        <input type="file" id="thumbnailFile" name="thumbnailFile" accept="image/*" class="hidden" onchange="previewThumbnail(event)"/>
+                        <p class="text-center text-[9px] font-label text-slate-700 tracking-widest uppercase">Supported: WEBP, PNG, JPG</p>
                     </div>
 
-                    <!-- 오른쪽: 입력 폼 -->
-                    <div class="flex-1 flex flex-col gap-6">
+                    <div class="flex-1 space-y-6">
 
-                        <!-- 강좌명 -->
-                        <div class="flex flex-col gap-2">
-                            <label class="text-[11px] font-label tracking-widest text-cyan-400 required-dot">강좌명</label>
-                            <input type="text"
-                                   name="courseTitle"
-                                   class="cy-input"
-                                   th:value="${course.courseTitle}"
-                                   placeholder="강좌명을 입력하세요"
-                                   required/>
+                        <div class="space-y-2">
+                            <label class="text-[9px] font-label font-black text-slate-600 uppercase tracking-widest block px-1 required-label">Mission Title</label>
+                            <input type="text" name="courseTitle" th:value="${course.courseTitle}" class="config-input w-full font-headline font-bold text-lg" required/>
                         </div>
 
-                        <!-- 강좌 소개 -->
-                        <div class="flex flex-col gap-2">
-                            <label class="text-[11px] font-label tracking-widest text-cyan-400 required-dot">강좌 소개</label>
-                            <textarea name="courseDescription"
-                                      rows="5"
-                                      class="cy-input"
-                                      placeholder="강좌에 대한 소개를 입력하세요"
-                                      th:text="${course.courseDescription}"
-                                      required></textarea>
+                        <div class="space-y-2">
+                            <label class="text-[9px] font-label font-black text-slate-600 uppercase tracking-widest block px-1 required-label">Mission Briefing</label>
+                            <textarea name="courseDescription" rows="4" class="config-input w-full font-body text-sm leading-relaxed" required th:text="${course.courseDescription}"></textarea>
                         </div>
 
-                        <!-- 대륙 선택 + 가격 (2열) -->
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-                            <!-- 대륙 선택 -->
-                            <div class="flex flex-col gap-2">
-                                <label class="text-[11px] font-label tracking-widest text-cyan-400 required-dot">대륙 선택</label>
-                                <select name="continentId" class="cy-select" required>
-                                    <option value="" disabled>대륙을 선택하세요</option>
+                            <div class="space-y-2">
+                                <label class="text-[9px] font-label font-black text-slate-600 uppercase tracking-widest block px-1 required-label">Target Sector</label>
+                                <select name="continentId" class="config-input w-full text-sm font-label appearance-none" required>
                                     <option th:each="continent : ${continents}"
                                             th:value="${continent.continentId}"
                                             th:text="${continent.continentName}"
                                             th:selected="${continent.continentId == course.continentId}"></option>
                                 </select>
                             </div>
-
-                            <!-- 가격 -->
-                            <div class="flex flex-col gap-2">
-                                <label class="text-[11px] font-label tracking-widest text-cyan-400 required-dot">가격 (원)</label>
-                                <input type="number"
-                                       name="coursePrice"
-                                       class="cy-input"
-                                       th:value="${course.coursePrice}"
-                                       placeholder="예) 50000"
-                                       min="0"
-                                       required/>
+                            <div class="space-y-2">
+                                <label class="text-[9px] font-label font-black text-slate-600 uppercase tracking-widest block px-1 required-label">Resource Cost (KRW)</label>
+                                <input type="number" name="coursePrice" th:value="${course.coursePrice}" class="config-input w-full font-headline font-bold" min="0" required/>
                             </div>
                         </div>
 
-                        <!-- 현재 공개 상태 표시 -->
-                        <div class="flex items-center gap-3 bg-slate-800/40 border border-slate-700/40 rounded-xl px-5 py-4">
-                            <span class="material-symbols-outlined text-slate-400 text-xl"
-                                  th:classappend="${course.courseStatus.name() == 'PUBLISHED'} ? 'text-cyan-400' : 'text-slate-400'">
-                                <th:block th:text="${course.courseStatus.name() == 'PUBLISHED'} ? 'public' : 'lock'"></th:block>
-                            </span>
-                            <div>
-                                <p class="text-sm font-label text-slate-300">현재 공개 상태</p>
-                                <p class="text-xs font-body mt-0.5"
-                                   th:classappend="${course.courseStatus.name() == 'PUBLISHED'} ? 'text-cyan-400' : 'text-slate-500'"
-                                   th:text="${course.courseStatus.name() == 'PUBLISHED'} ? '공개 중 (PUBLISHED)' : '비공개 (DRAFT)'">
-                                </p>
+                        <div class="mt-8 p-6 rounded-2xl bg-white/[0.02] border border-white/5 flex items-center justify-between">
+                            <div class="flex items-center gap-4">
+                                <div class="w-10 h-10 rounded-full bg-slate-950 flex items-center justify-center text-slate-500">
+                                    <span class="material-symbols-outlined" th:text="${course.courseStatus.name() == 'PUBLISHED' ? 'sensors' : 'sensors_off'}"></span>
+                                </div>
+                                <div>
+                                    <p class="text-[9px] font-label text-slate-600 tracking-widest uppercase">Broadcast Status</p>
+                                    <p class="text-xs font-headline font-bold uppercase tracking-widest"
+                                       th:classappend="${course.courseStatus.name() == 'PUBLISHED' ? 'text-primary' : 'text-secondary'}"
+                                       th:text="${course.courseStatus.name()}">STATUS</p>
+                                </div>
                             </div>
                         </div>
-
                     </div>
                 </div>
-            </div>
 
-            <!-- 버튼 -->
-            <div class="flex justify-end gap-3 mt-6">
-                <a th:href="@{/instructor/courses/PUBLISHED}"
-                   class="flex items-center gap-2 px-6 py-3 rounded-xl bg-slate-800/50 border border-slate-700/40 text-slate-400 hover:text-white hover:border-slate-600 transition-all text-sm font-label tracking-wide">
-                    <span class="material-symbols-outlined text-base">close</span>
-                    취소
-                </a>
-                <button type="submit"
-                        class="flex items-center gap-2 px-6 py-3 rounded-xl bg-secondary/10 border border-secondary/30 text-secondary hover:bg-secondary/20 hover:border-secondary/50 transition-all text-sm font-label tracking-wide shadow-[0_0_15px_rgba(201,124,255,0.1)]">
-                    <span class="material-symbols-outlined text-base">save</span>
-                    수정 완료
-                </button>
+                <div class="mt-12 pt-8 border-t border-white/5 flex justify-end gap-4">
+                    <a th:href="@{/instructor/courses/PUBLISHED}" class="px-8 py-3 rounded-xl text-slate-500 font-label text-[10px] font-black uppercase tracking-widest hover:text-white transition-all">
+                        Abort Change
+                    </a>
+                    <button type="submit" class="px-10 py-3 bg-secondary text-slate-950 font-label text-[10px] font-black rounded-xl hover:scale-105 active:scale-95 transition-all shadow-[0_0_25px_rgba(201,124,255,0.2)] uppercase tracking-widest">
+                        Apply Configuration
+                    </button>
+                </div>
             </div>
         </form>
     </div>
 </main>
-
-<!-- 배경 효과 -->
-<div class="fixed inset-0 pointer-events-none -z-10">
-    <div class="absolute top-1/4 left-1/4 w-[400px] h-[400px] bg-primary/5 rounded-full blur-[120px]"></div>
-    <div class="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-secondary/5 rounded-full blur-[150px]"></div>
-</div>
 
 <script>
     function previewThumbnail(event) {
@@ -355,16 +247,10 @@
         reader.onload = function (e) {
             const preview = document.getElementById('thumbnailPreview');
             const placeholder = document.getElementById('thumbnailPlaceholder');
-            const overlay = document.getElementById('thumbnailOverlay');
 
             preview.src = e.target.result;
             preview.classList.remove('hidden');
-            preview.className = 'w-full h-full object-cover absolute inset-0';
-
             placeholder.classList.add('hidden');
-
-            overlay.classList.remove('hidden');
-            overlay.className = 'absolute inset-0 bg-black/60 flex flex-col items-center justify-center gap-1 opacity-0 hover:opacity-100 transition-opacity';
         };
         reader.readAsDataURL(file);
     }

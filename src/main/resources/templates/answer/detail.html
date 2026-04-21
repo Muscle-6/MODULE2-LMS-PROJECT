@@ -67,21 +67,10 @@
         </div>
     </div>
 
-    <nav class="flex-1 py-6 space-y-1">
-        <div class="px-6 mb-4">
-            <span class="text-[9px] font-label font-black text-slate-600 uppercase tracking-[0.3em]">Main Protocol</span>
-        </div>
-
-        <a href="/"
-           class="flex items-center gap-4 py-3.5 px-6 transition-all duration-200 group text-slate-500 hover:bg-white/5 hover:text-slate-300">
-            <span class="material-symbols-outlined text-xl group-hover:scale-110 transition-transform">public</span>
-            <span class="text-sm font-label font-bold tracking-wide">대륙 탐색</span>
-        </a>
-
-        <a th:href="@{/student}"
-           class="flex items-center gap-4 py-3.5 px-6 transition-all duration-200 group text-cyan-400 bg-cyan-400/10 border-r-4 border-cyan-400">
-            <span class="material-symbols-outlined text-xl group-hover:scale-110 transition-transform">rocket_launch</span>
-            <span class="text-sm font-label font-bold tracking-wide">학생 홈</span>
+    <nav class="flex-1 py-6">
+        <a href="#" class="flex items-center gap-4 text-cyan-400 bg-cyan-400/10 border-r-4 border-cyan-400 py-3.5 px-6 font-label">
+            <span class="material-symbols-outlined">satellite_alt</span>
+            <span class="text-sm tracking-wide">사령부 대시보드</span>
         </a>
     </nav>
 
@@ -116,7 +105,7 @@
     <div class="max-w-4xl mx-auto">
 
         <div class="mb-8">
-            <a th:href="@{/student/course/{id}/qna(id=${courseId})}"
+            <a th:href="@{/instructor/courses/{id}/qna(id=${courseId})}"
                class="flex items-center gap-2 text-[10px] font-label tracking-widest text-slate-500 hover:text-primary transition-all uppercase group">
                 <span class="material-symbols-outlined text-sm transition-transform group-hover:-translate-x-1">arrow_back</span>
                 Back to Communication Logs
@@ -178,7 +167,7 @@
                             <span th:text="${#temporals.format(reply.createdAt,'yyyy.MM.dd HH:mm')}">시간</span>
                         </div>
 
-                        <div th:if="${loginMember.role == 'INSTRUCTOR'}" class="flex gap-2">
+                        <div class="flex gap-2">
                             <a th:href="@{/instructor/courses/{courseId}/qna/{qnaId}/reply/{replyId}/modify(courseId=${courseId}, qnaId=${qna.qnaId}, replyId=${reply.qnaId})}"
                                class="px-3 py-1.5 border border-white/10 rounded-lg hover:border-primary hover:text-primary transition-all uppercase tracking-tighter">Edit</a>
                             <button type="button" th:onclick="|openDeleteModal([[${reply.qnaId}]])|"
@@ -188,36 +177,102 @@
                 </div>
             </div>
 
-            <div th:if="${#lists.isEmpty(replies)}"
-                 class="flex flex-col items-center justify-center py-20 bg-surface/20 border border-dashed border-white/5 rounded-3xl">
-                <span class="material-symbols-outlined text-4xl text-slate-800 mb-4 animate-pulse">wifi_off</span>
-                <p class="text-[10px] font-label text-slate-600 uppercase tracking-widest">No Incoming Signals Yet</p>
-            </div>
-        </div>
-    </div>
-</main>
+            <div th:if="${#lists.isEmpty(replies)}">
+                    <button type="button" onclick="toggleReplyForm()"
+                            class="group flex items-center gap-3 px-6 py-4 rounded-2xl border border-primary/30 bg-primary/5 text-primary text-xs font-label font-black tracking-[0.2em] uppercase hover:bg-primary/10 hover:border-primary/60 hover:shadow-[0_0_30px_rgba(153,247,255,0.15)] transition-all">
+                        <span class="material-symbols-outlined text-lg group-hover:rotate-90 transition-transform duration-500">terminal</span>
+                        Initialize Response Protocol
+                    </button>
 
-<div id="deleteModal" class="hidden fixed inset-0 z-[100] bg-black/80 backdrop-blur-md flex items-center justify-center p-6">
-    <div class="bg-surface-high border border-error/30 rounded-2xl p-8 max-w-sm w-full shadow-2xl">
-        <h4 class="text-lg font-headline font-bold text-center text-white mb-6 uppercase tracking-tight">Purge Data?</h4>
-        <div class="flex gap-3">
-            <button onclick="closeDeleteModal()" class="flex-1 py-3 rounded-xl bg-white/5 text-slate-400 font-label text-[10px] font-bold uppercase tracking-widest hover:bg-white/10 transition-all">Abort</button>
-            <form id="deleteForm" method="post" class="flex-1">
-                <button type="submit" class="w-full py-3 rounded-xl bg-error text-white font-label text-[10px] font-bold uppercase tracking-widest hover:bg-red-500 transition-all">Confirm</button>
-            </form>
-        </div>
-    </div>
-</div>
+                    <div id="replyFormBox" style="display:none;"
+                         class="mt-6 bg-surface-high/90 backdrop-blur-2xl border border-primary/20 rounded-[2.5rem] p-10 shadow-[0_20px_80px_rgba(0,0,0,0.5)] relative overflow-hidden z-50">
+
+                        <div class="flex items-center gap-4 mb-8">
+                            <div class="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20 shadow-[0_0_20px_rgba(153,247,255,0.1)]">
+                                <span class="material-symbols-outlined text-primary text-2xl">rate_review</span>
+                            </div>
+                            <div>
+                                <h3 class="text-xs font-label font-black text-white tracking-[0.3em] uppercase">Manual Override</h3>
+                                <p class="text-[10px] font-label text-primary/50 uppercase tracking-tighter">Drafting encrypted response...</p>
+                            </div>
+                        </div>
+
+                        <form th:action="@{/instructor/courses/{courseId}/qna/{qnaId}/reply(courseId=${courseId}, qnaId=${qna.qnaId})}" method="post">
+                            <div class="mb-8 relative group">
+                                <div class="absolute -inset-0.5 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-[2rem] blur opacity-0 group-focus-within:opacity-100 transition duration-500"></div>
+                                <textarea name="qnaContent" id="qnaContentField" rows="6" required
+                                          placeholder="하달할 지침을 입력하십시오..."
+                                          class="relative w-full bg-slate-950/80 border border-white/5 rounded-[2rem] px-8 py-7 text-sm text-on-surface font-body leading-relaxed focus:outline-none focus:border-primary/40 transition-all resize-none placeholder:text-slate-700"></textarea>
+                            </div>
+                            <div class="flex gap-6 justify-end items-center">
+                                <button type="button" onclick="toggleReplyForm()" class="text-[10px] font-label font-bold text-slate-500 hover:text-error transition-all uppercase tracking-widest px-2">Abort</button>
+                                <button type="submit" class="group flex items-center gap-3 px-10 py-4 rounded-2xl bg-primary text-slate-950 text-[11px] font-black uppercase tracking-[0.2em] hover:scale-[1.03] active:scale-95 transition-all shadow-[0_10px_40px_rgba(153,247,255,0.3)]">
+                                    <span class="material-symbols-outlined text-sm font-bold group-hover:translate-x-1 transition-transform">send</span>
+                                    Transmit Data
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div id="deleteModal" class="hidden fixed inset-0 z-[100] bg-black/80 backdrop-blur-md flex items-center justify-center p-6 transition-all duration-300 opacity-0">
+                    <div class="bg-surface-high border border-error/30 rounded-[2.5rem] max-w-sm w-full shadow-[0_0_60px_rgba(255,113,108,0.2)] relative overflow-hidden transform scale-90 transition-all duration-300">
+                        <div class="h-1.5 w-full bg-[repeating-linear-gradient(45deg,rgba(255,113,108,0.2),rgba(255,113,108,0.2)_10px,transparent_10px,transparent_20px)]"></div>
+
+                        <div class="p-10 text-center">
+                            <div class="relative w-20 h-20 mx-auto mb-6 flex items-center justify-center">
+                                <div class="absolute inset-0 bg-error/10 rounded-full animate-ping"></div>
+                                <span class="material-symbols-outlined text-error text-5xl relative z-10" style="font-variation-settings: 'wght' 700;">warning</span>
+                            </div>
+                            <h3 class="text-xl font-headline font-black text-white tracking-tighter uppercase italic mb-3">Execute <span class="text-error">Purge?</span></h3>
+                            <p class="text-[10px] font-label text-slate-500 uppercase tracking-widest leading-relaxed mb-10">Data will be permanently erased.<br/>This action is <span class="text-error font-bold">Irreversible.</span></p>
+                            <div class="flex gap-4">
+                                <button type="button" onclick="closeDeleteModal()" class="flex-1 py-4 rounded-xl bg-white/5 text-slate-400 font-label text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-all">Abort</button>
+                                <form id="deleteForm" method="post" class="flex-1">
+                                    <button type="submit" class="w-full py-4 rounded-xl bg-error text-slate-950 font-label text-[10px] font-black uppercase tracking-widest hover:bg-red-500 transition-all">Confirm</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
 
 <script th:inline="javascript">
-    const courseId = /*[[${courseId}]]*/ 0;
-    const qnaId = /*[[${qna.qnaId}]]*/ 0;
+    const courseId = [[${courseId}]];
+    const qnaId = [[${qna.qnaId}]];
 
-    function openDeleteModal(replyId) {
-        document.getElementById('deleteForm').action = `/instructor/courses/${courseId}/qna/${qnaId}/reply/${replyId}/delete`;
-        document.getElementById('deleteModal').classList.remove('hidden');
+    // 답변 폼 토글
+    function toggleReplyForm() {
+        const box = document.getElementById('replyFormBox');
+        const field = document.getElementById('qnaContentField');
+        if (box.style.display === 'none') {
+            box.style.display = 'block';
+            field.focus(); // 입력 필드 자동 포커싱
+        } else {
+            box.style.display = 'none';
+        }
     }
-    function closeDeleteModal() { document.getElementById('deleteModal').classList.add('hidden'); }
+
+    // PURGE 모달 제어 (애니메이션 효과 추가)
+    function openDeleteModal(replyId) {
+        const modal = document.getElementById('deleteModal');
+        const card = modal.querySelector('.bg-surface-high');
+        document.getElementById('deleteForm').action = `/instructor/courses/${courseId}/qna/${qnaId}/reply/${replyId}/delete`;
+
+        modal.classList.remove('hidden');
+        setTimeout(() => {
+            modal.classList.add('opacity-100');
+            card.classList.replace('scale-90', 'scale-100');
+        }, 10);
+    }
+
+    function closeDeleteModal() {
+        const modal = document.getElementById('deleteModal');
+        const card = modal.querySelector('.bg-surface-high');
+        modal.classList.remove('opacity-100');
+        card.classList.replace('scale-100', 'scale-90');
+        setTimeout(() => modal.classList.add('hidden'), 300);
+    }
 </script>
 
 </body>

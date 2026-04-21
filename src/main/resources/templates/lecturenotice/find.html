@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Module02 LMS - 공지사항</title>
+    <title>COMMAND BROADCAST | MODULE02 LMS</title>
 
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
@@ -17,14 +17,9 @@
                 extend: {
                     colors: {
                         "primary": "#99f7ff",
-                        "on-primary-container": "#00555a",
                         "secondary": "#c97cff",
-                        "on-secondary-container": "#fff5ff",
-                        "error": "#ff716c",
-                        "on-surface": "#ecedf6",
                         "surface-container": "#161a21",
-                        "surface-container-highest": "#22262f",
-                        "outline-variant": "#45484f",
+                        "on-surface": "#ecedf6",
                     },
                     fontFamily: {
                         "headline": ["Space Grotesk"],
@@ -41,155 +36,146 @@
             font-family: 'Inter', sans-serif;
             background-color: #0b0e14;
             color: #ecedf6;
-            background-image:
-                radial-gradient(circle at 50% 50%, rgba(153, 247, 255, 0.05) 0%, transparent 50%),
-                url("data:image/svg+xml,%3Csvg width='400' height='400' viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M10 10L50 50M350 350L390 390' stroke='rgba(153, 247, 255, 0.1)' stroke-width='0.5'/%3E%3Ccircle cx='100' cy='100' r='1' fill='rgba(255,255,255,0.2)'/%3E%3Ccircle cx='300' cy='200' r='1' fill='rgba(255,255,255,0.3)'/%3E%3C/svg%3E");
+            background-image: radial-gradient(circle at 50% 50%, rgba(153, 247, 255, 0.05) 0%, transparent 50%);
         }
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-            vertical-align: middle;
+
+        .broadcast-card {
+            background: rgba(22, 26, 33, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .broadcast-card:hover {
+            border-color: rgba(153, 247, 255, 0.3);
+            transform: translateY(-2px);
+            background: rgba(22, 26, 33, 0.8);
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #99f7ff;
+            box-shadow: 0 0 10px #99f7ff;
         }
     </style>
 </head>
 
 <body class="min-h-screen">
 
-<!-- ===== HEADER ===== -->
-<header class="fixed top-0 w-full z-50 flex justify-between items-center px-6 h-16 bg-slate-950/40 backdrop-blur-xl shadow-[0_0_20px_rgba(153,247,255,0.1)] border-b border-cyan-400/10">
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-6 h-16 bg-slate-950/40 backdrop-blur-xl shadow-[0_0_20px_rgba(153,247,255,0.1)]">
     <div class="flex items-center gap-8">
-        <span class="text-2xl font-bold tracking-tighter text-cyan-400 drop-shadow-[0_0_8px_rgba(153,247,255,0.6)] font-headline">
-            MODULE02 LMS
-        </span>
+        <span class="text-2xl font-bold tracking-tighter text-cyan-400 drop-shadow-[0_0_8px_rgba(153,247,255,0.6)] font-headline">MODULE02 LMS</span>
+        <span class="hidden md:inline text-xs font-label text-slate-400 tracking-widest uppercase">우주/외계인 세계관 학습 플랫폼</span>
     </div>
-    <div class="flex items-center gap-4" th:if="${loginMember != null}">
-        <span class="text-xs font-label tracking-widest text-cyan-400"
-              th:text="|${loginMember.name} 님|"></span>
-        <a th:href="@{/logout}"
-           class="flex items-center gap-1 text-slate-400 hover:text-error transition-colors text-xs font-label">
-            <span class="material-symbols-outlined text-sm">power_settings_new</span>
-            로그아웃
-        </a>
+
+    <div class="flex items-center gap-4">
+        <div class="flex items-center gap-4" th:if="${loginMember == null}">
+            <a th:href="@{/login}" class="text-slate-300 hover:text-cyan-300 font-label text-xs tracking-widest transition-colors">로그인</a>
+            <a th:href="@{/signup}" class="bg-primary/10 border border-primary/30 text-primary px-4 py-1.5 rounded text-xs font-label tracking-widest hover:bg-primary/20 transition-all shadow-[0_0_10px_rgba(153,247,255,0.1)]">회원가입</a>
+        </div>
+
+        <div class="flex items-center gap-4" th:if="${loginMember != null}">
+            <div class="text-right hidden sm:block mr-2">
+                <span class="text-xs font-label tracking-widest text-cyan-400" th:text="|${loginMember.name} 님|"></span>
+                <span class="text-[10px] text-slate-500 font-label tracking-tight ml-1" th:text="|(${loginMember.role})|"></span>
+            </div>
+            <a th:href="@{/logout}" class="flex items-center gap-1 text-slate-400 hover:text-error transition-colors text-xs font-label">
+                <span class="material-symbols-outlined text-sm">power_settings_new</span> 로그아웃
+            </a>
+        </div>
     </div>
 </header>
 
-<!-- ===== MAIN ===== -->
-<main class="pt-24 px-6 md:px-12 pb-12">
-    <section class="max-w-4xl mx-auto">
+<main class="pt-28 px-6 md:px-12 pb-20">
+    <section class="max-w-5xl mx-auto">
 
-        <!-- 뒤로가기 + 타이틀 -->
-        <div class="mb-8">
-            <div class="flex items-center gap-3 mb-3">
-                <a th:href="@{/instructor/courses/{courseId}/lectures(courseId=${courseId})}"
-                   class="flex items-center gap-1 text-slate-500 hover:text-cyan-400 transition-colors text-xs font-label">
-                    <span class="material-symbols-outlined text-sm">arrow_back</span>
-                    강의 목록으로
-                </a>
-            </div>
-            <div class="flex items-center justify-between">
-                <div>
-                    <h1 class="text-3xl md:text-4xl font-headline font-bold text-on-surface tracking-tight mb-2">
-                        NOTICE
-                    </h1>
-                    <p class="text-slate-400 text-sm font-body">강좌 공지사항</p>
+        <div class="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
+            <div>
+                <div class="flex items-center gap-3 mb-3">
+                    <a th:href="@{/instructor/courses/{courseId}/lectures(courseId=${courseId})}"
+                       class="flex items-center gap-1 text-[10px] font-label text-slate-500 uppercase tracking-widest hover:text-primary transition-colors">
+                        <span class="material-symbols-outlined text-xs">arrow_back</span> Return to Station
+                    </a>
                 </div>
-                <!-- 강사만 공지사항 등록 버튼 표시 -->
-                <a sec:authorize="hasRole('INSTRUCTOR')"
-                   th:href="@{/instructor/courses/{courseId}/notices/add(courseId=${courseId})}"
-                   class="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-primary/30 bg-primary/10 text-primary text-sm font-label tracking-wide hover:bg-primary/20 hover:border-primary/50 transition-all">
-                    <span class="material-symbols-outlined text-base">add_box</span>
-                    공지사항 등록
-                </a>
+                <div class="flex items-center gap-3 mb-2">
+                    <span class="h-[1px] w-8 bg-primary/40"></span>
+                    <span class="text-[10px] font-label tracking-[0.4em] text-primary uppercase font-black">Official Channels</span>
+                </div>
+                <h1 class="text-4xl md:text-5xl font-headline font-black text-on-surface tracking-tighter uppercase italic">
+                    Command <span class="text-primary/50">Broadcast</span>
+                </h1>
             </div>
+
+            <a sec:authorize="hasRole('INSTRUCTOR')"
+               th:href="@{/instructor/courses/{courseId}/notices/add(courseId=${courseId})}"
+               class="group flex items-center gap-3 px-8 py-4 rounded-2xl bg-primary text-slate-950 font-label text-[10px] font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-[0_10px_30px_rgba(153,247,255,0.2)]">
+                <span class="material-symbols-outlined text-lg">add_circle</span>
+                New Transmission
+            </a>
         </div>
 
-        <!-- 공지사항 목록 -->
-        <div class="flex flex-col gap-3">
+        <div class="grid gap-4">
 
-            <!-- 공지사항 있을 때 -->
-            <div th:if="${notices != null and !#lists.isEmpty(notices)}"
-                 class="flex flex-col gap-3">
-                <div th:each="notice : ${notices}"
-                     class="group bg-surface-container/60 backdrop-blur-xl rounded-2xl border border-outline-variant/20 p-6 hover:border-cyan-400/20 transition-all shadow-lg shadow-cyan-500/5">
+            <div th:if="${notices != null and !#lists.isEmpty(notices)}" class="contents">
+                <div th:each="notice : ${notices}" class="broadcast-card rounded-[2rem] p-8">
 
-                    <!-- 제목 + 작성자 + 날짜 -->
-                    <div class="flex items-start justify-between gap-4 mb-3">
-                        <h3 class="text-base font-headline font-bold text-on-surface"
-                            th:text="${notice.noticeTitle}">공지 제목</h3>
-                        <div class="flex-shrink-0 flex items-center gap-3">
-                            <!-- 강사만 수정/삭제 버튼 표시 -->
-                            <a sec:authorize="hasRole('INSTRUCTOR')"
-                               th:href="@{/instructor/courses/{courseId}/notices/{noticeId}/edit(courseId=${courseId}, noticeId=${notice.noticeId})}"
-                               class="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-outline-variant/30 text-slate-400 hover:text-cyan-400 hover:border-cyan-400/30 transition-all text-xs font-label">
-                                <span class="material-symbols-outlined text-sm">edit</span>
-                                수정
-                            </a>
-                            <a sec:authorize="hasRole('INSTRUCTOR')"
-                               th:href="@{/instructor/courses/{courseId}/notices/{noticeId}/delete(courseId=${courseId}, noticeId=${notice.noticeId})}"
-                               class="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-error/30 text-error/70 hover:text-error hover:border-error/50 transition-all text-xs font-label">
-                                <span class="material-symbols-outlined text-sm">delete</span>
-                                삭제
-                            </a>
+                    <div class="flex flex-col md:flex-row gap-6">
+                        <div class="md:w-32 flex flex-col items-center justify-center border-r border-white/5 pr-6">
+                            <span class="text-2xl font-headline font-bold text-primary" th:text="${#temporals.format(notice.createdAt, 'dd')}">21</span>
+                            <span class="text-[9px] font-label text-slate-500 uppercase tracking-widest" th:text="${#temporals.format(notice.createdAt, 'MMM yyyy')}">APR 2026</span>
                         </div>
-                    </div>
 
-                    <!-- 내용 -->
-                    <p class="text-sm text-slate-400 font-body mb-4 line-clamp-2"
-                       th:text="${notice.noticeContent}">공지 내용</p>
+                        <div class="flex-1 space-y-3">
+                            <div class="flex items-center gap-3">
+                                <div class="status-dot"></div>
+                                <h3 class="text-xl font-headline font-bold text-on-surface tracking-tight" th:text="${notice.noticeTitle}">공지 제목</h3>
+                                <span th:if="${notice.updatedAt != null and notice.updatedAt != notice.createdAt}"
+                                      class="px-2 py-0.5 rounded bg-secondary/10 border border-secondary/20 text-[8px] font-label text-secondary uppercase tracking-widest">Modified</span>
+                            </div>
+                            <p class="text-sm font-body text-slate-400 leading-relaxed line-clamp-2" th:text="${notice.noticeContent}">공지 내용</p>
 
-                    <!-- 하단 메타 정보 -->
-                    <div class="flex items-center justify-between text-xs text-slate-500 font-label border-t border-outline-variant/10 pt-3">
-                        <span th:text="|작성자 : ${notice.authorName}|">작성자</span>
-                        <div class="flex items-center gap-4">
-                            <!-- 수정된 경우 표시 -->
-                            <span th:if="${notice.updatedAt != null and notice.updatedAt != notice.createdAt}"
-                                  class="text-secondary/70">
-                                (수정됨) 마지막 수정일시 :
-                                <span th:text="${#temporals.format(notice.updatedAt, 'yyyy-MM-dd HH:mm')}"></span>
-                            </span>
-                            <span class="flex items-center gap-1">
-                                <span class="material-symbols-outlined text-sm">schedule</span>
-                                <span th:text="${#temporals.format(notice.createdAt, 'yyyy.MM.dd')}">등록일</span>
-                            </span>
+                            <div class="flex items-center gap-4 pt-2">
+                                <span class="text-[10px] font-label text-slate-600 uppercase tracking-widest" th:text="|Authored by: ${notice.authorName}|">Author</span>
+                            </div>
+                        </div>
+
+                        <div sec:authorize="hasRole('INSTRUCTOR')" class="flex md:flex-col justify-end gap-2">
+                            <a th:href="@{/instructor/courses/{courseId}/notices/{noticeId}/edit(courseId=${courseId}, noticeId=${notice.noticeId})}"
+                               class="p-3 rounded-xl bg-white/5 border border-white/5 text-slate-500 hover:text-primary hover:border-primary/20 transition-all">
+                                <span class="material-symbols-outlined text-sm">edit</span>
+                            </a>
+                            <a th:href="@{/instructor/courses/{courseId}/notices/{noticeId}/delete(courseId=${courseId}, noticeId=${notice.noticeId})}"
+                               class="p-3 rounded-xl bg-white/5 border border-white/5 text-slate-500 hover:text-red-400 hover:border-red-400/20 transition-all">
+                                <span class="material-symbols-outlined text-sm">delete</span>
+                            </a>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- 공지사항 없을 때 -->
             <div th:if="${notices == null or #lists.isEmpty(notices)}"
-                 class="flex flex-col items-center justify-center py-24 text-center">
-                <div class="w-16 h-16 rounded-2xl bg-outline-variant/10 border border-outline-variant/20 flex items-center justify-center mb-4">
-                    <span class="material-symbols-outlined text-slate-600 text-3xl">campaign</span>
+                 class="py-32 flex flex-col items-center justify-center border-2 border-dashed border-white/5 rounded-[3rem] bg-white/[0.01]">
+                <div class="w-20 h-20 rounded-full bg-slate-900 border border-white/5 flex items-center justify-center mb-6 text-slate-700">
+                    <span class="material-symbols-outlined text-4xl">radar</span>
                 </div>
-                <p class="text-slate-400 font-label tracking-wide mb-1">등록된 공지사항이 없습니다</p>
-                <p class="text-slate-600 text-xs font-body mb-6">아직 이 강좌에 공지사항이 없습니다.</p>
+                <h3 class="text-sm font-label font-black text-slate-500 uppercase tracking-[0.3em] mb-2">No Transmissions Found</h3>
+                <p class="text-[10px] font-label text-slate-700 uppercase tracking-widest mb-8 text-center leading-relaxed">
+                    The frequency is currently quiet.<br/>Awaiting official orders from command.
+                </p>
                 <a sec:authorize="hasRole('INSTRUCTOR')"
                    th:href="@{/instructor/courses/{courseId}/notices/add(courseId=${courseId})}"
-                   class="flex items-center gap-2 px-5 py-2.5 rounded-lg border border-primary/30 bg-primary/10 text-primary text-sm font-label tracking-wide hover:bg-primary/20 transition-all">
-                    <span class="material-symbols-outlined text-base">add_box</span>
-                    첫 공지사항 등록하기
+                   class="px-8 py-3 rounded-xl bg-primary/10 border border-primary/20 text-primary font-label text-[10px] font-black uppercase tracking-widest hover:bg-primary hover:text-slate-950 transition-all">
+                    Initiate First Broadcast
                 </a>
             </div>
         </div>
     </section>
 </main>
 
-<!-- 배경 그라디언트 -->
 <div class="fixed inset-0 pointer-events-none -z-10">
-    <div class="absolute top-1/4 left-1/4 w-[400px] h-[400px] bg-primary/5 rounded-full blur-[120px]"></div>
-    <div class="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-secondary/5 rounded-full blur-[150px]"></div>
+    <div class="absolute top-1/2 left-0 w-96 h-96 bg-primary/5 rounded-full blur-[150px]"></div>
 </div>
-
-
-
-</body>
-</html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
 
 </body>
 </html>

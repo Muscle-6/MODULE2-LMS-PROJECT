@@ -1,254 +1,183 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html class="dark" lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="${lecture.lectureTitle} + ' - 강의 미리보기'">강의 미리보기</title>
+    <title th:text="${lecture.lectureTitle} + ' - BRIEFING'">강의 미리보기</title>
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#99f7ff",
+                        "secondary": "#c97cff",
+                        "surface-container": "#161a21",
+                        "on-surface": "#ecedf6",
+                    },
+                    fontFamily: {
+                        "headline": ["Space Grotesk"],
+                        "body": ["Inter"],
+                        "label": ["Space Grotesk"]
+                    }
+                },
+            },
+        }
+    </script>
 
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
         body {
-            background: #0b1020;
-            color: #f5f7ff;
-            font-family: 'Segoe UI', Roboto, sans-serif;
-            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+            background-color: #0b0e14;
+            color: #ecedf6;
+            background-image: radial-gradient(circle at 50% 50%, rgba(153, 247, 255, 0.03) 0%, transparent 50%);
         }
 
-        .header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 16px 32px;
-            background: #0d1117;
-            border-bottom: 1px solid rgba(95, 124, 255, 0.15);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            gap: 16px;
-        }
-
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-
-        .back-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            color: #626e9f;
-            text-decoration: none;
-            font-size: 0.85rem;
-            transition: color 0.2s;
-        }
-
-        .back-btn:hover { color: #a9b6ec; }
-
-        .lecture-title-header {
-            font-size: 1rem;
-            font-weight: 600;
-            color: #f5f7ff;
-            max-width: 600px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        /* 강사 배지 */
-        .instructor-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 6px 14px;
-            background: rgba(153, 247, 255, 0.1);
-            border: 1px solid rgba(153, 247, 255, 0.3);
-            border-radius: 20px;
-            color: #99f7ff;
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-
-        .main-container {
-            max-width: 1100px;
-            margin: 0 auto;
-            padding: 32px 24px;
-        }
-
-        .video-container {
+        .monitor-frame {
+            position: relative;
             background: #000;
-            border-radius: 16px;
+            border: 1px solid rgba(153, 247, 255, 0.2);
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(153, 247, 255, 0.05);
+            border-radius: 2rem;
             overflow: hidden;
-            border: 1px solid rgba(95, 124, 255, 0.15);
-            margin-bottom: 24px;
         }
 
-        .video-container video {
-            width: 100%;
-            display: block;
-            max-height: 600px;
+        /* 스캔라인 효과 */
+        .monitor-frame::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%),
+            linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02));
+            background-size: 100% 4px, 3px 100%;
+            pointer-events: none;
+            z-index: 10;
         }
 
-        /* 업로드 중 상태 */
-        .uploading-state {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 400px;
-            background: #121a35;
-            gap: 16px;
-        }
-
-        .uploading-spinner {
-            width: 48px;
-            height: 48px;
+        .upload-spinner {
             border: 3px solid rgba(153, 247, 255, 0.1);
-            border-top-color: #99f7ff;
+            border-top: 3px solid #99f7ff;
             border-radius: 50%;
+            width: 50px;
+            height: 50px;
             animation: spin 1s linear infinite;
         }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        @keyframes spin { to { transform: rotate(360deg); } }
-
-        .uploading-text {
-            color: #99f7ff;
-            font-size: 0.95rem;
-            font-weight: 500;
+        .btn-action {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-
-        .uploading-sub {
-            color: #626e9f;
-            font-size: 0.8rem;
-        }
-
-        /* 영상 없음 상태 */
-        .no-video {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 400px;
-            background: #121a35;
-            color: #626e9f;
-            gap: 12px;
-        }
-
-        .info-card {
-            background: #121a35;
-            border-radius: 16px;
-            padding: 28px;
-            border: 1px solid rgba(95, 124, 255, 0.1);
-            margin-bottom: 24px;
-        }
-
-        .info-card h1 {
-            font-size: 1.6rem;
-            font-weight: 700;
-            color: #f5f7ff;
-            margin-bottom: 20px;
-        }
-
-        .action-area {
-            display: flex;
-            justify-content: flex-end;
-            gap: 12px;
-        }
-
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 12px 28px;
-            border-radius: 10px;
-            font-size: 0.95rem;
-            font-weight: 600;
-            cursor: pointer;
-            border: none;
-            text-decoration: none;
-            transition: all 0.2s;
-        }
-
-        .btn-edit {
-            background: rgba(153, 247, 255, 0.1);
-            color: #99f7ff;
-            border: 1px solid rgba(153, 247, 255, 0.3);
-        }
-
-        .btn-edit:hover { background: rgba(153, 247, 255, 0.2); }
-
-        .btn-back {
-            background: rgba(255, 255, 255, 0.05);
-            color: #a9b6ec;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .btn-back:hover { background: rgba(255, 255, 255, 0.1); }
     </style>
 </head>
 
-<body>
+<body class="min-h-screen">
 
-<!-- ===== 헤더 ===== -->
-<header class="header">
-    <div class="header-left">
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-6 h-16 bg-slate-950/40 backdrop-blur-xl border-b border-white/5">
+    <div class="flex items-center gap-6">
         <a th:href="@{/instructor/courses/{courseId}/lectures(courseId=${courseId})}"
-           class="back-btn">
-            ← 강의 목록
+           class="flex items-center gap-2 text-slate-500 hover:text-primary transition-colors">
+            <span class="material-symbols-outlined text-xl">arrow_back</span>
         </a>
-        <span class="lecture-title-header" th:text="${lecture.lectureTitle}">강의 제목</span>
+        <div class="h-4 w-[1px] bg-white/10"></div>
+        <span class="text-sm font-label tracking-widest text-slate-400 uppercase truncate max-w-md" th:text="${lecture.lectureTitle}">Lecture Title</span>
     </div>
-    <span class="instructor-badge">👨‍🏫 강사 미리보기</span>
+    <div class="flex items-center gap-3">
+        <div class="px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-[10px] font-label text-primary tracking-tighter font-bold uppercase">
+            Preview Mode
+        </div>
+    </div>
 </header>
 
-<!-- ===== MAIN ===== -->
-<div class="main-container">
+<main class="pt-24 px-6 pb-20">
+    <div class="max-w-6xl mx-auto">
 
-    <!-- 영상 플레이어 -->
-    <div class="video-container">
-
-        <!-- 정상 재생 가능 -->
-        <video th:if="${lecture.videoStatus.name() == 'READY'}"
-               controls
-               controlsList="nodownload"
-               oncontextmenu="return false;">
-            <source th:src="${lecture.videoUrl}" type="video/mp4"/>
-            브라우저가 video 태그를 지원하지 않습니다.
-        </video>
-
-        <!-- 업로드 중 -->
-        <div th:if="${lecture.videoStatus.name() == 'UPLOADING'}" class="uploading-state">
-            <div class="uploading-spinner"></div>
-            <p class="uploading-text">영상 업로드 중입니다...</p>
-            <p class="uploading-sub">잠시 후 페이지를 새로고침 해주세요</p>
+        <div class="mb-8 flex items-end justify-between px-2">
+            <div>
+                <div class="flex items-center gap-2 mb-1">
+                    <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+                    <span class="text-[10px] font-label tracking-[0.3em] text-primary uppercase font-black">Visual Intelligence Feed</span>
+                </div>
+                <h1 class="text-3xl font-headline font-black text-on-surface tracking-tighter uppercase italic" th:text="${lecture.lectureTitle}">강의 제목</h1>
+            </div>
+            <div class="text-right hidden md:block">
+                <p class="text-[9px] font-label text-slate-600 tracking-widest uppercase">Encryption Status</p>
+                <p class="text-[10px] font-label text-primary/60 tracking-widest uppercase font-bold">Secure Data Stream [Active]</p>
+            </div>
         </div>
 
-        <!-- 영상 없음 -->
-        <div th:if="${lecture.videoStatus.name() == 'NONE'}" class="no-video">
-            <p>등록된 영상이 없습니다.</p>
+        <div class="monitor-frame aspect-video mb-10 group">
+
+            <video th:if="${lecture.videoStatus.name() == 'READY'}"
+                   class="w-full h-full object-contain relative z-0"
+                   controls controlsList="nodownload" oncontextmenu="return false;">
+                <source th:src="${lecture.videoUrl}" type="video/mp4"/>
+            </video>
+
+            <div th:if="${lecture.videoStatus.name() == 'UPLOADING'}"
+                 class="w-full h-full flex flex-col items-center justify-center bg-slate-950 gap-6 relative z-20">
+                <div class="upload-spinner"></div>
+                <div class="text-center">
+                    <p class="text-sm font-label text-primary tracking-[0.2em] uppercase font-black">Synchronizing Stream...</p>
+                    <p class="text-[10px] font-label text-slate-500 tracking-widest uppercase mt-2">Data packets are being deployed to the orbital server.</p>
+                </div>
+            </div>
+
+            <div th:if="${lecture.videoStatus.name() == 'NONE'}"
+                 class="w-full h-full flex flex-col items-center justify-center bg-slate-900/50 gap-4 relative z-20">
+                <span class="material-symbols-outlined text-6xl text-slate-800">videocam_off</span>
+                <p class="text-[10px] font-label text-slate-600 tracking-widest uppercase font-black font-headline">No Visual Data Detected</p>
+            </div>
+
+            <div class="absolute top-6 left-6 z-30 pointer-events-none opacity-40 group-hover:opacity-100 transition-opacity">
+                <div class="text-[9px] font-label text-primary tracking-widest uppercase border-l-2 border-primary pl-2">
+                    Rec: 2026.04.21<br/>
+                    Module: [[${lecture.lectureId}]]
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="lg:col-span-2 space-y-6">
+                <div class="bg-surface-container/40 border border-white/5 p-8 rounded-[2rem] min-h-[200px]">
+                    <h3 class="text-[10px] font-label font-black text-slate-600 uppercase tracking-widest mb-6 border-b border-white/5 pb-4 italic">Briefing Contents</h3>
+                    <p class="text-sm font-body leading-relaxed text-slate-300 whitespace-pre-wrap" th:text="${lecture.lectureDescription}">
+                        강의 설명이 이곳에 표시됩니다.
+                    </p>
+                </div>
+            </div>
+
+            <div class="space-y-4">
+                <div class="bg-surface-container/60 border border-white/10 p-6 rounded-[2rem] space-y-4">
+                    <p class="text-[9px] font-label font-black text-slate-500 uppercase tracking-[0.2em] text-center mb-2">Operational Controls</p>
+
+                    <a th:href="@{/instructor/courses/{courseId}/lectures/{lectureId}/edit(courseId=${courseId}, lectureId=${lecture.lectureId})}"
+                       class="btn-action w-full flex items-center justify-center gap-3 py-4 rounded-2xl bg-secondary/10 border border-secondary/20 text-secondary hover:bg-secondary hover:text-slate-950 font-label text-[10px] font-black uppercase tracking-widest">
+                        <span class="material-symbols-outlined text-base">edit</span> Recalibrate Unit
+                    </a>
+
+                    <a th:href="@{/instructor/courses/{courseId}/lectures(courseId=${courseId})}"
+                       class="btn-action w-full flex items-center justify-center gap-3 py-4 rounded-2xl bg-white/5 border border-white/10 text-slate-400 hover:bg-white/10 hover:text-white font-label text-[10px] font-black uppercase tracking-widest">
+                        <span class="material-symbols-outlined text-base">list</span> Return to Fleet
+                    </a>
+                </div>
+
+                <div class="px-6 py-4 flex items-center gap-4 grayscale opacity-40">
+                    <span class="material-symbols-outlined text-primary">verified_user</span>
+                    <span class="text-[8px] font-label text-slate-500 uppercase tracking-tighter">Approved by instructor 사령부</span>
+                </div>
+            </div>
         </div>
 
     </div>
+</main>
 
-    <!-- 강의 정보 + 버튼 -->
-    <div class="info-card">
-        <h1 th:text="${lecture.lectureTitle}">강의 제목</h1>
-        <p th:if="${lecture.lectureDescription != null}"
-           style="color: #a9b6ec; font-size: 0.95rem; line-height: 1.7; margin-bottom: 24px;"
-           th:text="${lecture.lectureDescription}">강의 설명</p>
-        <div class="action-area">
-            <a th:href="@{/instructor/courses/{courseId}/lectures/{lectureId}/edit(courseId=${courseId}, lectureId=${lecture.lectureId})}"
-               class="btn btn-edit">
-                ✏ 강의 수정
-            </a>
-            <a th:href="@{/instructor/courses/{courseId}/lectures(courseId=${courseId})}"
-               class="btn btn-back">
-                목록으로
-            </a>
-        </div>
-    </div>
-
+<div class="fixed inset-0 pointer-events-none -z-10">
+    <div class="absolute top-1/2 left-0 w-64 h-64 bg-primary/5 rounded-full blur-[100px]"></div>
 </div>
 
 </body>

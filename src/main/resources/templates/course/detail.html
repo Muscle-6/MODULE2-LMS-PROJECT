@@ -102,21 +102,36 @@
   </div>
 
   <nav class="flex-1 py-6 space-y-1">
-    <div class="px-6 mb-4">
-      <span class="text-[9px] font-label font-black text-slate-600 uppercase tracking-[0.3em]">Main Protocol</span>
+
+    <div sec:authorize="hasRole('INSTRUCTOR')">
+      <div class="px-6 mb-4">
+        <span class="text-[9px] font-label font-black text-amber-500 uppercase tracking-[0.3em]">Command Protocol</span>
+      </div>
+      <a th:href="@{/instructor/dashboard}"
+         class="flex items-center gap-4 py-3.5 px-6 transition-all duration-200 group text-cyan-400 bg-cyan-400/10 border-r-4 border-cyan-400">
+        <span class="material-symbols-outlined text-xl group-hover:scale-110 transition-transform">satellite_alt</span>
+        <span class="text-sm font-label font-bold tracking-wide">사령부 대시보드</span>
+      </a>
     </div>
 
-    <a href="/"
-       class="flex items-center gap-4 py-3.5 px-6 transition-all duration-200 group text-slate-500 hover:bg-white/5 hover:text-slate-300">
-      <span class="material-symbols-outlined text-xl group-hover:scale-110 transition-transform">public</span>
-      <span class="text-sm font-label font-bold tracking-wide">대륙 탐색</span>
-    </a>
+    <div sec:authorize="!hasRole('INSTRUCTOR')">
+      <div class="px-6 mb-4">
+        <span class="text-[9px] font-label font-black text-slate-600 uppercase tracking-[0.3em]">Main Protocol</span>
+      </div>
 
-    <a th:href="@{/student}"
-       class="flex items-center gap-4 py-3.5 px-6 transition-all duration-200 group text-cyan-400 bg-cyan-400/10 border-r-4 border-cyan-400">
-      <span class="material-symbols-outlined text-xl group-hover:scale-110 transition-transform">rocket_launch</span>
-      <span class="text-sm font-label font-bold tracking-wide">학생 홈</span>
-    </a>
+      <a th:href="@{/}" data-menu="continent"
+         class="menu-item flex items-center gap-4 py-3.5 px-6 transition-all duration-200 group text-slate-500 hover:bg-white/5 hover:text-slate-300">
+        <span class="material-symbols-outlined text-xl group-hover:scale-110 transition-transform">public</span>
+        <span class="text-sm font-label font-bold tracking-wide">대륙 탐색</span>
+      </a>
+
+      <a th:href="@{/student}" data-menu="student"
+         class="menu-item flex items-center gap-4 py-3.5 px-6 transition-all duration-200 group text-slate-500 hover:bg-white/5 hover:text-slate-300">
+        <span class="material-symbols-outlined text-xl group-hover:scale-110 transition-transform">rocket_launch</span>
+        <span class="text-sm font-label font-bold tracking-wide">학생 홈</span>
+      </a>
+    </div>
+
   </nav>
 
   <div class="p-6 mt-auto">
@@ -457,6 +472,29 @@
 </main>
 
 <script th:inline="javascript">
+
+  document.addEventListener("DOMContentLoaded", function() {
+    const path = window.location.pathname;
+    const activeClass = "text-cyan-400 bg-cyan-400/10 border-r-4 border-cyan-400";
+    const inactiveClass = "text-slate-500 hover:bg-white/5 hover:text-slate-300";
+
+    const continentMenu = document.querySelector('[data-menu="continent"]');
+    const studentMenu = document.querySelector('[data-menu="student"]');
+
+    // 모든 메뉴 초기화
+    document.querySelectorAll('.menu-item').forEach(el => {
+      el.className = el.className.replace(activeClass, "").trim() + " " + inactiveClass;
+    });
+
+    // 경로에 따라 불 켜기
+    if (path.startsWith('/student')) {
+      studentMenu.className = studentMenu.className.replace(inactiveClass, "").trim() + " " + activeClass;
+    } else {
+      // 루트(/), /continents, /posts 등은 모두 대륙 탐색 활성화
+      continentMenu.className = continentMenu.className.replace(inactiveClass, "").trim() + " " + activeClass;
+    }
+  });
+
   /*<![CDATA[*/
   function denyAccess() {
     Swal.fire({
@@ -478,14 +516,7 @@
     Swal.fire({
       title: 'DEPLOYMENT REQUEST',
       text: "이 강좌를 보급품 목록(장바구니)에 추가하시겠습니까?",
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonColor: '#99f7ff',
-      cancelButtonColor: '#ff716c',
-      confirmButtonText: 'YES, DEPLOY',
-      cancelButtonText: 'ABORT',
-      background: '#161a21',
-      color: '#ecedf6'
+      // ... (기존 스타일 설정 생략)
     }).then((result) => {
       if (result.isConfirmed) {
         fetch('/student/cart/' + courseId, {
@@ -502,7 +533,16 @@
               cancelButtonText: 'STAY HERE',
               background: '#161a21',
               color: '#ecedf6'
-            }).then((nav) => { if (nav.isConfirmed) location.href = '/student/cart'; });
+            }).then((nav) => {
+              if (nav.isConfirmed) {
+                location.href = '/student/cart';
+              } else {
+                // 💡 [여기에 박으십쇼!]
+                // 장바구니에 담긴 후 'STAY HERE'를 누르면
+                // 페이지를 새로고침해서 랭크업된 상태창을 반영합니다.
+                location.reload();
+              }
+            });
           } else { throw new Error(); }
         }).catch(() => {
           Swal.fire({ title: 'SIGNAL LOST', text: "사령부와의 통신이 불안정합니다.", icon: 'error', background: '#161a21', color: '#ecedf6' });
@@ -511,6 +551,10 @@
     });
   }
   /*]]>*/
+
+  function updateAgentRank() {
+    window.location.reload();
+  }
 </script>
 </body>
 </html>

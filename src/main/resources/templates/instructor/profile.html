@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Module02 LMS - 내 정보</title>
+    <title>INTEL VIEW | MODULE02 LMS</title>
 
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
@@ -16,14 +16,10 @@
                 extend: {
                     colors: {
                         "primary": "#99f7ff",
-                        "on-primary-container": "#00555a",
                         "secondary": "#c97cff",
-                        "on-secondary-container": "#fff5ff",
-                        "error": "#ff716c",
-                        "on-surface": "#ecedf6",
                         "surface-container": "#161a21",
-                        "surface-container-highest": "#22262f",
-                        "outline-variant": "#45484f",
+                        "surface-container-high": "#1c2028",
+                        "on-surface": "#ecedf6",
                     },
                     fontFamily: {
                         "headline": ["Space Grotesk"],
@@ -40,186 +36,189 @@
             font-family: 'Inter', sans-serif;
             background-color: #0b0e14;
             color: #ecedf6;
-            background-image:
-                radial-gradient(circle at 50% 50%, rgba(153, 247, 255, 0.05) 0%, transparent 50%),
-                url("data:image/svg+xml,%3Csvg width='400' height='400' viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M10 10L50 50M350 350L390 390' stroke='rgba(153, 247, 255, 0.1)' stroke-width='0.5'/%3E%3Ccircle cx='100' cy='100' r='1' fill='rgba(255,255,255,0.2)'/%3E%3Ccircle cx='300' cy='200' r='1' fill='rgba(255,255,255,0.3)'/%3E%3C/svg%3E");
+            background-image: radial-gradient(circle at 50% 50%, rgba(153, 247, 255, 0.05) 0%, transparent 50%);
         }
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-            vertical-align: middle;
+
+        /* 데이터 필드 장식 */
+        .intel-field {
+            position: relative;
+            background: rgba(15, 23, 42, 0.4);
+            border: 1px solid rgba(153, 247, 255, 0.05);
+            border-radius: 16px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+        .intel-field:hover {
+            background: rgba(15, 23, 42, 0.6);
+            border-color: rgba(153, 247, 255, 0.2);
+        }
+        .intel-field::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 2px;
+            height: 0;
+            background: #99f7ff;
+            transition: height 0.3s ease;
+        }
+        .intel-field:hover::before {
+            height: 100%;
         }
     </style>
 </head>
 
 <body class="min-h-screen">
 
-<!-- 헤더 -->
-<header class="fixed top-0 w-full z-50 flex justify-between items-center px-6 h-16 bg-slate-950/40 backdrop-blur-xl shadow-[0_0_20px_rgba(153,247,255,0.1)] border-b border-cyan-400/10">
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-6 h-16 bg-slate-950/40 backdrop-blur-xl shadow-[0_0_20px_rgba(153,247,255,0.1)]">
     <div class="flex items-center gap-8">
-        <span class="text-2xl font-bold tracking-tighter text-cyan-400 drop-shadow-[0_0_8px_rgba(153,247,255,0.6)] font-headline">
-            MODULE02 LMS
-        </span>
-        <span class="hidden md:inline text-xs font-label text-slate-400 tracking-widest uppercase">
-            우주/외계인 세계관 학습 플랫폼 (강사 사령부)
-        </span>
+        <span class="text-2xl font-bold tracking-tighter text-cyan-400 drop-shadow-[0_0_8px_rgba(153,247,255,0.6)] font-headline">MODULE02 LMS</span>
+        <span class="hidden md:inline text-xs font-label text-slate-400 tracking-widest uppercase">우주/외계인 세계관 학습 플랫폼</span>
     </div>
+
     <div class="flex items-center gap-4">
+        <div class="flex items-center gap-4" th:if="${loginMember == null}">
+            <a th:href="@{/login}" class="text-slate-300 hover:text-cyan-300 font-label text-xs tracking-widest transition-colors">로그인</a>
+            <a th:href="@{/signup}" class="bg-primary/10 border border-primary/30 text-primary px-4 py-1.5 rounded text-xs font-label tracking-widest hover:bg-primary/20 transition-all shadow-[0_0_10px_rgba(153,247,255,0.1)]">회원가입</a>
+        </div>
+
         <div class="flex items-center gap-4" th:if="${loginMember != null}">
             <div class="text-right hidden sm:block mr-2">
-                <span class="text-xs font-label tracking-widest text-cyan-400"
-                      th:text="|${loginMember.name} 님|"></span>
-                <span class="text-[10px] text-slate-500 font-label tracking-tight ml-1"
-                      th:text="|(${loginMember.role})|"></span>
+                <span class="text-xs font-label tracking-widest text-cyan-400" th:text="|${loginMember.name} 님|"></span>
+                <span class="text-[10px] text-slate-500 font-label tracking-tight ml-1" th:text="|(${loginMember.role})|"></span>
             </div>
-            <div class="w-px h-4 bg-outline-variant/30 hidden sm:block"></div>
-            <a th:href="@{/logout}"
-               class="flex items-center gap-1 text-slate-400 hover:text-error transition-colors text-xs font-label">
-                <span class="material-symbols-outlined text-sm">power_settings_new</span>
-                로그아웃
+            <a th:href="@{/logout}" class="flex items-center gap-1 text-slate-400 hover:text-error transition-colors text-xs font-label">
+                <span class="material-symbols-outlined text-sm">power_settings_new</span> 로그아웃
             </a>
         </div>
     </div>
 </header>
 
-<!-- 사이드바 -->
-<aside class="fixed left-0 top-16 bottom-0 flex flex-col z-40 bg-slate-950/80 backdrop-blur-lg w-64 shadow-[4px_0_24px_rgba(0,0,0,0.5)] bg-gradient-to-r from-slate-900 to-slate-950 hidden md:flex border-r border-cyan-400/5">
-
-    <div class="p-6 border-b border-outline-variant/10" th:if="${loginMember != null}">
-        <div class="flex items-center gap-3">
-            <div class="h-10 w-10 rounded-lg bg-cyan-400/10 flex items-center justify-center border border-cyan-400/20">
-                <span class="material-symbols-outlined text-cyan-400"
-                      style="font-variation-settings: 'FILL' 1;">satellite_alt</span>
-            </div>
-            <div>
-                <p class="text-xs font-label tracking-widest text-cyan-400"
-                   th:text="${loginMember.name}">OPERATIVE</p>
-                <p class="text-[10px] text-slate-500 font-label tracking-tight"
-                   th:text="|ROLE: ${loginMember.role}|">ROLE</p>
-            </div>
-        </div>
-    </div>
-
-    <nav class="flex-1 py-4">
-        <a th:href="@{/instructor}"
-           class="flex items-center gap-4 text-slate-400 hover:text-cyan-400 hover:bg-cyan-400/5 py-3 px-6 transition-colors font-label">
-            <span class="material-symbols-outlined text-sm">arrow_back</span>
-            <span class="text-sm tracking-wide">사령부로 돌아가기</span>
+<aside class="fixed left-0 top-16 bottom-0 flex flex-col z-40 bg-slate-950/80 backdrop-blur-lg w-64 border-r border-white/5">
+    <nav class="flex-1 py-6">
+        <a th:href="@{/instructor}" class="flex items-center gap-4 text-slate-400 hover:text-cyan-400 hover:bg-cyan-400/5 py-3.5 px-6 transition-all font-label">
+            <span class="material-symbols-outlined">arrow_back</span>
+            <span class="text-sm tracking-wide">Back to Command</span>
         </a>
-        <a th:href="@{/instructor/profile}"
-           class="flex items-center gap-4 text-cyan-400 bg-cyan-400/10 border-r-4 border-cyan-400 py-3 px-6 shadow-[inset_0_0_15px_rgba(0,241,254,0.2)] font-label">
+        <div class="flex items-center gap-4 text-cyan-400 bg-cyan-400/10 border-r-4 border-cyan-400 py-3.5 px-6 font-label">
             <span class="material-symbols-outlined">person</span>
-            <span class="text-sm tracking-wide">내 정보</span>
-        </a>
-        <a th:href="@{/instructor/lectures}"
-           class="flex items-center gap-4 text-slate-400 hover:text-cyan-400 hover:bg-cyan-400/5 py-3 px-6 transition-colors font-label">
-            <span class="material-symbols-outlined">library_books</span>
-            <span class="text-sm tracking-wide">강의 관리</span>
-        </a>
+            <span class="text-sm tracking-wide tracking-widest uppercase">Intel Overview</span>
+        </div>
     </nav>
+    <div class="p-6 mt-auto">
+        <div class="relative group cursor-help">
+            <div class="absolute -inset-1 bg-gradient-to-r from-cyan-500/20 to-purple-500/20 rounded-xl blur opacity-25 group-hover:opacity-50 transition duration-1000"></div>
 
-    <div class="p-6 border-t border-outline-variant/10 hidden md:block">
-        <div class="w-full bg-primary/5 border border-primary/20 text-primary/50 py-3 rounded-lg font-label text-xs tracking-widest text-center flex items-center justify-center gap-2">
-            <span class="material-symbols-outlined text-sm animate-pulse">radar</span>
-            COMMAND ONLINE
+            <div class="relative w-full bg-slate-900/50 border border-white/10 p-4 rounded-xl">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-[9px] font-label font-black text-slate-500 uppercase tracking-widest">Network Status</span>
+                    <span class="flex h-2 w-2">
+                        <span class="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-cyan-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
+                    </span>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <span class="material-symbols-outlined text-primary text-sm animate-pulse">radar</span>
+                    <div class="flex-1">
+                        <div class="h-1 w-full bg-white/5 rounded-full overflow-hidden">
+                            <div class="h-full bg-primary w-[85%] shadow-[0_0_8px_#99f7ff]"></div>
+                        </div>
+                    </div>
+                </div>
+                <p class="mt-2 text-[9px] font-label text-primary/60 text-center uppercase tracking-[0.2em]">System Online</p>
+            </div>
         </div>
     </div>
 </aside>
 
-<!-- 메인 -->
-<main class="md:ml-64 pt-24 px-6 md:px-12 pb-12">
-    <div class="max-w-4xl">
+<main class="ml-64 pt-32 px-10 pb-16">
+    <div class="max-w-4xl mx-auto">
 
-        <!-- 페이지 타이틀 -->
-        <div class="mb-8">
-            <h1 class="text-3xl md:text-4xl font-headline font-bold text-on-surface tracking-tight mb-2">
-                내 정보
+        <div class="mb-10">
+            <div class="flex items-center gap-3 mb-2">
+                <span class="h-[1px] w-8 bg-primary/40"></span>
+                <span class="text-[10px] font-label tracking-[0.3em] text-primary uppercase">Personnel File</span>
+            </div>
+            <h1 class="text-4xl font-headline font-black text-on-surface tracking-tighter uppercase italic leading-none">
+                Operative <span class="text-primary/50">Profile</span>
             </h1>
-            <p class="text-slate-400 text-sm font-body">
-                강사 프로필 정보를 확인할 수 있습니다.
-            </p>
         </div>
 
-        <!-- 프로필 카드 -->
-        <div class="bg-surface-container/60 backdrop-blur-xl rounded-2xl border border-outline-variant/20 p-6 md:p-8 shadow-lg shadow-cyan-500/5 overflow-hidden relative">
-            <div class="absolute -top-10 -right-10 w-40 h-40 bg-primary/10 rounded-full blur-3xl"></div>
-            <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-secondary/10 rounded-full blur-3xl"></div>
+        <div class="bg-surface-container/60 backdrop-blur-xl border border-white/5 p-10 rounded-[2.5rem] shadow-2xl relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary/30 to-transparent"></div>
 
-            <div class="relative z-10 flex flex-col md:flex-row gap-8 items-start">
+            <div class="flex flex-col md:flex-row gap-12 items-start">
 
-                <!-- 프로필 이미지 -->
-                <div class="flex flex-col items-center gap-3 flex-shrink-0">
-                    <div class="w-28 h-28 rounded-xl bg-cyan-400/10 border-2 border-cyan-400/30 flex items-center justify-center overflow-hidden shadow-[0_0_20px_rgba(153,247,255,0.15)]">
-                        <img th:if="${user.profileImageUrl != null}"
-                             th:src="${user.profileImageUrl}"
-                             alt="프로필 이미지"
-                             class="w-full h-full object-cover"/>
-                        <span th:if="${user.profileImageUrl == null}"
-                              class="material-symbols-outlined text-6xl text-cyan-400/50"
-                              style="font-variation-settings: 'FILL' 1;">account_circle</span>
+                <div class="flex flex-col items-center gap-6">
+                    <div class="relative group">
+                        <div class="w-32 h-32 rounded-3xl bg-slate-950 border border-primary/20 p-1 shadow-[0_0_30px_rgba(153,247,255,0.1)] overflow-hidden">
+                            <img th:if="${user.profileImageUrl != null}" th:src="${user.profileImageUrl}"
+                                 class="w-full h-full object-cover rounded-2xl transition-transform group-hover:scale-110 duration-500"/>
+                            <div th:if="${user.profileImageUrl == null}"
+                                 class="w-full h-full flex items-center justify-center text-primary/20">
+                                <span class="material-symbols-outlined text-6xl">account_circle</span>
+                            </div>
+                        </div>
+                        <div class="absolute -bottom-2 -right-2 w-8 h-8 rounded-lg bg-slate-950 border border-primary/40 flex items-center justify-center shadow-lg">
+                            <span class="material-symbols-outlined text-primary text-sm">shield_person</span>
+                        </div>
                     </div>
-                    <div class="text-center">
-                        <p class="text-xs font-label tracking-widest text-cyan-400"
-                           th:text="${user.role != null ? user.role.displayName : 'UNKNOWN'}">ROLE</p>
+
+                    <div class="text-center space-y-2">
+                        <span class="px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-[10px] font-label font-bold text-primary tracking-widest uppercase shadow-[0_0_15px_rgba(153,247,255,0.1)]"
+                              th:text="${user.role != null ? user.role.displayName : 'UNKNOWN'}">ROLE</span>
+                        <p class="text-[9px] text-slate-500 font-label tracking-[0.2em] uppercase pt-2">Authorized Personnel</p>
                     </div>
                 </div>
 
-                <!-- 정보 테이블 -->
-                <div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-6 w-full">
+                <div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
 
-                    <!-- 아이디 -->
-                    <div class="flex flex-col gap-1">
-                        <label class="text-[10px] font-label tracking-widest text-cyan-400">아이디</label>
-                        <p class="font-body text-base text-on-surface border-b border-outline-variant/30 pb-2"
-                           th:text="${user.loginId}">-</p>
+                    <div class="intel-field">
+                        <label class="text-[9px] font-label font-black text-slate-600 uppercase tracking-widest block mb-1">Access Identity</label>
+                        <p class="text-primary font-headline font-bold tracking-tight" th:text="${user.loginId}">ID_NULL</p>
                     </div>
 
-                    <!-- 이름 -->
-                    <div class="flex flex-col gap-1">
-                        <label class="text-[10px] font-label tracking-widest text-cyan-400">이름</label>
-                        <p class="font-body text-base text-on-surface border-b border-outline-variant/30 pb-2"
-                           th:text="${user.name}">-</p>
+                    <div class="intel-field">
+                        <label class="text-[9px] font-label font-black text-slate-600 uppercase tracking-widest block mb-1">Full Name</label>
+                        <p class="text-on-surface font-body font-semibold" th:text="${user.name}">NAME_NULL</p>
                     </div>
 
-                    <!-- 이메일 -->
-                    <div class="flex flex-col gap-1">
-                        <label class="text-[10px] font-label tracking-widest text-cyan-400">이메일</label>
-                        <p class="font-body text-base text-on-surface border-b border-outline-variant/30 pb-2"
-                           th:text="${user.email}">-</p>
+                    <div class="intel-field">
+                        <label class="text-[9px] font-label font-black text-slate-600 uppercase tracking-widest block mb-1">Communication Channel</label>
+                        <p class="text-on-surface font-body text-sm" th:text="${user.email}">EMAIL_NULL</p>
                     </div>
 
-                    <!-- 전화번호 -->
-                    <div class="flex flex-col gap-1">
-                        <label class="text-[10px] font-label tracking-widest text-cyan-400">전화번호</label>
-                        <p class="font-body text-base text-on-surface border-b border-outline-variant/30 pb-2"
-                           th:text="${user.phone != null ? user.phone : '-'}">-</p>
+                    <div class="intel-field">
+                        <label class="text-[9px] font-label font-black text-slate-600 uppercase tracking-widest block mb-1">Telephone</label>
+                        <p class="text-on-surface font-body text-sm" th:text="${user.phone != null ? user.phone : 'NO SIGNAL'}">PHONE_NULL</p>
                     </div>
 
-                    <!-- 자기소개 -->
-                    <div class="flex flex-col gap-1 md:col-span-2">
-                        <label class="text-[10px] font-label tracking-widest text-cyan-400">자기소개</label>
-                        <p class="font-body text-sm text-slate-300 border-b border-outline-variant/30 pb-2 leading-relaxed"
-                           th:text="${user.introduction != null ? user.introduction : '자기소개가 없습니다.'}">-</p>
+                    <div class="intel-field md:col-span-2">
+                        <label class="text-[9px] font-label font-black text-slate-600 uppercase tracking-widest block mb-1">Operative Biography</label>
+                        <p class="text-slate-400 font-body text-xs leading-relaxed"
+                           th:text="${user.introduction != null ? user.introduction : '사령부에 등록된 요원 정보가 없습니다.'}">BIO_NULL</p>
                     </div>
                 </div>
             </div>
 
-            <!-- 수정 버튼 -->
-            <div class="relative z-10 flex justify-end mt-8">
+            <div class="flex items-center justify-end gap-4 mt-12 pt-8 border-t border-white/5">
                 <a th:href="@{/instructor/profile/edit}"
-                   class="flex items-center gap-2 px-6 py-3 rounded-xl bg-cyan-400/10 border border-cyan-400/30 text-cyan-400 hover:bg-cyan-400/20 hover:border-cyan-400/50 transition-all text-sm font-label tracking-wide shadow-[0_0_15px_rgba(153,247,255,0.1)]">
-                    <span class="material-symbols-outlined text-base">edit</span>
-                    수정
+                   class="px-10 py-3 bg-primary text-slate-950 font-label text-[10px] font-black rounded-xl hover:bg-white hover:scale-105 active:scale-95 transition-all shadow-[0_0_25px_rgba(153,247,255,0.2)] uppercase tracking-widest flex items-center gap-2">
+                    <span class="material-symbols-outlined text-sm font-bold">edit</span> Re-Configure Intel
                 </a>
             </div>
         </div>
+
+        <div class="mt-8 px-6 flex items-center justify-between text-[9px] font-label text-slate-700 tracking-[0.2em] uppercase">
+            <div class="flex gap-4">
+                <span>Access: Restricted</span>
+                <span>Encryption: Active</span>
+            </div>
+            <span>Module02 Admin Protocol</span>
+        </div>
     </div>
 </main>
-
-<!-- 배경 효과 -->
-<div class="fixed inset-0 pointer-events-none -z-10">
-    <div class="absolute top-1/4 left-1/4 w-[400px] h-[400px] bg-primary/5 rounded-full blur-[120px]"></div>
-    <div class="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-secondary/5 rounded-full blur-[150px]"></div>
-</div>
 
 </body>
 </html>
