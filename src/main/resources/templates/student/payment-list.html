@@ -6,163 +6,180 @@
     <title>Module02 LMS - 결제 내역</title>
 
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 
     <script id="tailwind-config">
         tailwind.config = {
             darkMode: "class",
-            theme: { extend: { colors: { "ow-orange": "#FF9C00", "ow-orange-hover": "#FFB84D", "ow-blue": "#00B4FF" }, fontFamily: { "ow": ["Oswald", "sans-serif"], "body": ["Noto Sans KR", "sans-serif"] } } }
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#99f7ff",
+                        "secondary": "#c97cff",
+                        "error": "#ff716c",
+                        "surface-container": "#161a21",
+                        "surface-container-high": "#1c2028",
+                        "on-surface": "#ecedf6",
+                        "on-surface-variant": "#a9abb3",
+                        "outline-variant": "#45484f"
+                    },
+                    fontFamily: {
+                        "headline": ["Space Grotesk"],
+                        "body": ["Inter"],
+                        "label": ["Space Grotesk"]
+                    }
+                },
+            },
         }
     </script>
 
     <style>
-        body { font-family: 'Noto Sans KR', sans-serif; background-color: #0b0e14; color: #F0F0F0; }
-        .bg-sci-fi {
-            position: fixed; inset: 0; z-index: -3;
-            background-image: radial-gradient(circle at 30% 50%, rgba(0,0,0,.2) 0%, rgba(0,0,0,.9) 100%),
-            url("https://images.unsplash.com/photo-1541701494587-cb58502866ab?q=80&w=2070&auto=format&fit=crop");
-            background-size: cover; background-position: center;
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0b0e14;
+            color: #ecedf6;
+            background-image: radial-gradient(circle at 50% 50%, rgba(153, 247, 255, 0.05) 0%, transparent 50%);
         }
-        .bg-overlay { position: fixed; inset: 0; z-index: -2; background: linear-gradient(90deg, rgba(11,14,20,1) 0%, rgba(11,14,20,.8) 30%, transparent 100%); }
-        .ow-font-italic { font-family: 'Oswald', sans-serif; font-style: italic; text-transform: uppercase; }
-        .material-symbols-outlined { font-variation-settings: 'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24; vertical-align: middle; }
-
-        /* 결제 카드 */
-        .payment-card {
-            background: rgba(29,33,39,.75); backdrop-filter: blur(16px);
-            border: 1px solid rgba(255,255,255,.08); border-radius: 4px;
-            border-left: 3px solid rgba(255,255,255,.1);
-            padding: 18px 22px;
-            margin-bottom: 10px;
-            display: flex; align-items: center; gap: 18px;
-            transition: border-left-color .2s, background .2s;
-        }
-        .payment-card:hover { background: rgba(40,45,55,.9); border-left-color: #FF9C00; }
-
-        .payment-icon {
-            width: 42px; height: 42px; flex-shrink: 0;
-            background: rgba(255,156,0,.08); border: 1px solid rgba(255,156,0,.15);
-            border-radius: 4px;
-            display: flex; align-items: center; justify-content: center;
-        }
-        .payment-icon span { color: #FF9C00; font-size: 20px; }
-
-        .payment-order-no { font-family: 'Oswald', sans-serif; font-style: italic; font-size: 15px; color: #e5e7eb; margin-bottom: 4px; }
-        .payment-meta { font-size: 12px; color: #6b7280; }
-        .payment-meta .sep { margin: 0 6px; color: rgba(255,255,255,.1); }
-        .payment-amount { font-family: 'Oswald', sans-serif; font-style: italic; font-size: 20px; font-weight: 700; color: #00B4FF; white-space: nowrap; flex-shrink: 0; }
-
-        /* 상태 뱃지 */
-        .status-badge {
-            font-family: 'Oswald', sans-serif; font-style: italic;
-            display: inline-block; padding: 4px 10px; font-size: 11px; font-weight: 600;
-            white-space: nowrap; flex-shrink: 0; letter-spacing: .5px;
-        }
-        .badge-requested { background: rgba(234,179,8,.1); border: 1px solid rgba(234,179,8,.3); color: #fbbf24; }
-        .badge-approved  { background: rgba(34,197,94,.1);  border: 1px solid rgba(34,197,94,.3);  color: #4ade80; }
-        .badge-rejected  { background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1); color: #6b7280; }
-
-        /* 환불 버튼 */
-        .refund-btn {
-            font-family: 'Oswald', sans-serif; font-style: italic;
-            padding: 4px 12px; font-size: 11px; font-weight: 600; letter-spacing: .5px;
-            border: 1px solid rgba(239,68,68,.4); color: #f87171;
-            background: rgba(239,68,68,.06); cursor: pointer;
-            transition: all .15s; white-space: nowrap;
-        }
-        .refund-btn:hover { background: rgba(239,68,68,.15); border-color: #ef4444; }
-        .refund-btn:disabled { opacity: .5; cursor: not-allowed; }
-
-        /* 빈 목록 */
-        .empty-card { background: rgba(29,33,39,.75); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,.08); border-radius: 4px; padding: 80px 24px; text-align: center; }
-
-        /* 알림 */
-        .alert-success { background: rgba(34,197,94,.08); border: 1px solid rgba(34,197,94,.25); color: #86efac; padding: 13px 16px; border-radius: 4px; font-size: 13px; margin-bottom: 16px; }
-        .alert-error   { background: rgba(239,68,68,.08); border: 1px solid rgba(239,68,68,.25); color: #fca5a5; padding: 13px 16px; border-radius: 4px; font-size: 13px; margin-bottom: 16px; }
+        .material-symbols-outlined { vertical-align: middle; }
     </style>
 </head>
 
-<body class="min-h-screen relative">
-<div class="bg-sci-fi"></div>
-<div class="bg-overlay"></div>
+<body class="min-h-screen">
 
-<!-- ── 헤더 ── -->
-<header class="fixed top-0 left-0 right-0 z-50 flex justify-between items-start p-6 pointer-events-none">
-    <div class="pointer-events-auto">
-        <h1 class="ow-font-italic text-5xl font-bold text-white tracking-wider drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">
-            <span class="text-ow-orange">MODULE02</span> LMS
-        </h1>
-        <p class="font-body text-xs text-gray-400 tracking-widest mt-1">ALIEN UNIVERSE LEARNING PLATFORM</p>
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-6 h-16 bg-slate-950/40 backdrop-blur-xl border-b border-white/5">
+    <div class="flex items-center gap-8">
+        <span class="text-2xl font-bold tracking-tighter text-cyan-400 font-headline">MODULE02 LMS</span>
     </div>
-    <div class="pointer-events-auto flex items-stretch bg-white text-black rounded-sm shadow-[0_5px_20px_rgba(0,0,0,0.6)] overflow-hidden" th:if="${loginMember != null}">
-        <div class="bg-gray-200 px-4 py-2 flex items-center justify-center border-r border-gray-300">
-            <span class="material-symbols-outlined text-gray-700 text-4xl">account_circle</span>
+
+    <div class="flex items-center gap-4" th:if="${loginMember != null}">
+        <div class="text-right hidden sm:block mr-2">
+            <span class="text-xs font-label tracking-widest text-cyan-400" th:text="|${loginMember.name} 님|"></span>
+            <span class="text-[10px] text-slate-500 font-label tracking-tight ml-1" th:text="|(${loginMember.role})|"></span>
         </div>
-        <div class="px-5 py-1 flex flex-col justify-center min-w-[140px]">
-            <span class="ow-font-italic font-bold text-xl leading-tight uppercase" th:text="${loginMember.name}">PLAYER</span>
-            <span class="font-body text-[11px] text-gray-600 font-bold tracking-wider" th:text="|RANK: ${loginMember.role}|">RANK</span>
-        </div>
-        <a th:href="@{/logout}" class="bg-ow-orange hover:bg-ow-orange-hover px-5 flex items-center justify-center transition-colors group cursor-pointer border-l border-orange-400">
-            <span class="material-symbols-outlined text-white group-hover:scale-110 transition-transform text-2xl">logout</span>
+        <a th:href="@{/logout}" class="flex items-center gap-1 text-slate-400 hover:text-error transition-colors text-xs font-label">
+            <span class="material-symbols-outlined text-sm">power_settings_new</span> 로그아웃
         </a>
     </div>
 </header>
 
-<!-- ── 메인 ── -->
-<main class="min-h-screen max-w-5xl mx-auto px-6 pt-36 pb-16">
-    <div class="mb-8 flex items-center justify-between">
-        <h2 class="ow-font-italic text-4xl font-bold text-white tracking-wide flex items-center gap-3">
-            <span class="text-ow-orange">></span>
-            PAYMENT LOG <span class="text-gray-600 text-xl font-normal">// 자원 소모 기록</span>
-        </h2>
-        <a th:href="@{/student}" class="font-body text-sm text-gray-400 hover:text-ow-orange transition-colors">← 학생 홈</a>
+<!-- 사이드바 -->
+<aside class="fixed left-0 top-16 bottom-0 flex flex-col z-40 bg-slate-950/80 backdrop-blur-lg w-64 shadow-[4px_0_24px_rgba(0,0,0,0.5)] border-r border-white/5 transition-all duration-300">
+
+    <div class="p-6 border-b border-white/5" th:if="${loginMember != null}">
+        <div class="flex items-center gap-4 group">
+            <div class="h-11 w-11 rounded-xl bg-cyan-400/10 flex items-center justify-center border border-cyan-400/20 shadow-[0_0_15px_rgba(153,247,255,0.1)] group-hover:border-cyan-400/40 transition-all">
+                <span class="material-symbols-outlined text-cyan-400 text-2xl" style="font-variation-settings: 'FILL' 1;">military_tech</span>
+            </div>
+            <div class="flex flex-col">
+                <p class="text-xs font-headline font-black text-cyan-400 tracking-tight leading-none mb-1 uppercase" th:text="${loginMember.name}">OPERATIVE</p>
+                <div class="flex items-center gap-1">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <p class="text-[10px] font-label text-slate-500 font-bold tracking-tighter uppercase" th:text="|RANK: ${loginMember.role}|">RANK</p>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div th:if="${successMsg}" class="alert-success" th:text="${successMsg}"></div>
-    <div th:if="${errorMsg}"   class="alert-error"   th:text="${errorMsg}"></div>
+    <nav class="flex-1 py-6 space-y-1">
+        <div class="px-6 mb-4">
+            <span class="text-[9px] font-label font-black text-slate-600 uppercase tracking-[0.3em]">Main Protocol</span>
+        </div>
 
-    <!-- 빈 목록 -->
-    <div th:if="${#lists.isEmpty(payments)}" class="empty-card">
-        <span class="material-symbols-outlined text-6xl text-gray-600 mb-4 block">receipt_long</span>
-        <p class="ow-font-italic text-2xl text-gray-500">NO TRANSACTIONS</p>
-        <p class="font-body text-sm text-gray-600 mt-2">아직 결제 내역이 없습니다.</p>
+        <a href="/"
+           class="flex items-center gap-4 py-3.5 px-6 transition-all duration-200 group text-slate-500 hover:bg-white/5 hover:text-slate-300">
+            <span class="material-symbols-outlined text-xl group-hover:scale-110 transition-transform">public</span>
+            <span class="text-sm font-label font-bold tracking-wide">대륙 탐색</span>
+        </a>
+
+        <a th:href="@{/student}"
+           class="flex items-center gap-4 py-3.5 px-6 transition-all duration-200 group text-cyan-400 bg-cyan-400/10 border-r-4 border-cyan-400">
+            <span class="material-symbols-outlined text-xl group-hover:scale-110 transition-transform">rocket_launch</span>
+            <span class="text-sm font-label font-bold tracking-wide">학생 홈</span>
+        </a>
+    </nav>
+
+    <div class="p-6 mt-auto">
+        <div class="relative group cursor-help">
+            <div class="absolute -inset-1 bg-gradient-to-r from-cyan-500/20 to-purple-500/20 rounded-xl blur opacity-25 group-hover:opacity-50 transition duration-1000"></div>
+
+            <div class="relative w-full bg-slate-900/50 border border-white/10 p-4 rounded-xl">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-[9px] font-label font-black text-slate-500 uppercase tracking-widest">Network Status</span>
+                    <span class="flex h-2 w-2">
+                        <span class="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-cyan-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
+                    </span>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <span class="material-symbols-outlined text-primary text-sm animate-pulse">radar</span>
+                    <div class="flex-1">
+                        <div class="h-1 w-full bg-white/5 rounded-full overflow-hidden">
+                            <div class="h-full bg-primary w-[85%] shadow-[0_0_8px_#99f7ff]"></div>
+                        </div>
+                    </div>
+                </div>
+                <p class="mt-2 text-[9px] font-label text-primary/60 text-center uppercase tracking-[0.2em]">System Online</p>
+            </div>
+        </div>
+    </div>
+</aside>
+
+<main class="ml-64 pt-24 px-8 pb-12">
+
+    <div class="flex items-center justify-between mb-10">
+        <div>
+            <h1 class="text-4xl font-headline font-bold text-on-surface tracking-tight mb-2 uppercase">Payment Log</h1>
+            <p class="text-on-surface-variant font-body">자원 소모 기록 및 결제 내역을 확인하십시오.</p>
+        </div>
+        <a th:href="@{/student}" class="text-xs font-label tracking-widest text-slate-500 hover:text-primary transition-colors flex items-center gap-2">
+            <span class="material-symbols-outlined text-sm">arrow_back</span> BACK TO BASE
+        </a>
     </div>
 
-    <!-- 결제 목록 -->
-    <div th:if="${!#lists.isEmpty(payments)}">
-        <div th:each="payment : ${payments}" class="payment-card">
+    <div th:if="${successMsg}" class="mb-6 p-4 bg-primary/10 border border-primary/20 text-primary text-xs font-label rounded-lg" th:text="${successMsg}"></div>
+    <div th:if="${errorMsg}" class="mb-6 p-4 bg-error/10 border border-error/20 text-error text-xs font-label rounded-lg" th:text="${errorMsg}"></div>
 
-            <!-- 아이콘 -->
-            <div class="payment-icon">
+    <div th:if="${#lists.isEmpty(payments)}" class="flex flex-col items-center justify-center border-2 border-dashed border-outline-variant/20 rounded-2xl min-h-[300px] bg-surface-container/30">
+        <span class="material-symbols-outlined text-5xl text-outline-variant mb-4">history_edu</span>
+        <h3 class="text-lg font-headline font-bold text-on-surface-variant uppercase">No Transactions</h3>
+        <p class="text-xs font-label tracking-widest text-slate-600 mt-1">아직 결제 내역이 존재하지 않습니다.</p>
+    </div>
+
+    <div th:unless="${#lists.isEmpty(payments)}" class="space-y-4">
+        <div th:each="payment : ${payments}" class="group flex items-center gap-6 p-6 bg-surface-container/60 border border-outline-variant/10 rounded-xl hover:bg-surface-container-high transition-all">
+
+            <div class="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/20 text-primary">
                 <span class="material-symbols-outlined">receipt_long</span>
             </div>
 
-            <!-- 주문 정보 (클릭 → 상세) -->
-            <a th:href="@{/student/payments/{id}(id=${payment.paymentId})}"
-               style="flex:1; min-width:0; text-decoration:none;">
-                <p class="payment-order-no hover:text-ow-orange transition-colors" th:text="${payment.paymentOrderNo}">ORD-20260414</p>
-                <div class="payment-meta">
-                    <span th:text="${payment.itemCount} + '개 강좌'">0개 강좌</span>
-                    <span class="sep">|</span>
-                    <span th:text="${#temporals.format(payment.paymentCompletedAt, 'yyyy-MM-dd HH:mm')}">날짜</span>
+            <div class="flex-1 min-w-0">
+                <a th:href="@{/student/payments/{id}(id=${payment.paymentId})}"
+                   class="text-lg font-headline font-bold text-on-surface hover:text-primary transition-colors block decoration-none"
+                   th:text="${payment.paymentOrderNo}"></a>
+                <div class="flex gap-3 mt-1 items-center">
+                    <span class="text-[10px] font-label tracking-widest text-slate-500 uppercase" th:text="|${payment.itemCount} Units|"></span>
+                    <span class="w-1 h-1 rounded-full bg-slate-700"></span>
+                    <span class="text-[10px] font-label tracking-widest text-slate-500" th:text="${#temporals.format(payment.paymentCompletedAt, 'yyyy-MM-dd HH:mm')}"></span>
                 </div>
-            </a>
+            </div>
 
-            <!-- 결제 금액 -->
-            <p class="payment-amount" th:text="${#numbers.formatInteger(payment.paymentTotalPrice, 3, 'COMMA')} + '원'">0원</p>
+            <div class="text-right">
+                <p class="text-xl font-headline font-bold text-primary mb-2"
+                   th:text="${#numbers.formatInteger(payment.paymentTotalPrice, 3, 'COMMA')} + ' 원'"></p>
 
-            <!-- 환불 영역 -->
-            <div style="flex-shrink:0; min-width:80px; text-align:right;">
-                <button th:if="${payment.refundStatus == null}"
-                        type="button" class="refund-btn"
-                        th:attr="data-payment-id=${payment.paymentId},data-action=@{/student/payments/{id}/refund(id=${payment.paymentId})}"
-                        onclick="openRefundModal(this)">환불 신청</button>
+                <div th:if="${payment.refundStatus == null}">
+                    <button type="button" class="px-4 py-1.5 rounded border border-error/30 text-error bg-error/5 text-[10px] font-label tracking-widest hover:bg-error/20 transition-all uppercase"
+                            th:attr="data-payment-id=${payment.paymentId},data-action=@{/student/payments/{id}/refund(id=${payment.paymentId})}"
+                            onclick="openRefundModal(this)">환불 신청</button>
+                </div>
+
                 <div th:if="${payment.refundStatus != null}">
                     <span th:switch="${payment.refundStatus.name()}">
-                        <span th:case="'REQUESTED'" class="status-badge badge-requested">검토 중</span>
-                        <span th:case="'APPROVED'"  class="status-badge badge-approved">승인됨</span>
-                        <span th:case="'REJECTED'"  class="status-badge badge-rejected">거절됨</span>
+                        <span th:case="'REQUESTED'" class="text-[10px] font-label tracking-widest text-secondary uppercase">Pending review</span>
+                        <span th:case="'APPROVED'"  class="text-[10px] font-label tracking-widest text-primary uppercase">Approved</span>
+                        <span th:case="'REJECTED'"  class="text-[10px] font-label tracking-widest text-slate-500 uppercase">Rejected</span>
                     </span>
                 </div>
             </div>
@@ -170,47 +187,47 @@
     </div>
 </main>
 
-<!-- 환불 사유 입력 모달 -->
-<div id="refundModal" style="display:none; position:fixed; inset:0; z-index:100; background:rgba(0,0,0,.7); backdrop-filter:blur(4px);">
-    <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:90%; max-width:480px;
-                background:#1a1e27; border:1px solid rgba(239,68,68,.3); border-left:3px solid #ef4444; border-radius:4px; padding:28px;">
-        <p style="font-family:'Oswald',sans-serif; font-style:italic; font-size:13px; color:#6b7280; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:16px;">
-            <span class="material-symbols-outlined" style="font-size:16px; color:#ef4444; vertical-align:middle; margin-right:6px;">currency_exchange</span>
-            Refund Request
-        </p>
-        <p style="font-size:13px; color:#9ca3af; margin-bottom:16px;">환불 사유를 입력하십시오. 관리자 검토 후 처리됩니다.</p>
-        <form id="refundForm" method="post">
-            <textarea id="refundReason" name="refundReason" rows="4"
-                      placeholder="환불 사유를 입력하십시오..."
-                      style="width:100%; padding:12px; border-radius:3px; border:1px solid rgba(255,255,255,.1);
-                             background:rgba(0,0,0,.3); color:#d1d5db; font-family:'Noto Sans KR',sans-serif;
-                             font-size:13px; resize:none; outline:none; box-sizing:border-box;"></textarea>
-            <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:14px;">
-                <button type="button" onclick="closeRefundModal()"
-                        style="font-family:'Oswald',sans-serif; font-style:italic; padding:9px 20px; font-size:12px;
-                               font-weight:700; letter-spacing:1px; border:1px solid rgba(255,255,255,.15);
-                               color:#6b7280; background:transparent; cursor:pointer; text-transform:uppercase;">취소</button>
-                <button type="submit"
-                        style="font-family:'Oswald',sans-serif; font-style:italic; padding:9px 24px; font-size:12px;
-                               font-weight:700; letter-spacing:1px; border:1px solid rgba(239,68,68,.5);
-                               color:#f87171; background:rgba(239,68,68,.06); cursor:pointer; text-transform:uppercase;">환불 요청 &gt;</button>
-            </div>
-        </form>
+<div id="refundModal" class="fixed inset-0 z-[100] hidden bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="w-full max-w-md bg-surface-container border border-error/30 rounded-xl overflow-hidden shadow-2xl">
+        <div class="p-6 border-b border-error/10 bg-error/5">
+            <h3 class="text-lg font-headline font-bold text-error uppercase flex items-center gap-2">
+                <span class="material-symbols-outlined">currency_exchange</span> Refund Request
+            </h3>
+        </div>
+        <div class="p-6">
+            <p class="text-xs text-on-surface-variant mb-4 font-body leading-relaxed">환불 사유를 입력하십시오. 관리자 검토 후 처리됩니다.</p>
+            <form id="refundForm" method="post">
+                <textarea id="refundReason" name="refundReason" rows="4"
+                          class="w-full bg-slate-950/50 border border-outline-variant/30 rounded-lg p-4 text-sm text-on-surface focus:ring-1 focus:ring-error/50 outline-none mb-6 resize-none"
+                          placeholder="사유를 기입하세요..."></textarea>
+                <div class="flex justify-end gap-3">
+                    <button type="button" onclick="closeRefundModal()"
+                            class="px-5 py-2 text-xs font-label text-slate-500 hover:text-on-surface transition-colors uppercase">Cancel</button>
+                    <button type="submit"
+                            class="px-6 py-2 bg-error text-on-error font-label text-xs font-bold rounded-lg hover:scale-105 active:scale-95 transition-all shadow-[0_0_15px_rgba(255,113,108,0.2)]">
+                        SEND REQUEST
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 
 <script>
+    // 기존 스크립트 로직 유지
     function openRefundModal(btn) {
         document.getElementById('refundForm').action = btn.getAttribute('data-action');
         document.getElementById('refundReason').value = '';
-        document.getElementById('refundModal').style.display = 'block';
+        document.getElementById('refundModal').classList.remove('hidden');
     }
     function closeRefundModal() {
-        document.getElementById('refundModal').style.display = 'none';
+        document.getElementById('refundModal').classList.add('hidden');
     }
-    document.getElementById('refundModal').addEventListener('click', function(e) {
-        if (e.target === this) closeRefundModal();
-    });
+    window.onclick = function(event) {
+        let modal = document.getElementById('refundModal');
+        if (event.target == modal) closeRefundModal();
+    }
 </script>
+
 </body>
 </html>

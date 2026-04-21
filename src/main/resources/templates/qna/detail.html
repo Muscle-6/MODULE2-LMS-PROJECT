@@ -1,15 +1,21 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>TRANSMISSION DETAIL | ILLUMINATI LMS</title>
+    <title>TRANSMISSION DETAIL | MODULE02 LMS</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+
     <style>
         body {
-            background-color: #0f172a;
-            color: #e2e8f0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Inter', sans-serif;
+            background-color: #0b0e14;
+            color: #ecedf6;
             margin: 0;
             padding: 40px;
+            background-image: radial-gradient(circle at 50% 50%, rgba(153,247,255,0.05) 0%, transparent 50%);
         }
 
         .container {
@@ -17,152 +23,182 @@
             margin: 0 auto;
         }
 
-        /* 상세 카드 섹션 */
         .detail-card {
-            background-color: #1e293b;
-            border-radius: 12px;
-            border: 1px solid #334155;
+            background: rgba(22,26,33,0.7);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 18px;
             overflow: hidden;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+            transition: 0.3s;
+        }
+
+        .detail-card:hover {
+            border-color: rgba(153,247,255,0.3);
+            box-shadow: 0 0 30px rgba(153,247,255,0.08);
         }
 
         .card-header {
             padding: 30px;
-            border-bottom: 1px solid #334155;
-            background: linear-gradient(to right, #1e293b, #273549);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
         }
 
-        .status-area { margin-bottom: 12px; }
-
-        .status-badge {
-            padding: 4px 12px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: bold;
-            text-transform: uppercase;
+        h1 {
+            font-family: 'Space Grotesk';
+            font-size: 26px;
+            color: #e5e7eb;
+            margin: 10px 0;
         }
-        .status-waiting  { background-color: #1e3a5f; color: #93c5fd; border: 1px solid #3b82f6; }
-        .status-complete { background-color: #065f46; color: #34d399; border: 1px solid #10b981; }
-
-        h1 { margin: 10px 0; font-size: 1.8rem; color: #f8fafc; }
 
         .meta-info {
             display: flex;
             gap: 20px;
-            color: #94a3b8;
-            font-size: 0.85rem;
-            margin-top: 15px;
+            color: #6b7280;
+            font-size: 12px;
+            margin-top: 10px;
         }
 
-        .meta-item b { color: #cbd5e1; }
+        .meta-item b {
+            color: #d1d5db;
+        }
 
-        /* 본문 내용 */
+        .status-badge {
+            font-family: 'Space Grotesk';
+            font-size: 11px;
+        }
+
+        .status-waiting  { color: #fbbf24; }
+        .status-complete { color: #4ade80; }
+
         .card-body {
             padding: 40px 30px;
             line-height: 1.8;
-            color: #cbd5e1;
-            min-height: 200px;
-            white-space: pre-wrap; /* 줄바꿈 유지 */
+            color: #d1d5db;
+            white-space: pre-wrap;
         }
 
-        /* 하단 액션 버튼 */
+        .answer-box {
+            margin: 0 30px 30px 30px;
+            padding: 24px;
+            background: rgba(0,0,0,.3);
+            border-radius: 10px;
+            border: 1px solid rgba(153,247,255,0.1);
+        }
+
+        .answer-title {
+            color: #99f7ff;
+            font-family: 'Space Grotesk';
+            font-size: 13px;
+            margin-bottom: 12px;
+        }
+
+        .answer-date {
+            font-size: 11px;
+            color: #6b7280;
+            margin-bottom: 10px;
+        }
+
+        .btn {
+            font-family: 'Space Grotesk';
+            padding: 8px 18px;
+            font-size: 12px;
+            border: 1px solid rgba(255,255,255,0.2);
+            background: transparent;
+            color: #9ca3af;
+            transition: .2s;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            color: #99f7ff;
+            border-color: #99f7ff;
+        }
+
+        .btn-edit {
+            border-color: rgba(153,247,255,0.3);
+            color: #99f7ff;
+        }
+
+        .btn-delete {
+            border-color: rgba(239,68,68,.4);
+            color: #f87171;
+        }
+
+        .btn-delete:hover {
+            background: rgba(239,68,68,.1);
+        }
+
         .card-footer {
             padding: 20px 30px;
-            background-color: #0f172a;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        .btn {
-            padding: 10px 20px;
-            border-radius: 6px;
-            font-size: 0.9rem;
-            font-weight: bold;
-            text-decoration: none;
-            transition: all 0.2s;
-            cursor: pointer;
-            border: none;
+        .pending-box {
+            margin: 0 30px 30px 30px;
+            padding: 20px;
+            text-align: center;
+            border: 1px dashed rgba(255,255,255,0.1);
+            border-radius: 10px;
+            color: #6b7280;
+            font-size: 13px;
         }
-
-        .btn-back { color: #94a3b8; }
-        .btn-back:hover { color: #f8fafc; }
-
-        .btn-edit { background-color: #3b82f6; color: white; margin-right: 10px; }
-        .btn-edit:hover { background-color: #2563eb; }
-
-        .btn-delete { background-color: #ef4444; color: white; }
-        .btn-delete:hover { background-color: #dc2626; }
-
-        /* 답변 구역 (나중에 구현하실 때 참고!) */
-        .answer-section {
-            margin-top: 30px;
-            padding: 25px;
-            background-color: #0f172a;
-            border-left: 4px solid #10b981;
-            border-radius: 4px;
-        }
-        .answer-header { font-weight: bold; color: #10b981; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
     </style>
 </head>
+
 <body>
 
 <div class="container">
     <div class="detail-card">
+
+        <!-- HEADER -->
         <div class="card-header">
-            <div class="status-area">
-                <span th:if="${qna.isAnswered}"  class="status-badge status-complete">RESOLVED</span>
+            <div>
+                <span th:if="${qna.isAnswered}" class="status-badge status-complete">RESOLVED</span>
                 <span th:unless="${qna.isAnswered}" class="status-badge status-waiting">PENDING</span>
             </div>
-            <h1 th:text="${qna.qnaTitle}">통신 타이틀</h1>
+
+            <h1 th:text="${qna.qnaTitle}">제목</h1>
+
             <div class="meta-info">
-                <div class="meta-item">AGENT: <b th:text="${qna.authorName}">요원명</b></div>
-                <div class="meta-item">TIMESTAMP: <b th:text="${qna.createdAt}">2026-04-19</b></div>
+                <div class="meta-item">작성자: <b th:text="${qna.authorName}"></b></div>
+                <div class="meta-item">작성일: <b th:text="${qna.createdAt}"></b></div>
             </div>
         </div>
 
-        <div class="card-body" th:text="${qna.qnaContent}">
-            질문 내용...
+        <!-- CONTENT -->
+        <div class="card-body" th:text="${qna.qnaContent}"></div>
+
+        <!-- ANSWER -->
+        <div th:if="${qna.isAnswered}" class="answer-box">
+            <div class="answer-title">[답변]</div>
+            <div class="answer-date"
+                 th:text="${#temporals.format(qna.answeredAt, 'yyyy.MM.dd HH:mm')}"></div>
+            <div th:text="${qna.answerContent}" style="white-space: pre-wrap;"></div>
         </div>
 
-        <div th:if="${qna.isAnswered}"
-             style="margin: 0 30px 30px 30px; padding: 25px; background-color: #0f172a; border-left: 4px solid #99f7ff; border-radius: 8px; border: 1px solid rgba(153, 247, 255, 0.1);">
-
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                <div style="display: flex; align-items: center; gap: 8px; color: #99f7ff; font-weight: bold; font-size: 0.9rem;">
-                    <span>[▲] COMMANDER'S BRIEFING</span>
-                </div>
-                <span style="font-size: 0.75rem; color: #64748b;"
-                      th:text="${#temporals.format(qna.answeredAt, 'yyyy.MM.dd HH:mm')}">2026.04.19</span>
-            </div>
-
-            <div style="color: #e2e8f0; line-height: 1.8; font-size: 0.95rem; white-space: pre-wrap;"
-                 th:text="${qna.answerContent}">
-                여기는 강사님의 답변 내용이 들어갈 자리입니다 오호이야~!
-            </div>
+        <div th:unless="${qna.isAnswered}" class="pending-box">
+            답변 대기 중입니다.
         </div>
 
-        <div th:unless="${qna.isAnswered}"
-             style="margin: 0 30px 30px 30px; padding: 20px; text-align: center; border: 1px dashed #334155; border-radius: 8px;">
-            <p style="color: #64748b; font-size: 0.85rem; font-style: italic; margin: 0;">
-                사령부의 응답을 기다리는 중입니다. 교신을 유지하세요... 오호이야~!
-            </p>
-        </div>
-
+        <!-- FOOTER -->
         <div class="card-footer">
-            <a th:href="@{/student/course/{id}/qna(id=${courseId})}" class="btn btn-back">
-                ← BACK TO LIST
+
+            <a th:href="@{/student/course/{id}/qna(id=${courseId})}" class="btn">
+                ← 목록
             </a>
 
             <div th:if="${qna.memberId == currentMemberId}">
-                <a th:href="@{/student/course/{cId}/qna/{qId}/edit(cId=${courseId}, qId=${qna.qnaId})}" class="btn btn-edit">
-                    MODIFY
-                </a>
+                <a th:href="@{/student/course/{cId}/qna/{qId}/edit(cId=${courseId}, qId=${qna.qnaId})}"
+                   class="btn btn-edit">수정</a>
+
                 <form th:action="@{/student/course/{cId}/qna/{qId}/delete(cId=${courseId}, qId=${qna.qnaId})}"
-                      method="post" style="display: inline;">
-                    <button type="submit" class="btn btn-delete">PURGE</button>
+                      method="post" style="display:inline;">
+                    <button type="submit" class="btn btn-delete">삭제</button>
                 </form>
             </div>
+
         </div>
     </div>
 </div>

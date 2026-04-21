@@ -1,381 +1,224 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html class="dark" lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>COMMUNICATION LOGS | ILLUMINATI LMS</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COMMUNICATION LOGS | MODULE02 LMS</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#99f7ff",
+                        "secondary": "#c97cff",
+                        "surface-container": "#161a21",
+                        "surface-container-high": "#1c2028",
+                        "on-surface": "#ecedf6",
+                        "on-surface-variant": "#a9abb3",
+                        "outline-variant": "#2a2f3a",
+                        "error": "#ff716c"
+                    },
+                    fontFamily: { "headline": ["Space Grotesk"], "body": ["Inter"], "label": ["Space Grotesk"] }
+                },
+            },
+        }
+    </script>
     <style>
-        body {
-            background-color: #0f172a;
-            color: #e2e8f0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 40px;
-        }
-
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-        }
-
-        .header-section {
-            background: linear-gradient(90deg, #1e293b 0%, #334155 100%);
-            padding: 30px;
-            border-radius: 12px;
-            margin-bottom: 30px;
-            text-align: center;
-        }
-
-        .header-section h1 {
-            margin: 0 0 8px;
-            font-size: 2rem;
-            letter-spacing: 2px;
-            color: #f8fafc;
-        }
-
-        .header-section p {
-            margin: 0;
-            color: #94a3b8;
-            font-size: 0.9rem;
-        }
-
-        .action-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .back-link {
-            color: #94a3b8;
-            text-decoration: none;
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: color 0.2s;
-        }
-
-        .back-link:hover { color: #e2e8f0; }
-
-        .btn-write {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background-color: #3b82f6;
-            color: white;
-            padding: 12px 24px;
-            border-radius: 6px;
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 0.9rem;
-            letter-spacing: 0.5px;
-            transition: background 0.2s, transform 0.1s;
-        }
-
-        .btn-write:hover {
-            background-color: #2563eb;
-            transform: translateY(-1px);
-        }
-
-        .filter-bar {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 16px;
-        }
-
-        .filter-tab {
-            padding: 6px 16px;
-            border-radius: 20px;
-            border: 1px solid #334155;
-            background: transparent;
-            color: #94a3b8;
-            font-size: 0.8rem;
-            cursor: pointer;
-            text-decoration: none;
-            transition: all 0.2s;
-        }
-
-        .filter-tab:hover, .filter-tab.active {
-            background: #1e293b;
-            border-color: #3b82f6;
-            color: #7ee0ff;
-        }
-
-        .qna-table {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0 8px;
-        }
-
-        .qna-table th {
-            padding: 12px 15px;
-            text-align: left;
-            color: #64748b;
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .qna-row {
-            background-color: #1e293b;
-            transition: transform 0.15s, background-color 0.15s;
-            cursor: pointer;
-        }
-
-        .qna-row:hover {
-            background-color: #273549;
-            transform: scale(1.005);
-        }
-
-        .qna-row td {
-            padding: 18px 15px;
-        }
-
-        .qna-row td:first-child { border-radius: 8px 0 0 8px; }
-        .qna-row td:last-child  { border-radius: 0 8px 8px 0; }
-
-        .status-badge {
-            padding: 3px 10px;
-            border-radius: 4px;
-            font-size: 0.72rem;
-            font-weight: bold;
-            white-space: nowrap;
-        }
-
-        .status-waiting  { background-color: #1e3a5f; color: #93c5fd; }
-        .status-complete { background-color: #065f46; color: #34d399; }
-
-        .title-cell {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .title-text { font-weight: 500; }
-
-        .reply-count {
-            color: #63b3ed;
-            font-size: 0.85em;
-        }
-
-        .empty-msg {
-            text-align: center;
-            padding: 60px;
-            color: #64748b;
-            font-style: italic;
-        }
-
-        .mine-dot {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: #3b82f6;
-            display: inline-block;
-            margin-right: 4px;
-            vertical-align: middle;
-        }
-
-        /* 💡 액션 버튼 공통 스타일 */
-        .btn-action {
-            display: inline-block;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.7rem;
-            font-weight: bold;
-            text-decoration: none;
-            transition: all 0.2s;
-            border: none;
-            cursor: pointer;
-            color: white;
-        }
-
-        /* 수정 버튼 스타일 */
-        .btn-modify {
-            background-color: #3b82f6;
-            margin-left: 10px;
-        }
-        .btn-modify:hover {
-            background-color: #2563eb;
-            box-shadow: 0 0 8px rgba(59, 130, 246, 0.5);
-        }
-
-        /* 삭제 버튼 스타일 */
-        .btn-purge {
-            background-color: #ef4444;
-            margin-left: 5px;
-        }
-        .btn-purge:hover {
-            background-color: #b91c1c;
-            box-shadow: 0 0 8px rgba(239, 68, 68, 0.5);
-        }
-
-        /* 숙청 확인 레이어 스타일 */
-        #purgeOverlay {
-            display: none; /* 평소엔 숨김 */
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(15, 23, 42, 0.9); /* 어두운 배경 */
-            z-index: 10000;
-            justify-content: center;
-            align-items: center;
-            backdrop-filter: blur(5px);
-        }
-
-        .purge-card {
-            background-color: #1e293b;
-            padding: 40px;
-            border-radius: 12px;
-            border: 1px solid #ef4444;
-            text-align: center;
-            max-width: 400px;
-            box-shadow: 0 0 30px rgba(239, 68, 68, 0.3);
-        }
-
-        .action-btn-wrapper {
-            display: flex;
-            align-items: center;      /* 💡 이게 세로 중앙 정렬의 핵심! */
-            justify-content: center;  /* 💡 가로 중앙 정렬 (필요시) */
-            gap: 10px;
-            height: 100%;             /* 부모 높이를 꽉 채워야 중앙이 잡힙니다 */
-        }
-
-        /* form 태그가 마진을 가질 수 있으니 제거 */
-        .action-btn-wrapper form {
-            margin: 0;
-            display: flex;
-            align-items: center;
-        }
-
-
+        body { font-family: 'Inter', sans-serif; background-color: #0b0e14; color: #ecedf6; min-height: 100vh; }
+        .material-symbols-outlined { vertical-align: middle; }
     </style>
 </head>
-<body>
 
-<div class="container">
-
-    <div class="header-section">
-        <h1>COMMUNICATION LOGS</h1>
-        <p th:text="'PROTOCOL ID: ' + ${courseId}">PROTOCOL ID: 001</p>
+<body class="min-h-screen overflow-x-hidden"> <header class="fixed top-0 w-full z-50 flex justify-between items-center px-6 h-16 bg-slate-950/40 backdrop-blur-xl border-b border-white/5">
+    <div class="flex items-center gap-8">
+        <a th:href="@{/}" class="text-2xl font-bold tracking-tighter text-cyan-400 font-headline uppercase">Module02 LMS</a>
     </div>
-
-    <div class="action-bar">
-        <a th:href="@{/student/course/{id}(id=${courseId})}" class="back-link">
-            ← BACK TO TERMINAL
-        </a>
-        <a th:href="@{/student/course/{id}/qna/write(id=${courseId})}" class="btn-write">
-            + NEW TRANSMISSION
+    <div class="flex items-center gap-4" th:if="${loginMember != null}">
+        <div class="text-right hidden sm:block mr-2">
+            <span class="text-xs font-label tracking-widest text-cyan-400" th:text="|${loginMember.name} 님|"></span>
+            <span class="text-[10px] text-slate-500 font-label tracking-tight ml-1" th:text="|(${loginMember.role})|"></span>
+        </div>
+        <a th:href="@{/logout}" class="flex items-center gap-1 text-slate-400 hover:text-error transition-colors text-xs font-label uppercase tracking-widest">
+            <span class="material-symbols-outlined text-sm">power_settings_new</span> 로그아웃
         </a>
     </div>
+</header>
 
-    <div class="filter-bar">
-        <a th:href="@{/student/course/{id}/qna(id=${courseId})}"
-           th:classappend="${currentStatus == null or currentStatus == 'ALL'} ? 'active'" class="filter-tab">전체</a>
+<aside class="fixed left-0 top-16 bottom-0 flex flex-col z-40 bg-slate-950/80 backdrop-blur-lg w-64 shadow-[4px_0_24px_rgba(0,0,0,0.5)] border-r border-white/5 transition-all duration-300">
 
-        <a th:href="@{/student/course/{id}/qna(id=${courseId}, status='PENDING')}"
-           th:classappend="${currentStatus == 'PENDING'} ? 'active'" class="filter-tab">미답변</a>
-
-        <a th:href="@{/student/course/{id}/qna(id=${courseId}, status='RESOLVED')}"
-           th:classappend="${currentStatus == 'RESOLVED'} ? 'active'" class="filter-tab">답변완료</a>
-    </div>
-
-    <table class="qna-table">
-        <thead>
-        <tr>
-            <th width="12%">STATUS</th>
-            <th width="40%">SUBJECT</th> <th width="28%">AGENT & ACTIONS</th>
-            <th width="20%">TIMESTAMP</th>
-        </tr>
-        </thead>
-        <tbody>
-
-        <tr th:each="qna : ${qnaList}"
-            class="qna-row"
-            th:onclick="|location.href='@{/student/course/{courseId}/qna/{qnaId}(courseId=${courseId},qnaId=${qna.qnaId})}'|">
-            <td>
-                <span th:if="${qna.isAnswered}"  class="status-badge status-complete">RESOLVED</span>
-                <span th:unless="${qna.isAnswered}" class="status-badge status-waiting">PENDING</span>
-            </td>
-            <td>
-                <div class="title-cell">
-                    <span th:if="${qna.memberId == currentMemberId}" class="mine-dot" title="내가 쓴 글"></span>
-                    <span class="title-text" th:text="${qna.qnaTitle}">질문 제목</span>
-                    <span th:if="${qna.replyCount > 0}"
-                          class="reply-count"
-                          th:text="'[' + ${qna.replyCount} + ']'"></span>
+    <div class="p-6 border-b border-white/5" th:if="${loginMember != null}">
+        <div class="flex items-center gap-4 group">
+            <div class="h-11 w-11 rounded-xl bg-cyan-400/10 flex items-center justify-center border border-cyan-400/20 shadow-[0_0_15px_rgba(153,247,255,0.1)] group-hover:border-cyan-400/40 transition-all">
+                <span class="material-symbols-outlined text-cyan-400 text-2xl" style="font-variation-settings: 'FILL' 1;">military_tech</span>
+            </div>
+            <div class="flex flex-col">
+                <p class="text-xs font-headline font-black text-cyan-400 tracking-tight leading-none mb-1 uppercase" th:text="${loginMember.name}">OPERATIVE</p>
+                <div class="flex items-center gap-1">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <p class="text-[10px] font-label text-slate-500 font-bold tracking-tighter uppercase" th:text="|RANK: ${loginMember.role}|">RANK</p>
                 </div>
-            </td>
-            <td style="color: #94a3b8; white-space: nowrap; vertical-align: middle;">
-                <div style="display: flex; align-items: center; gap: 12px;">
-
-                    <span th:text="${qna.authorName}" style="flex-shrink: 0;">요원명</span>
-
-                    <th:block th:if="${qna.memberId == currentMemberId}">
-                        <div class="action-btn-wrapper" style="display: flex; align-items: center; gap: 8px; margin-left: auto;">
-                            <a th:href="@{/student/course/{cId}/qna/{qId}/modify(cId=${courseId}, qId=${qna.qnaId})}"
-                               class="btn-action btn-modify"
-                               style="margin: 0;"
-                               onclick="event.stopPropagation();">MODIFY</a>
-
-                            <form th:action="@{/student/course/{cId}/qna/{qId}/delete(cId=${courseId}, qId=${qna.qnaId})}"
-                                  method="post"
-                                  style="margin: 0; display: flex; align-items: center;">
-                                <button type="submit" class="btn-action btn-purge"
-                                        style="margin: 0;"
-                                        onclick="openPurge(event, this)">PURGE</button>
-                            </form>
-                        </div>
-                    </th:block>
-
-                </div>
-            </td>
-            <td style="color: #64748b; font-size: 0.88em;" th:text="${qna.createdAt}">2026-04-18</td>
-        </tr>
-
-        <tr th:if="${#lists.isEmpty(qnaList)}">
-            <td colspan="4" class="empty-msg">기록된 통신 데이터가 존재하지 않습니다.</td>
-        </tr>
-
-        </tbody>
-    </table>
-
-</div>
-
-<div id="purgeOverlay">
-    <div class="purge-card">
-        <div style="font-size: 3rem; margin-bottom: 20px;">⚠️</div>
-        <h2 style="color: #f8fafc; margin-bottom: 10px; letter-spacing: 1px;">TERMINATE DATA</h2>
-        <p style="color: #94a3b8; margin-bottom: 30px; line-height: 1.6;">
-            이 통신 기록을 시스템에서 영구히 제거하시겠습니까?<br>
-            <strong>숙청된 데이터는 복구할 수 없습니다.</strong>
-        </p>
-        <div style="display: flex; gap: 15px; justify-content: center;">
-            <button onclick="closePurge()" style="padding: 12px 25px; background: #334155; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">ABORT</button>
-            <button onclick="executePurge()" style="padding: 12px 25px; background: #ef4444; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">CONFIRM PURGE</button>
+            </div>
         </div>
     </div>
+
+    <nav class="flex-1 py-6 space-y-1">
+        <div class="px-6 mb-4">
+            <span class="text-[9px] font-label font-black text-slate-600 uppercase tracking-[0.3em]">Main Protocol</span>
+        </div>
+
+        <a href="/"
+           class="flex items-center gap-4 py-3.5 px-6 transition-all duration-200 group text-slate-500 hover:bg-white/5 hover:text-slate-300">
+            <span class="material-symbols-outlined text-xl group-hover:scale-110 transition-transform">public</span>
+            <span class="text-sm font-label font-bold tracking-wide">대륙 탐색</span>
+        </a>
+
+        <a th:href="@{/student}"
+           class="flex items-center gap-4 py-3.5 px-6 transition-all duration-200 group text-cyan-400 bg-cyan-400/10 border-r-4 border-cyan-400">
+            <span class="material-symbols-outlined text-xl group-hover:scale-110 transition-transform">rocket_launch</span>
+            <span class="text-sm font-label font-bold tracking-wide">학생 홈</span>
+        </a>
+    </nav>
+
+    <div class="p-6 mt-auto">
+        <div class="relative group cursor-help">
+            <div class="absolute -inset-1 bg-gradient-to-r from-cyan-500/20 to-purple-500/20 rounded-xl blur opacity-25 group-hover:opacity-50 transition duration-1000"></div>
+
+            <div class="relative w-full bg-slate-900/50 border border-white/10 p-4 rounded-xl">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-[9px] font-label font-black text-slate-500 uppercase tracking-widest">Network Status</span>
+                    <span class="flex h-2 w-2">
+                        <span class="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-cyan-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
+                    </span>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <span class="material-symbols-outlined text-primary text-sm animate-pulse">radar</span>
+                    <div class="flex-1">
+                        <div class="h-1 w-full bg-white/5 rounded-full overflow-hidden">
+                            <div class="h-full bg-primary w-[85%] shadow-[0_0_8px_#99f7ff]"></div>
+                        </div>
+                    </div>
+                </div>
+                <p class="mt-2 text-[9px] font-label text-primary/60 text-center uppercase tracking-[0.2em]">System Online</p>
+            </div>
+        </div>
+    </div>
+</aside>
+
+<main class="ml-64 pt-24 px-10 pb-16 min-h-screen">
+    <div class="max-w-5xl mx-auto"> <div class="mb-12">
+        <div class="flex items-center gap-3 mb-2">
+            <span class="material-symbols-outlined text-primary animate-pulse">sensors</span>
+            <span class="text-[10px] font-label tracking-[0.3em] text-primary uppercase">Active Signal</span>
+        </div>
+        <h1 class="text-4xl font-headline font-bold tracking-tight text-on-surface uppercase">
+            Communication <span class="text-primary/50">Logs</span>
+        </h1>
+    </div>
+
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-8">
+            <a th:href="@{/student/course/{id}(id=${courseId})}"
+               class="flex items-center gap-2 text-[10px] font-label tracking-widest text-slate-500 hover:text-primary transition-all uppercase group">
+                <span class="material-symbols-outlined text-sm transition-transform group-hover:-translate-x-1">arrow_back</span> Back to Course
+            </a>
+
+            <a th:href="@{/student/course/{id}/qna/write(id=${courseId})}"
+               class="px-6 py-2.5 bg-primary text-slate-950 font-headline text-[10px] font-black rounded-lg hover:bg-white hover:scale-105 active:scale-95 transition-all shadow-[0_0_20px_rgba(153,247,255,0.2)] uppercase tracking-widest flex items-center gap-2">
+                <span class="material-symbols-outlined text-sm">edit_note</span> New Inquiry
+            </a>
+        </div>
+
+        <div class="flex gap-2 mb-8 bg-surface-container/40 p-1.5 rounded-full w-fit border border-white/5 backdrop-blur-md">
+            <a th:href="@{/student/course/{id}/qna(id=${courseId})}"
+               th:classappend="${currentStatus == null or currentStatus == 'ALL'} ? 'bg-primary text-slate-950 shadow-lg shadow-primary/20' : 'text-slate-500 hover:text-slate-300'"
+               class="px-5 py-1.5 rounded-full text-[9px] font-label font-bold uppercase tracking-widest transition-all">
+                All Logs
+            </a>
+            <a th:href="@{/student/course/{id}/qna(id=${courseId}, status='PENDING')}"
+               th:classappend="${currentStatus == 'PENDING'} ? 'bg-error text-white shadow-lg shadow-error/20' : 'text-slate-500 hover:text-slate-300'"
+               class="px-5 py-1.5 rounded-full text-[9px] font-label font-bold uppercase tracking-widest transition-all">
+                Pending
+            </a>
+            <a th:href="@{/student/course/{id}/qna(id=${courseId}, status='RESOLVED')}"
+               th:classappend="${currentStatus == 'RESOLVED'} ? 'bg-secondary text-white shadow-lg shadow-secondary/20' : 'text-slate-500 hover:text-slate-300'"
+               class="px-5 py-1.5 rounded-full text-[9px] font-label font-bold uppercase tracking-widest transition-all">
+                Resolved
+            </a>
+        </div>
+
+        <div class="space-y-4">
+            <div th:each="qna : ${qnaList}"
+                 class="qna-row group bg-surface-container/60 backdrop-blur-xl border border-white/5 rounded-2xl p-6 flex justify-between items-center cursor-pointer hover:bg-surface-container-high hover:border-primary/40 transition-all duration-300 shadow-xl"
+                 th:attr="data-href=@{/student/course/{courseId}/qna/{qnaId}(courseId=${courseId},qnaId=${qna.qnaId})}">
+
+                <div class="flex flex-col gap-3 min-w-0 flex-1">
+                    <div class="flex items-center gap-4 flex-wrap">
+                        <div th:if="${qna.isAnswered}" class="flex-shrink-0 flex items-center gap-1.5 px-2 py-0.5 rounded bg-secondary/10 border border-secondary/20">
+                            <span class="h-1 w-1 rounded-full bg-secondary"></span>
+                            <span class="text-[8px] font-label font-black text-secondary tracking-widest uppercase">Resolved</span>
+                        </div>
+                        <div th:unless="${qna.isAnswered}" class="flex-shrink-0 flex items-center gap-1.5 px-2 py-0.5 rounded bg-error/10 border border-error/20">
+                            <span class="h-1 w-1 rounded-full bg-error animate-pulse"></span>
+                            <span class="text-[8px] font-label font-black text-error tracking-widest uppercase">Pending</span>
+                        </div>
+                        <h3 class="font-headline font-bold text-on-surface tracking-tight group-hover:text-primary transition-colors truncate" th:text="${qna.qnaTitle}">Title</h3>
+                        <span th:if="${qna.replyCount > 0}" class="bg-white/5 px-2 py-0.5 rounded text-[10px] font-label text-primary font-bold" th:text="${qna.replyCount}"></span>
+                    </div>
+                    <div class="flex items-center gap-3 text-[10px] font-label tracking-widest text-slate-500 uppercase">
+                        <span th:text="${qna.authorName}">Author</span>
+                        <span class="text-white/10">|</span>
+                        <span th:text="${qna.createdAt}">Date</span>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-3 ml-6 flex-shrink-0">
+                    <a th:href="@{/student/course/{cId}/qna/{qId}/modify(cId=${courseId}, qId=${qna.qnaId})}"
+                       class="btn-action w-9 h-9 rounded-lg border border-white/5 flex items-center justify-center text-slate-500 hover:text-primary hover:border-primary/30 hover:bg-primary/5 transition-all"
+                       onclick="event.stopPropagation()">
+                        <span class="material-symbols-outlined text-sm">edit_square</span>
+                    </a>
+                    <button class="btn-action w-9 h-9 rounded-lg border border-white/5 flex items-center justify-center text-slate-500 hover:text-error hover:border-error/30 hover:bg-error/5 transition-all"
+                            onclick="openPurge(event, 'deleteForm-' + [[${qna.qnaId}]])">
+                        <span class="material-symbols-outlined text-sm">delete_forever</span>
+                    </button>
+                    <form th:id="'deleteForm-' + ${qna.qnaId}" th:action="@{/student/course/{cId}/qna/{qId}/delete(cId=${courseId}, qId=${qna.qnaId})}" method="post" class="hidden"></form>
+                </div>
+            </div>
+
+            <div th:if="${#lists.isEmpty(qnaList)}"
+                 class="flex flex-col items-center justify-center py-32 bg-surface-container/20 rounded-3xl border border-dashed border-white/5">
+                <span class="material-symbols-outlined text-5xl text-slate-700 mb-4">leak_remove</span>
+                <p class="text-xs font-label text-slate-600 uppercase tracking-[0.3em]">No Communication Signals Detected</p>
+            </div>
+        </div>
+    </div>
+</main>
+
+<div id="purgeOverlay" class="hidden fixed inset-0 z-[100] bg-black/80 backdrop-blur-md flex items-center justify-center p-6">
 </div>
 
 <script th:inline="javascript">
-    let currentForm = null;
-
-    function openPurge(event, btn) {
-        event.preventDefault(); // 폼 전송 일단 정지
-        event.stopPropagation(); // 행 클릭 방지
-
-        currentForm = btn.closest('form'); // 클릭한 버튼의 부모 폼 기억
-        document.getElementById('purgeOverlay').style.display = 'flex';
+    // (스크립트 기존 코드 유지)
+    document.querySelectorAll('.qna-row').forEach(row => {
+        row.addEventListener('click', function(e) {
+            if (e.target.closest('.btn-action')) return;
+            const href = this.getAttribute('data-href');
+            if(href) location.href = href;
+        });
+    });
+    let targetFormId = null;
+    function openPurge(e, formId) {
+        e.preventDefault(); e.stopPropagation();
+        targetFormId = formId;
+        document.getElementById('purgeOverlay').classList.remove('hidden');
     }
-
-    function closePurge() {
-        document.getElementById('purgeOverlay').style.display = 'none';
-    }
-
-    function executePurge() {
-        if(currentForm) {
-            currentForm.submit(); // 저장해둔 폼을 진짜로 전송!
-        }
-    }
+    function closePurge() { document.getElementById('purgeOverlay').classList.add('hidden'); }
+    document.getElementById('confirmBtn').onclick = function() { if (targetFormId) document.getElementById(targetFormId).submit(); };
 </script>
 
 </body>
