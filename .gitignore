@@ -42,5 +42,7 @@ src/main/resources/gcs/
 ### 업로드된 이미지 파일 제외 (폴더는 유지) ###
 src/main/resources/static/images/profile/*
 src/main/resources/static/images/courseThumbnail/*
+src/main/resources/static/images/continentThumbnail/*
 !src/main/resources/static/images/profile/.gitkeep
 !src/main/resources/static/images/courseThumbnail/.gitkeep
+!src/main/resources/static/images/continentThumbnail/.gitkeep
