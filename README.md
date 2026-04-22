@@ -1,7 +1,7 @@
 # 🚀 Alien LMS
 
 <p align="center">
-  <img src="docs/images/00-project-logo.png" alt="Alien LMS Logo" width="220" />
+  <img width="2461" height="1536" alt="Image" src="https://github.com/user-attachments/assets/b5824189-70f9-4acf-b9cf-83db0c28e80b" />
 </p>
 
 <p align="center">
@@ -33,23 +33,14 @@
 
 ## 2. 대표 화면
 
-> 아래 이미지는 README에서 가장 먼저 보이는 구간입니다.  
-> **메인 화면 / 대륙 목록 / 강좌 상세**처럼 서비스의 분위기가 가장 잘 드러나는 화면을 배치하는 것을 추천합니다.
+
 
 <p align="center">
-  <img src="docs/images/01-main-home.png" alt="메인 홈 화면" width="80%" />
+  <img width="2879" height="1520" alt="메인 화면" src="https://github.com/user-attachments/assets/6e565df5-9b27-4991-ac7c-1f8d88a7d221" />
 </p>
 
-<p align="center">
-  <img src="docs/images/02-continents.png" alt="대륙 목록 화면" width="31%" />
-  <img src="docs/images/03-course-detail.png" alt="강좌 상세 화면" width="31%" />
-  <img src="docs/images/04-learning-view.png" alt="강의 시청 화면" width="31%" />
-</p>
 
-**배치 의도**
-- **첫 번째 이미지**: 서비스 정체성을 보여주는 메인 화면
-- **두 번째 줄 3장**: 학생 여정의 핵심 화면을 한 번에 보여주는 구간
-- 발표 자료가 아니라 GitHub README이므로, 너무 많은 이미지를 초반에 몰기보다 **대표 4장** 정도만 먼저 배치하는 것이 좋습니다.
+
 
 ---
 
@@ -156,7 +147,6 @@
 
 ## 8. 시스템 구조
 
-> 이 섹션에는 **아키텍처 이미지 1장 + 학생 메인 흐름 이미지 1장** 정도를 넣는 것이 가장 깔끔합니다.
 
 ### 전체 요청 흐름
 `Client → Controller → Service → Repository → DB → View`
@@ -165,12 +155,9 @@
 `로그인 → 강좌 조회 → 결제/수강 → 강의 시청 → 진도 저장 → Q&A`
 
 <p align="center">
-  <img src="docs/images/10-system-architecture.png" alt="시스템 구조도" width="85%" />
+  <img width="1179" height="717" alt="Image" src="https://github.com/user-attachments/assets/a5f11b34-99f9-409f-a781-7119670682f0" />
 </p>
 
-<p align="center">
-  <img src="docs/images/11-student-flow.png" alt="학생 학습 흐름도" width="85%" />
-</p>
 
 ---
 
@@ -180,7 +167,7 @@
 > 초반에 두면 가독성이 떨어지고, 너무 뒤에 두면 구조 설명과 연결이 끊깁니다.
 
 <p align="center">
-  <img src="docs/images/12-erd.png" alt="Alien LMS ERD" width="85%" />
+  <img width="1179" height="717" alt="Image" src="https://github.com/user-attachments/assets/ccf797d7-0d87-4720-9454-5263039b05c5" />
 </p>
 
 ### 핵심 도메인
@@ -204,38 +191,27 @@
 
 ## 10. 핵심 기능 화면
 
-### 10-1. 학생 학습 흐름
+### 10-1. 강좌 세부 화면
 <p align="center">
-  <img src="docs/images/20-course-detail.png" alt="강좌 상세" width="31%" />
-  <img src="docs/images/21-payment.png" alt="결제 화면" width="31%" />
-  <img src="docs/images/22-learning-progress.png" alt="진도 저장 화면" width="31%" />
+<img width="2877" height="1504" alt="Image" src="https://github.com/user-attachments/assets/89823816-fd41-4bd7-b4f2-83b084171b3a" />
 </p>
 
-**추천 설명 문구**
-- 강좌 상세에서 가격과 학습 정보를 확인한 뒤 결제를 진행합니다.
-- 결제 완료 후 수강 상태가 반영되고, 강의 시청 및 진도 저장이 가능합니다.
-- 다음 접속 시 이어보기를 통해 학습 흐름이 유지됩니다.
 
-### 10-2. 커뮤니티 / Q&A
+
+### 10-2. 게시판
 <p align="center">
-  <img src="docs/images/23-qna-list.png" alt="QnA 목록" width="31%" />
-  <img src="docs/images/24-post-list.png" alt="대륙 게시판" width="31%" />
-  <img src="docs/images/25-report-detail.png" alt="신고 상세" width="31%" />
+<img width="1228" height="1280" alt="Image" src="https://github.com/user-attachments/assets/ef206254-c50e-4bcb-a94c-4d5c063d3d9c" />
 </p>
 
-**추천 설명 문구**
-- 학습 중 발생한 질문은 강의 단위 Q&A를 통해 해결할 수 있습니다.
-- 대륙 게시판은 관심사 기반 커뮤니티 역할을 수행합니다.
-- 신고 기능을 통해 부적절한 콘텐츠를 운영 레벨에서 관리할 수 있습니다.
 
 ### 10-3. 관리자 인사이트 화면
 <p align="center">
-  <img src="docs/images/26-admin-statistics.png" alt="관리자 통계" width="80%" />
+  <img width="1716" height="1489" alt="Image" src="https://github.com/user-attachments/assets/69996109-f601-447d-9b1e-d01a9e7642d6" />
 </p>
 
-**추천 설명 문구**
+
 - 관리자 화면에서는 대륙별 활성도와 강좌 성과를 시각화하여 운영 판단 근거를 제공합니다.
-- 강사 채용 우선순위, 신고 집중 구간, 수요 대비 강좌 편차 등을 한눈에 파악할 수 있습니다.
+
 
 ---
 
@@ -277,17 +253,9 @@
 
 ## 12. 트러블슈팅 화면 배치 추천
 
-> 이 구간은 README 후반부에 두는 것이 좋습니다.  
-> “무엇을 만들었는가” 다음에 “어떤 문제를 해결했는가”를 보여주면 설득력이 좋아집니다.
 
 <p align="center">
-  <img src="docs/images/30-badword-aop.png" alt="AOP 유해어 차단" width="48%" />
-  <img src="docs/images/31-gcs-upload.png" alt="GCS 비동기 업로드" width="48%" />
-</p>
-
-<p align="center">
-  <img src="docs/images/32-loading-strategy.png" alt="JPA 로딩 전략" width="48%" />
-  <img src="docs/images/33-admin-insight-problem-solving.png" alt="관리자 인사이트" width="48%" />
+  <img width="1738" height="934" alt="Image" src="https://github.com/user-attachments/assets/2ceb4e5e-7772-40b6-a181-8f884aaf3df3" />
 </p>
 
 ---
@@ -387,58 +355,3 @@ http://localhost:8080
 
 ---
 
-## 18. README 이미지 폴더 규칙
-
-```text
-docs/
-└── images/
-    ├── 00-project-logo.png
-    ├── 01-main-home.png
-    ├── 02-continents.png
-    ├── 03-course-detail.png
-    ├── 04-learning-view.png
-    ├── 10-system-architecture.png
-    ├── 11-student-flow.png
-    ├── 12-erd.png
-    ├── 20-course-detail.png
-    ├── 21-payment.png
-    ├── 22-learning-progress.png
-    ├── 23-qna-list.png
-    ├── 24-post-list.png
-    ├── 25-report-detail.png
-    ├── 26-admin-statistics.png
-    ├── 30-badword-aop.png
-    ├── 31-gcs-upload.png
-    ├── 32-loading-strategy.png
-    └── 33-admin-insight-problem-solving.png
-```
-
----
-
-## 19. 이미지 캡처 우선순위
-
-README용 이미지는 아래 순서대로 준비하면 됩니다.
-
-1. **메인 화면**
-2. **대륙 목록 화면**
-3. **강좌 상세 화면**
-4. **강의 시청 / 진도 저장 화면**
-5. **Q&A 또는 게시판 화면**
-6. **관리자 통계 화면**
-7. **ERD 이미지**
-8. **시스템 구조도**
-9. **트러블슈팅 핵심 이미지 2~4장**
-
----
-
-## 20. 회고 포인트
-
-- 단순 CRUD를 나열하기보다, **학생 여정과 운영 흐름을 연결한 서비스 설계**가 중요했다.
-- Spring Security, JPA, 예외 처리, 비동기 업로드, 외부 결제 연동처럼 서로 다른 기술을 실제 사용자 흐름 안에서 통합하는 경험을 얻었다.
-- 기능 구현만이 아니라, **협업 구조와 문서화 방식도 프로젝트 품질에 직접적인 영향을 준다**는 점을 학습했다.
-
----
-
-## 21. License
-
-This project was created for educational purposes.
