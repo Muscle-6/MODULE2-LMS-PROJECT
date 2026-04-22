@@ -223,7 +223,11 @@
               <h4 class="font-headline font-bold text-white uppercase tracking-widest text-sm">Tactical Notices</h4>
             </div>
             <p class="text-xs text-on-surface-variant mb-8 leading-relaxed">사령부에서 하달된 최신 전술 지침 및 공지사항을 확인하세요.</p>
-            <a th:href="@{/student/courses/{id}/notices(id=${course.courseId})}" class="flex items-center justify-center gap-2 py-3 rounded-xl border border-secondary/30 text-secondary text-[10px] font-label font-black hover:bg-secondary/10 transition-all uppercase tracking-[0.2em]">View Notices</a>
+            <a th:if="${isEnrolled}"
+               th:href="@{/student/courses/{id}/notices(id=${course.courseId})}"
+               class="flex items-center justify-center gap-2 py-3 rounded-xl border border-secondary/30 text-secondary text-[10px] font-label font-black hover:bg-secondary/10 transition-all uppercase tracking-[0.2em]">View Notices</a>
+            <button th:unless="${isEnrolled}" onclick="denyNotice()"
+                    class="w-full flex items-center justify-center gap-2 py-3 rounded-xl border border-secondary/30 text-secondary text-[10px] font-label font-black hover:bg-secondary/10 transition-all uppercase tracking-[0.2em]">Locked Notice</button>
           </div>
 
           <div class="bg-surface-container/40 p-8 rounded-3xl border border-white/5 backdrop-blur-sm group hover:border-primary/30 transition-all">
@@ -555,6 +559,19 @@
   function updateAgentRank() {
     window.location.reload();
   }
+
+  function denyNotice() {
+    Swal.fire({
+      title: 'ACCESS DENIED',
+      text: "본부 지침에 따라 침공(수강 신청)을 완료한 요원만 전술 공지에 접근할 수 있습니다.",
+      icon: 'warning',
+      background: '#161a21',
+      color: '#ecedf6',
+      confirmButtonColor: '#99f7ff',
+      confirmButtonText: 'UNDERSTOOD'
+    });
+  }
+
 </script>
 </body>
 </html>
