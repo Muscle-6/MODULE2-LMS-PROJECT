@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>강사 계정 생성 | ADMIN</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-dark: #4338ca;
+            --secondary: #64748b;
+            --bg-body: #f8fafc;
+            --bg-sidebar: #1e293b;
+            --white: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+        }
+
+        body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+            background: var(--bg-body);
+            margin: 0;
+            display: flex;
+            min-height: 100vh;
+            color: var(--text-main);
+        }
+
+        /* --- Sidebar --- */
+        aside {
+            width: 260px;
+            background: var(--bg-sidebar);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+
+        .sidebar-header {
+            padding: 30px 24px;
+            font-size: 1.25rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .sidebar-menu {
+            flex: 1;
+            padding: 20px 12px;
+            overflow-y: auto;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            color: #cbd5e1;
+            text-decoration: none;
+            border-radius: 8px;
+            margin-bottom: 4px;
+            transition: all 0.2s;
+            font-size: 0.95rem;
+        }
+
+        .nav-item i {
+            width: 24px;
+            font-size: 1.1rem;
+        }
+
+        .nav-item:hover,
+        .nav-item.active {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .nav-item.logout {
+            margin-top: 20px;
+            color: #fca5a5;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            padding-top: 20px;
+        }
+
+        /* --- Main Content --- */
+        main {
+            flex: 1;
+            margin-left: 260px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background: var(--white);
+            padding: 16px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .breadcrumb {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+
+        .top-links a {
+            text-decoration: none;
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .container {
+            padding: 40px;
+            max-width: 1200px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .content-wrap {
+            max-width: 800px;
+        }
+
+        /* --- Page Header --- */
+        .page-header {
+            margin-bottom: 32px;
+        }
+
+        .page-header h2 {
+            margin: 0;
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+
+        .page-description {
+            background: #eff6ff;
+            border-left: 4px solid var(--primary);
+            padding: 16px 20px;
+            border-radius: 0 8px 8px 0;
+            margin-top: 16px;
+            color: #1e40af;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        /* --- Form Card --- */
+        .card {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 32px;
+            border: 1px solid var(--border);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+        }
+
+        .alert-error {
+            background: #fef2f2;
+            color: var(--danger);
+            border: 1px solid #fecaca;
+            padding: 14px 16px;
+            border-radius: 10px;
+            margin-bottom: 24px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* --- Fields --- */
+        .field {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--bg-sidebar);
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: #fcfcfd;
+            font-size: 1rem;
+            transition: all 0.2s;
+            outline: none;
+            box-sizing: border-box;
+        }
+
+        input:focus {
+            border-color: var(--primary);
+            background: var(--white);
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+        }
+
+        .error {
+            margin-top: 6px;
+            font-size: 0.85rem;
+            color: var(--danger);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* --- Buttons --- */
+        .actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 32px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 14px 18px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.2s;
+            text-decoration: none;
+            border: none;
+            box-sizing: border-box;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            flex: 1;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background: #f1f5f9;
+            color: var(--secondary);
+            flex: 1;
+        }
+
+        .btn-secondary:hover {
+            background: #e2e8f0;
+        }
+
+        /* --- Responsive --- */
+        @media (max-width: 1024px) {
+            aside {
+                width: 80px;
+            }
+
+            aside .sidebar-header span,
+            aside .nav-item span {
+                display: none;
+            }
+
+            main {
+                margin-left: 80px;
+            }
+
+            .sidebar-header {
+                justify-content: center;
+                padding: 20px 0;
+            }
+
+            .nav-item {
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 640px) {
+            main {
+                margin-left: 0;
+            }
+
+            aside {
+                transform: translateX(-100%);
+            }
+
+            .container {
+                padding: 20px;
+            }
+
+            header {
+                padding: 16px 20px;
+            }
+
+            .card {
+                padding: 24px;
+            }
+
+            .actions {
+                flex-direction: column;
+            }
+
+            .btn-primary,
+            .btn-secondary {
+                width: 100%;
+                flex: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<aside>
+    <div class="sidebar-header">
+        <i class="fa-solid fa-shield-halved"></i>
+        <span>ADMIN PANEL</span>
+    </div>
+    <nav class="sidebar-menu">
+        <a th:href="@{/admin}" class="nav-item">
+            <i class="fa-solid fa-house"></i>
+            <span>대시보드 홈</span>
+        </a>
+        <a th:href="@{/admin/members}" class="nav-item">
+            <i class="fa-solid fa-users"></i>
+            <span>회원/계정 관리</span>
+        </a>
+        <a th:href="@{/admin/instructors/new}" class="nav-item active">
+            <i class="fa-solid fa-user-plus"></i>
+            <span>강사 계정 생성</span>
+        </a>
+        <a th:href="@{/admin/reports}" class="nav-item">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            <span>게시판/신고 관리</span>
+        </a>
+        <a th:href="@{/admin/statics}" class="nav-item">
+            <i class="fa-solid fa-chart-line"></i>
+            <span>통계/모니터링</span>
+        </a>
+        <a th:href="@{/admin/refunds}" class="nav-item">
+            <i class="fa-solid fa-receipt"></i>
+            <span>환불 요청 관리</span>
+        </a>
+        <a th:href="@{/admin/courses}" class="nav-item">
+            <i class="fa-solid fa-book-open"></i>
+            <span>강좌 신청 관리</span>
+        </a>
+        <a th:href="@{/admin/continent-notices}" class="nav-item">
+            <i class="fa-solid fa-bullhorn"></i>
+            <span>대륙 공지 작성</span>
+        </a>
+        <a th:href="@{/logout}" class="nav-item logout">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+            <span>로그아웃</span>
+        </a>
+    </nav>
+</aside>
+
+<main>
+    <header>
+        <div class="breadcrumb">
+            Admin &gt; 강사 계정 생성 &gt;
+            <span style="color: var(--text-main); font-weight: 600;">신규 등록</span>
+        </div>
+        <div class="top-links">
+            <a th:href="@{/}">
+                <i class="fa-solid fa-globe"></i> 사이트 바로가기
+            </a>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="content-wrap">
+            <div class="page-header">
+                <h2>신규 강사 등록</h2>
+                <div class="page-description">
+                    <i class="fa-solid fa-circle-info"></i>
+                    관리자가 강사의 기본 인증 정보를 먼저 생성합니다.
+                    개인 프로필 및 상세 정보는 계정 생성 후 강사가 직접 수정할 수 있습니다.
+                </div>
+            </div>
+
+            <div class="card">
+                <div th:if="${errorMessage}" class="alert-error">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                    <span th:text="${errorMessage}">에러 메시지</span>
+                </div>
+
+                <form th:action="@{/admin/instructors/new}" th:object="${request}" method="post">
+                    <div class="field">
+                        <label for="loginId">아이디</label>
+                        <input id="loginId" type="text" th:field="*{loginId}" placeholder="사용할 아이디를 입력하세요">
+                        <div class="error" th:if="${#fields.hasErrors('loginId')}">
+                            <i class="fa-solid fa-circle-info"></i>
+                            <span th:errors="*{loginId}"></span>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label for="email">이메일 주소</label>
+                        <input id="email" type="email" th:field="*{email}" placeholder="example@domain.com">
+                        <div class="error" th:if="${#fields.hasErrors('email')}">
+                            <i class="fa-solid fa-circle-info"></i>
+                            <span th:errors="*{email}"></span>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label for="password">비밀번호</label>
+                        <input id="password" type="password" th:field="*{password}" placeholder="초기 비밀번호를 설정하세요">
+                        <div class="error" th:if="${#fields.hasErrors('password')}">
+                            <i class="fa-solid fa-circle-info"></i>
+                            <span th:errors="*{password}"></span>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label for="name">강사 성함</label>
+                        <input id="name" type="text" th:field="*{name}" placeholder="실명을 입력하세요">
+                        <div class="error" th:if="${#fields.hasErrors('name')}">
+                            <i class="fa-solid fa-circle-info"></i>
+                            <span th:errors="*{name}"></span>
+                        </div>
+                    </div>
+
+                    <div class="actions">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fa-solid fa-check"></i>
+                            계정 생성하기
+                        </button>
+                        <a th:href="@{/admin}" class="btn btn-secondary">
+                            <i class="fa-solid fa-arrow-left"></i>
+                            취소 후 돌아가기
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>
+</body>
+</html>

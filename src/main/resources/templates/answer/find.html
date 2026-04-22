@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html class="dark" lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SUPPORT UPLINK | MODULE02 LMS</title>
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#99f7ff",
+                        "secondary": "#c97cff",
+                        "error": "#ff716c",
+                        "surface-container": "#161a21",
+                        "on-surface": "#ecedf6",
+                    },
+                    fontFamily: {
+                        "headline": ["Space Grotesk"],
+                        "body": ["Inter"],
+                        "label": ["Space Grotesk"]
+                    }
+                },
+            },
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0b0e14;
+            color: #ecedf6;
+            background-image: radial-gradient(circle at 50% 50%, rgba(153, 247, 255, 0.05) 0%, transparent 50%);
+        }
+
+        .qna-card {
+            background: rgba(22, 26, 33, 0.5);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .qna-card:hover {
+            border-color: rgba(153, 247, 255, 0.2);
+            background: rgba(22, 26, 33, 0.8);
+            transform: translateX(4px);
+        }
+
+        .tab-active {
+            background: rgba(153, 247, 255, 0.1) !important;
+            border-color: rgba(153, 247, 255, 0.5) !important;
+            color: #99f7ff !important;
+            box-shadow: 0 0 20px rgba(153, 247, 255, 0.1);
+        }
+    </style>
+</head>
+
+<body class="min-h-screen pb-20">
+
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-8 h-16 bg-slate-950/40 backdrop-blur-xl border-b border-white/5">
+    <div class="flex items-center gap-6">
+        <span class="text-2xl font-black tracking-tighter text-cyan-400 font-headline italic uppercase">MODULE02</span>
+        <div class="h-4 w-[1px] bg-white/10"></div>
+        <span class="text-[10px] font-label tracking-[0.3em] text-slate-500 uppercase">Communication Hub</span>
+    </div>
+</header>
+
+<main class="pt-28 px-6 md:px-12 max-w-5xl mx-auto">
+
+    <div class="mb-10">
+        <div class="flex items-center gap-3 mb-4">
+            <a th:href="@{/instructor/courses/{courseId}/lectures(courseId=${courseId})}"
+               class="group flex items-center gap-2 text-[10px] font-label text-slate-500 uppercase tracking-widest hover:text-primary transition-all">
+                <span class="material-symbols-outlined text-xs group-hover:-translate-x-1 transition-transform">arrow_back</span> Return to Station
+            </a>
+        </div>
+        <div class="flex items-center gap-3 mb-2">
+            <span class="h-[1px] w-8 bg-secondary/40"></span>
+            <span class="text-[10px] font-label tracking-[0.4em] text-secondary uppercase font-black">Inquiry Streams</span>
+        </div>
+        <h1 class="text-4xl md:text-5xl font-headline font-black text-on-surface tracking-tighter uppercase italic">
+            Q&A <span class="text-secondary/50">Uplink</span>
+        </h1>
+    </div>
+
+    <div class="flex items-center gap-3 mb-8 p-1 bg-white/5 rounded-2xl w-fit border border-white/5">
+        <button onclick="switchTab('all')" id="tab-all"
+                class="tab-btn tab-active flex items-center gap-3 px-6 py-3 rounded-xl text-[10px] font-label font-black uppercase tracking-widest transition-all">
+            <span class="material-symbols-outlined text-sm">database</span>
+            All Logs
+            <span class="opacity-50" th:text="${#lists.size(answered) + #lists.size(unanswered)}">0</span>
+        </button>
+        <button onclick="switchTab('unanswered')" id="tab-unanswered"
+                class="tab-btn flex items-center gap-3 px-6 py-3 rounded-xl text-[10px] font-label font-black uppercase tracking-widest text-slate-500 hover:text-slate-300 transition-all">
+            <span class="material-symbols-outlined text-sm">emergency</span>
+            Pending
+            <span class="text-error" th:text="${#lists.size(unanswered)}">0</span>
+        </button>
+        <button onclick="switchTab('answered')" id="tab-answered"
+                class="tab-btn flex items-center gap-3 px-6 py-3 rounded-xl text-[10px] font-label font-black uppercase tracking-widest text-slate-500 hover:text-slate-300 transition-all">
+            <span class="material-symbols-outlined text-sm">verified</span>
+            Resolved
+            <span class="text-primary" th:text="${#lists.size(answered)}">0</span>
+        </button>
+    </div>
+
+    <div class="space-y-3">
+
+        <div id="section-all" class="contents">
+            <a th:each="qna : ${unanswered}"
+               th:href="@{/instructor/courses/{courseId}/qna/{qnaId}(courseId=${courseId}, qnaId=${qna.qnaId})}"
+               class="qna-card flex items-center gap-6 p-6 rounded-[2rem] border-l-2 border-l-error/50">
+                <div class="w-12 h-12 rounded-2xl bg-error/10 flex items-center justify-center text-error">
+                    <span class="material-symbols-outlined">contact_support</span>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <h3 class="text-lg font-headline font-bold text-on-surface truncate mb-1" th:text="${qna.qnaTitle}">질문 제목</h3>
+                    <div class="flex items-center gap-3 text-[10px] font-label text-slate-500 uppercase tracking-widest">
+                        <span class="text-slate-300" th:text="${qna.authorName}">Author</span>
+                        <span class="w-1 h-1 rounded-full bg-white/10"></span>
+                        <span th:text="${qna.createdAt}">Date</span>
+                    </div>
+                </div>
+                <div class="hidden md:block px-4 py-1.5 rounded-full border border-error/20 bg-error/5 text-[9px] font-label font-black text-error uppercase tracking-widest">
+                    Awaiting Response
+                </div>
+            </a>
+
+            <a th:each="qna : ${answered}"
+               th:href="@{/instructor/courses/{courseId}/qna/{qnaId}(courseId=${courseId}, qnaId=${qna.qnaId})}"
+               class="qna-card flex items-center gap-6 p-6 rounded-[2rem] opacity-60 grayscale-[0.5]">
+                <div class="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
+                    <span class="material-symbols-outlined text-sm">check_circle</span>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <h3 class="text-lg font-headline font-bold text-slate-400 truncate mb-1" th:text="${qna.qnaTitle}">질문 제목</h3>
+                    <div class="flex items-center gap-3 text-[10px] font-label text-slate-600 uppercase tracking-widest">
+                        <span th:text="${qna.authorName}">Author</span>
+                        <span th:text="${qna.createdAt}">Date</span>
+                    </div>
+                </div>
+                <div class="hidden md:block px-4 py-1.5 rounded-full border border-white/5 bg-white/5 text-[9px] font-label font-black text-slate-500 uppercase tracking-widest">
+                    Closed Log
+                </div>
+            </a>
+        </div>
+
+        <div id="section-unanswered" class="hidden contents">
+            <a th:each="qna : ${unanswered}"
+               th:href="@{/instructor/courses/{courseId}/qna/{qnaId}(courseId=${courseId}, qnaId=${qna.qnaId})}"
+               class="qna-card flex items-center gap-6 p-6 rounded-[2rem] border-l-2 border-l-error/50">
+                <div class="w-12 h-12 rounded-2xl bg-error/10 flex items-center justify-center text-error">
+                    <span class="material-symbols-outlined">contact_support</span>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <h3 class="text-lg font-headline font-bold text-on-surface truncate mb-1" th:text="${qna.qnaTitle}">질문 제목</h3>
+                    <div class="flex items-center gap-3 text-[10px] font-label text-slate-500 uppercase tracking-widest">
+                        <span class="text-slate-300" th:text="${qna.authorName}">Author</span>
+                        <span class="w-1 h-1 rounded-full bg-white/10"></span>
+                        <span th:text="${qna.createdAt}">Date</span>
+                    </div>
+                </div>
+                <div class="hidden md:block px-4 py-1.5 rounded-full border border-error/20 bg-error/5 text-[9px] font-label font-black text-error uppercase tracking-widest">
+                    Awaiting Response
+                </div>
+            </a>
+
+            <div th:if="${#lists.isEmpty(unanswered)}" class="py-20 text-center text-slate-500 text-xs font-label uppercase tracking-widest">
+                No Pending Inquiries.
+            </div>
+        </div>
+
+        <div id="section-answered" class="hidden contents">
+            <a th:each="qna : ${answered}"
+               th:href="@{/instructor/courses/{courseId}/qna/{qnaId}(courseId=${courseId}, qnaId=${qna.qnaId})}"
+               class="qna-card flex items-center gap-6 p-6 rounded-[2rem] opacity-60 grayscale-[0.5]">
+                <div class="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
+                    <span class="material-symbols-outlined text-sm">check_circle</span>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <h3 class="text-lg font-headline font-bold text-slate-400 truncate mb-1" th:text="${qna.qnaTitle}">질문 제목</h3>
+                    <div class="flex items-center gap-3 text-[10px] font-label text-slate-600 uppercase tracking-widest">
+                        <span th:text="${qna.authorName}">Author</span>
+                        <span th:text="${qna.createdAt}">Date</span>
+                    </div>
+                </div>
+                <div class="hidden md:block px-4 py-1.5 rounded-full border border-white/5 bg-white/5 text-[9px] font-label font-black text-slate-500 uppercase tracking-widest">
+                    Closed Log
+                </div>
+            </a>
+
+            <div th:if="${#lists.isEmpty(answered)}" class="py-20 text-center text-slate-500 text-xs font-label uppercase tracking-widest">
+                No Resolved Logs.
+            </div>
+        </div>
+
+        <div th:if="${#lists.isEmpty(unanswered) and #lists.isEmpty(answered)}"
+             class="py-32 flex flex-col items-center justify-center border-2 border-dashed border-white/5 rounded-[3rem]">
+            <span class="material-symbols-outlined text-5xl text-slate-800 mb-4">forum</span>
+            <p class="text-[10px] font-label text-slate-600 uppercase tracking-[0.3em]">No Active Inquiries</p>
+        </div>
+    </div>
+</main>
+
+<script>
+    function switchTab(target) {
+        // 모든 섹션 숨기기
+        ['all', 'unanswered', 'answered'].forEach(s => {
+            const section = document.getElementById('section-' + s);
+            if(section) section.classList.add('hidden');
+
+            const btn = document.getElementById('tab-' + s);
+            btn.classList.remove('tab-active');
+            btn.classList.add('text-slate-500');
+        });
+
+        // 활성화
+        document.getElementById('section-' + target).classList.remove('hidden');
+        document.getElementById('tab-' + target).classList.add('tab-active');
+        document.getElementById('tab-' + target).classList.remove('text-slate-500');
+    }
+</script>
+
+</body>
+</html>

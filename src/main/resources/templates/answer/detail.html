@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html class="dark" lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COMMUNICATION DETAIL | MODULE02 LMS</title>
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#99f7ff",
+                        secondary: "#c97cff",
+                        error: "#ff716c",
+                        surface: "#161a21",
+                        "surface-high": "#1c2028",
+                        outline: "#45484f"
+                    },
+                    fontFamily: { headline: ["Space Grotesk"], body: ["Inter"], label: ["Space Grotesk"] }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #0b0e14; color: #ecedf6; overflow-x: hidden; }
+        .material-symbols-outlined { vertical-align: middle; }
+    </style>
+</head>
+
+<body class="min-h-screen">
+
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-6 h-16 bg-slate-950/40 backdrop-blur-xl border-b border-white/5">
+    <div class="flex items-center gap-8">
+        <a th:href="@{/}" class="text-2xl font-bold tracking-tighter text-cyan-400 font-headline uppercase">Module02 LMS</a>
+    </div>
+    <div class="flex items-center gap-4" th:if="${loginMember != null}">
+        <div class="text-right hidden sm:block mr-2">
+            <span class="text-xs font-label tracking-widest text-cyan-400" th:text="|${loginMember.name} 님|"></span>
+        </div>
+        <a th:href="@{/logout}" class="flex items-center gap-1 text-slate-400 hover:text-error transition-colors text-xs font-label uppercase tracking-widest">
+            <span class="material-symbols-outlined text-sm">power_settings_new</span> 로그아웃
+        </a>
+    </div>
+</header>
+
+<aside class="fixed left-0 top-16 bottom-0 flex flex-col z-40 bg-slate-950/80 backdrop-blur-lg w-64 shadow-[4px_0_24px_rgba(0,0,0,0.5)] border-r border-white/5 transition-all duration-300">
+
+    <div class="p-6 border-b border-white/5" th:if="${loginMember != null}">
+        <div class="flex items-center gap-4 group">
+            <div class="h-11 w-11 rounded-xl bg-cyan-400/10 flex items-center justify-center border border-cyan-400/20 shadow-[0_0_15px_rgba(153,247,255,0.1)] group-hover:border-cyan-400/40 transition-all">
+                <span class="material-symbols-outlined text-cyan-400 text-2xl" style="font-variation-settings: 'FILL' 1;">military_tech</span>
+            </div>
+            <div class="flex flex-col">
+                <p class="text-xs font-headline font-black text-cyan-400 tracking-tight leading-none mb-1 uppercase" th:text="${loginMember.name}">OPERATIVE</p>
+                <div class="flex items-center gap-1">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <p class="text-[10px] font-label text-slate-500 font-bold tracking-tighter uppercase" th:text="|RANK: ${loginMember.role}|">RANK</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <nav class="flex-1 py-6">
+        <a href="#" class="flex items-center gap-4 text-cyan-400 bg-cyan-400/10 border-r-4 border-cyan-400 py-3.5 px-6 font-label">
+            <span class="material-symbols-outlined">satellite_alt</span>
+            <span class="text-sm tracking-wide">사령부 대시보드</span>
+        </a>
+    </nav>
+
+    <div class="p-6 mt-auto">
+        <div class="relative group cursor-help">
+            <div class="absolute -inset-1 bg-gradient-to-r from-cyan-500/20 to-purple-500/20 rounded-xl blur opacity-25 group-hover:opacity-50 transition duration-1000"></div>
+
+            <div class="relative w-full bg-slate-900/50 border border-white/10 p-4 rounded-xl">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-[9px] font-label font-black text-slate-500 uppercase tracking-widest">Network Status</span>
+                    <span class="flex h-2 w-2">
+                        <span class="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-cyan-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
+                    </span>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <span class="material-symbols-outlined text-primary text-sm animate-pulse">radar</span>
+                    <div class="flex-1">
+                        <div class="h-1 w-full bg-white/5 rounded-full overflow-hidden">
+                            <div class="h-full bg-primary w-[85%] shadow-[0_0_8px_#99f7ff]"></div>
+                        </div>
+                    </div>
+                </div>
+                <p class="mt-2 text-[9px] font-label text-primary/60 text-center uppercase tracking-[0.2em]">System Online</p>
+            </div>
+        </div>
+    </div>
+</aside>
+
+<main class="ml-64 pt-24 px-10 pb-16">
+    <div class="max-w-4xl mx-auto">
+
+        <div class="mb-8">
+            <a th:href="@{/instructor/courses/{id}/qna(id=${courseId})}"
+               class="flex items-center gap-2 text-[10px] font-label tracking-widest text-slate-500 hover:text-primary transition-all uppercase group">
+                <span class="material-symbols-outlined text-sm transition-transform group-hover:-translate-x-1">arrow_back</span>
+                Back to Communication Logs
+            </a>
+        </div>
+
+        <div class="bg-surface/60 backdrop-blur-xl border border-white/5 rounded-3xl p-10 mb-10 shadow-2xl relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-40 h-40 bg-primary/5 rounded-full blur-3xl -mr-20 -mt-20"></div>
+
+            <div class="flex justify-between items-start mb-8">
+                <div class="space-y-4">
+                    <span th:if="${qna.isAnswered}"
+                          class="inline-flex items-center gap-1.5 px-3 py-1 rounded bg-secondary/10 border border-secondary/20 text-secondary text-[10px] font-black tracking-widest uppercase">
+                        <span class="h-1 w-1 rounded-full bg-secondary shadow-[0_0_5px_#c97cff]"></span> RESOLVED
+                    </span>
+                    <span th:unless="${qna.isAnswered}"
+                          class="inline-flex items-center gap-1.5 px-3 py-1 rounded bg-error/10 border border-error/20 text-error text-[10px] font-black tracking-widest uppercase">
+                        <span class="h-1 w-1 rounded-full bg-error animate-pulse shadow-[0_0_5px_#ff716c]"></span> PENDING
+                    </span>
+                    <h1 class="text-3xl font-headline font-black text-white tracking-tight leading-tight" th:text="${qna.qnaTitle}">질문 제목</h1>
+                </div>
+            </div>
+
+            <div class="bg-slate-900/40 rounded-2xl p-6 border border-white/5 mb-8">
+                <p class="text-on-surface text-base leading-relaxed whitespace-pre-line font-body" th:text="${qna.qnaContent}">질문 내용</p>
+            </div>
+
+            <div class="flex justify-between items-center text-[10px] font-label font-bold text-slate-500 uppercase tracking-widest border-t border-white/5 pt-6">
+                <div class="flex items-center gap-4">
+                    <span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-sm">person</span> <span th:text="${qna.authorName}">요원</span></span>
+                    <span class="text-white/5">|</span>
+                    <span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-sm">event</span> <span th:text="${#temporals.format(qna.createdAt,'yyyy.MM.dd HH:mm')}">시간</span></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="space-y-6">
+            <h2 class="text-xs font-label font-black text-primary tracking-[0.3em] uppercase ml-4 mb-4">Command Response</h2>
+
+            <div th:if="${!#lists.isEmpty(replies)}" class="relative pl-8">
+                <div class="absolute left-[11px] top-0 bottom-0 w-[2px] bg-gradient-to-b from-primary/40 to-transparent"></div>
+
+                <div th:with="reply=${replies[0]}" class="bg-surface-high border border-primary/20 rounded-3xl p-8 shadow-xl relative">
+                    <div class="absolute -left-[26px] top-10 w-4 h-4 bg-primary rounded-full border-4 border-[#0b0e14] shadow-[0_0_10px_rgba(153,247,255,0.5)]"></div>
+
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/20">
+                            <span class="material-symbols-outlined text-primary text-sm">support_agent</span>
+                        </div>
+                        <span class="text-[11px] font-label font-black text-white uppercase tracking-widest">Instructor Intelligence</span>
+                    </div>
+
+                    <p class="text-on-surface text-base leading-relaxed whitespace-pre-line font-body mb-8 pl-4 border-l border-primary/20" th:text="${reply.qnaContent}">답변 내용</p>
+
+                    <div class="flex justify-between items-center text-[10px] font-label font-bold text-slate-500 uppercase tracking-widest">
+                        <div class="flex items-center gap-4">
+                            <span th:text="|Source: ${reply.authorName}|">강사명</span>
+                            <span class="text-white/5">|</span>
+                            <span th:text="${#temporals.format(reply.createdAt,'yyyy.MM.dd HH:mm')}">시간</span>
+                        </div>
+
+                        <div class="flex gap-2">
+                            <a th:href="@{/instructor/courses/{courseId}/qna/{qnaId}/reply/{replyId}/modify(courseId=${courseId}, qnaId=${qna.qnaId}, replyId=${reply.qnaId})}"
+                               class="px-3 py-1.5 border border-white/10 rounded-lg hover:border-primary hover:text-primary transition-all uppercase tracking-tighter">Edit</a>
+                            <button type="button" th:onclick="|openDeleteModal([[${reply.qnaId}]])|"
+                                    class="px-3 py-1.5 border border-error/30 text-error hover:bg-error/10 rounded-lg transition-all uppercase tracking-tighter">Purge</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div th:if="${#lists.isEmpty(replies)}">
+                    <button type="button" onclick="toggleReplyForm()"
+                            class="group flex items-center gap-3 px-6 py-4 rounded-2xl border border-primary/30 bg-primary/5 text-primary text-xs font-label font-black tracking-[0.2em] uppercase hover:bg-primary/10 hover:border-primary/60 hover:shadow-[0_0_30px_rgba(153,247,255,0.15)] transition-all">
+                        <span class="material-symbols-outlined text-lg group-hover:rotate-90 transition-transform duration-500">terminal</span>
+                        Initialize Response Protocol
+                    </button>
+
+                    <div id="replyFormBox" style="display:none;"
+                         class="mt-6 bg-surface-high/90 backdrop-blur-2xl border border-primary/20 rounded-[2.5rem] p-10 shadow-[0_20px_80px_rgba(0,0,0,0.5)] relative overflow-hidden z-50">
+
+                        <div class="flex items-center gap-4 mb-8">
+                            <div class="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20 shadow-[0_0_20px_rgba(153,247,255,0.1)]">
+                                <span class="material-symbols-outlined text-primary text-2xl">rate_review</span>
+                            </div>
+                            <div>
+                                <h3 class="text-xs font-label font-black text-white tracking-[0.3em] uppercase">Manual Override</h3>
+                                <p class="text-[10px] font-label text-primary/50 uppercase tracking-tighter">Drafting encrypted response...</p>
+                            </div>
+                        </div>
+
+                        <form th:action="@{/instructor/courses/{courseId}/qna/{qnaId}/reply(courseId=${courseId}, qnaId=${qna.qnaId})}" method="post">
+                            <div class="mb-8 relative group">
+                                <div class="absolute -inset-0.5 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-[2rem] blur opacity-0 group-focus-within:opacity-100 transition duration-500"></div>
+                                <textarea name="qnaContent" id="qnaContentField" rows="6" required
+                                          placeholder="하달할 지침을 입력하십시오..."
+                                          class="relative w-full bg-slate-950/80 border border-white/5 rounded-[2rem] px-8 py-7 text-sm text-on-surface font-body leading-relaxed focus:outline-none focus:border-primary/40 transition-all resize-none placeholder:text-slate-700"></textarea>
+                            </div>
+                            <div class="flex gap-6 justify-end items-center">
+                                <button type="button" onclick="toggleReplyForm()" class="text-[10px] font-label font-bold text-slate-500 hover:text-error transition-all uppercase tracking-widest px-2">Abort</button>
+                                <button type="submit" class="group flex items-center gap-3 px-10 py-4 rounded-2xl bg-primary text-slate-950 text-[11px] font-black uppercase tracking-[0.2em] hover:scale-[1.03] active:scale-95 transition-all shadow-[0_10px_40px_rgba(153,247,255,0.3)]">
+                                    <span class="material-symbols-outlined text-sm font-bold group-hover:translate-x-1 transition-transform">send</span>
+                                    Transmit Data
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div id="deleteModal" class="hidden fixed inset-0 z-[100] bg-black/80 backdrop-blur-md flex items-center justify-center p-6 transition-all duration-300 opacity-0">
+                    <div class="bg-surface-high border border-error/30 rounded-[2.5rem] max-w-sm w-full shadow-[0_0_60px_rgba(255,113,108,0.2)] relative overflow-hidden transform scale-90 transition-all duration-300">
+                        <div class="h-1.5 w-full bg-[repeating-linear-gradient(45deg,rgba(255,113,108,0.2),rgba(255,113,108,0.2)_10px,transparent_10px,transparent_20px)]"></div>
+
+                        <div class="p-10 text-center">
+                            <div class="relative w-20 h-20 mx-auto mb-6 flex items-center justify-center">
+                                <div class="absolute inset-0 bg-error/10 rounded-full animate-ping"></div>
+                                <span class="material-symbols-outlined text-error text-5xl relative z-10" style="font-variation-settings: 'wght' 700;">warning</span>
+                            </div>
+                            <h3 class="text-xl font-headline font-black text-white tracking-tighter uppercase italic mb-3">Execute <span class="text-error">Purge?</span></h3>
+                            <p class="text-[10px] font-label text-slate-500 uppercase tracking-widest leading-relaxed mb-10">Data will be permanently erased.<br/>This action is <span class="text-error font-bold">Irreversible.</span></p>
+                            <div class="flex gap-4">
+                                <button type="button" onclick="closeDeleteModal()" class="flex-1 py-4 rounded-xl bg-white/5 text-slate-400 font-label text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-all">Abort</button>
+                                <form id="deleteForm" method="post" class="flex-1">
+                                    <button type="submit" class="w-full py-4 rounded-xl bg-error text-slate-950 font-label text-[10px] font-black uppercase tracking-widest hover:bg-red-500 transition-all">Confirm</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+<script th:inline="javascript">
+    const courseId = [[${courseId}]];
+    const qnaId = [[${qna.qnaId}]];
+
+    // 답변 폼 토글
+    function toggleReplyForm() {
+        const box = document.getElementById('replyFormBox');
+        const field = document.getElementById('qnaContentField');
+        if (box.style.display === 'none') {
+            box.style.display = 'block';
+            field.focus(); // 입력 필드 자동 포커싱
+        } else {
+            box.style.display = 'none';
+        }
+    }
+
+    // PURGE 모달 제어 (애니메이션 효과 추가)
+    function openDeleteModal(replyId) {
+        const modal = document.getElementById('deleteModal');
+        const card = modal.querySelector('.bg-surface-high');
+        document.getElementById('deleteForm').action = `/instructor/courses/${courseId}/qna/${qnaId}/reply/${replyId}/delete`;
+
+        modal.classList.remove('hidden');
+        setTimeout(() => {
+            modal.classList.add('opacity-100');
+            card.classList.replace('scale-90', 'scale-100');
+        }, 10);
+    }
+
+    function closeDeleteModal() {
+        const modal = document.getElementById('deleteModal');
+        const card = modal.querySelector('.bg-surface-high');
+        modal.classList.remove('opacity-100');
+        card.classList.replace('scale-100', 'scale-90');
+        setTimeout(() => modal.classList.add('hidden'), 300);
+    }
+</script>
+
+</body>
+</html>

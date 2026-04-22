@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>403 - 접근 거부</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .error-box {
+            width: 720px;
+            max-width: calc(100% - 40px);
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid #334155;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+            text-align: center;
+        }
+
+        .status {
+            font-size: 64px;
+            font-weight: 800;
+            margin: 0 0 12px;
+            color: #f97316;
+        }
+
+        .title {
+            font-size: 28px;
+            font-weight: 700;
+            margin: 0 0 18px;
+        }
+
+        .desc {
+            font-size: 17px;
+            line-height: 1.7;
+            color: #cbd5e1;
+            margin-bottom: 28px;
+        }
+
+        .system-log {
+            margin: 24px 0;
+            padding: 16px;
+            border-radius: 12px;
+            background: #111827;
+            color: #93c5fd;
+            font-size: 14px;
+            text-align: left;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 18px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        .btn-home {
+            background: #f97316;
+            color: white;
+        }
+
+        .btn-back {
+            background: #1e293b;
+            color: #e2e8f0;
+            border: 1px solid #475569;
+        }
+    </style>
+</head>
+<body>
+<div class="error-box">
+    <p class="status">403</p>
+    <h1 class="title">접근이 거부되었습니다</h1>
+    <p class="desc">
+        현재 계정 권한으로는 해당 구역에 접근할 수 없습니다.<br>
+        Student Alien / Instructor Alien / Admin Alien 권한 체계를 다시 확인해주세요.
+    </p>
+
+    <div class="system-log">
+        <div>[SYSTEM_LOG] ACCESS_DENIED</div>
+        <div>[MODULE] SECURITY_FILTER_CHAIN</div>
+        <div>[MESSAGE] 접근 권한이 없는 요청이 차단되었습니다.</div>
+    </div>
+
+    <div class="actions">
+        <a class="btn btn-home" th:href="@{/}">메인으로 이동</a>
+        <a class="btn btn-back" href="javascript:history.back()">이전 페이지로 이동</a>
+    </div>
+</div>
+</body>
+</html>

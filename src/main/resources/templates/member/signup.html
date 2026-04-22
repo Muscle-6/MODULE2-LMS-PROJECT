@@ -1,122 +1,161 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html class="dark" lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>회원가입</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STUDENT SIGNUP | MODULE02 LMS</title>
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#99f7ff",
+                        "secondary": "#c97cff",
+                        "error": "#ff716c",
+                        "surface-container": "#161a21",
+                        "surface-container-high": "#1c2028",
+                        "on-surface": "#ecedf6",
+                    },
+                    fontFamily: {
+                        "headline": ["Space Grotesk"],
+                        "body": ["Inter"],
+                        "label": ["Space Grotesk"]
+                    }
+                },
+            },
+        }
+    </script>
+
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background: #f4f7fb;
-            margin: 0;
-            padding: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: #0b0e14;
+            color: #ecedf6;
+            background-image: radial-gradient(circle at 50% 50%, rgba(153, 247, 255, 0.05) 0%, transparent 50%);
+            overflow-x: hidden;
         }
 
-        .wrap {
-            width: 520px;
-            margin: 50px auto;
-            background: white;
-            padding: 32px;
-            border-radius: 16px;
-            box-shadow: 0 6px 18px rgba(0,0,0,0.08);
-        }
-
-        h1 {
-            margin-top: 0;
-            margin-bottom: 24px;
-            text-align: center;
-        }
-
-        .field {
-            margin-bottom: 16px;
-        }
-
-        .field label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
-        }
-
-        .field input,
-        .field select,
-        .field textarea {
+        /* 10년차 개발자의 눈을 위한 다크 입력창 */
+        .cyber-input {
             width: 100%;
-            padding: 12px;
-            box-sizing: border-box;
-            border: 1px solid #d0d7e2;
-            border-radius: 8px;
+            background: rgba(15, 23, 42, 0.6) !important;
+            border: 1px solid rgba(255, 255, 255, 0.05) !important;
+            border-radius: 12px;
+            padding: 12px 16px;
+            color: #99f7ff !important;
+            font-size: 0.875rem;
+            transition: all 0.3s ease;
         }
-
-        .btn {
-            width: 100%;
-            padding: 12px;
-            border: none;
-            border-radius: 8px;
-            background: #2d4aa7;
-            color: white;
-            font-size: 16px;
-            cursor: pointer;
+        .cyber-input:focus {
+            outline: none;
+            background: rgba(15, 23, 42, 0.9) !important;
+            border-color: #99f7ff !important;
+            box-shadow: 0 0 15px rgba(153, 247, 255, 0.1);
+            color: #ffffff !important;
         }
-
-        .sub-links {
-            margin-top: 18px;
-            text-align: center;
-        }
-
-        .sub-links a {
-            text-decoration: none;
-            color: #2d4aa7;
-            margin: 0 8px;
-        }
-
-        .error {
-            background: #ffe5e5;
-            color: #c62828;
-            padding: 10px;
-            border-radius: 8px;
-            margin-bottom: 14px;
+        /* 에러 발생 시 입력창 스타일 */
+        .cyber-input-error {
+            border-color: rgba(255, 113, 108, 0.4) !important;
+            background: rgba(255, 113, 108, 0.05) !important;
         }
     </style>
 </head>
-<body>
-<div class="wrap">
-    <h1>회원가입</h1>
 
-    <div class="error" th:if="${errorMessage}" th:text="${errorMessage}"></div>
+<body class="min-h-screen flex items-center justify-center p-6">
 
-    <form th:action="@{/signup}" method="post">
-        <div class="field">
-            <label for="loginId">아이디</label>
-            <input type="text" id="loginId" name="loginId" required>
+<div class="w-full max-w-md bg-surface-container/60 backdrop-blur-2xl border border-white/5 rounded-[2.5rem] p-10 shadow-2xl relative overflow-hidden">
+
+    <div class="absolute -top-12 -right-12 w-32 h-32 bg-primary/10 rounded-full blur-3xl"></div>
+    <div class="absolute -bottom-12 -left-12 w-32 h-32 bg-secondary/10 rounded-full blur-3xl"></div>
+
+    <div class="text-center mb-8 relative">
+        <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-primary/10 border border-primary/20 mb-4">
+            <span class="material-symbols-outlined text-primary text-3xl">person_add</span>
+        </div>
+        <h1 class="text-2xl font-headline font-black tracking-tight text-white uppercase italic">
+            Operative <span class="text-primary/60">Signup</span>
+        </h1>
+        <p class="text-[10px] font-label text-slate-500 tracking-[0.2em] mt-2 uppercase">
+            Establish New Uplink Connection
+        </p>
+    </div>
+
+    <div th:if="${errorMessage}"
+         class="mb-6 p-4 rounded-xl bg-error/10 border border-error/20 flex items-start gap-3 animate-pulse">
+        <span class="material-symbols-outlined text-error text-sm mt-0.5">report</span>
+        <p class="text-error text-xs font-medium leading-relaxed" th:text="${errorMessage}">ERROR_MSG</p>
+    </div>
+
+    <form th:action="@{/signup}" th:object="${request}" method="post" class="space-y-5 relative">
+
+        <div class="space-y-1.5">
+            <label class="flex items-center gap-2 text-[10px] font-label font-bold text-slate-500 uppercase tracking-widest ml-1">
+                <span class="material-symbols-outlined text-xs">fingerprint</span> Login ID
+            </label>
+            <input type="text" th:field="*{loginId}"
+                   th:classappend="${#fields.hasErrors('loginId')} ? 'cyber-input-error' : ''"
+                   class="cyber-input" placeholder="Enter unique ID...">
+            <p class="text-error text-[10px] font-medium ml-1" th:if="${#fields.hasErrors('loginId')}" th:errors="*{loginId}"></p>
         </div>
 
-
-        <div class="field">
-            <label for="email">이메일</label>
-            <input type="email" id="email" name="email" required>
+        <div class="space-y-1.5">
+            <label class="flex items-center gap-2 text-[10px] font-label font-bold text-slate-500 uppercase tracking-widest ml-1">
+                <span class="material-symbols-outlined text-xs">alternate_email</span> Comm Link (Email)
+            </label>
+            <input type="email" th:field="*{email}"
+                   th:classappend="${#fields.hasErrors('email')} ? 'cyber-input-error' : ''"
+                   class="cyber-input" placeholder="name@domain.com">
+            <p class="text-error text-[10px] font-medium ml-1" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></p>
         </div>
 
-        <div class="field">
-            <label for="password">비밀번호</label>
-            <input type="password" id="password" name="password" required>
+        <div class="space-y-1.5">
+            <label class="flex items-center gap-2 text-[10px] font-label font-bold text-slate-500 uppercase tracking-widest ml-1">
+                <span class="material-symbols-outlined text-xs">lock</span> Security Key
+            </label>
+            <input type="password" th:field="*{password}"
+                   th:classappend="${#fields.hasErrors('password')} ? 'cyber-input-error' : ''"
+                   class="cyber-input" placeholder="Min. 8 chars with symbols">
+            <p class="text-error text-[10px] font-medium ml-1" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></p>
         </div>
 
-        <div class="field">
-            <label for="name">이름</label>
-            <input type="text" id="name" name="name" required>
+        <div class="space-y-1.5">
+            <label class="flex items-center gap-2 text-[10px] font-label font-bold text-slate-500 uppercase tracking-widest ml-1">
+                <span class="material-symbols-outlined text-xs">badge</span> Full Name
+            </label>
+            <input type="text" th:field="*{name}"
+                   th:classappend="${#fields.hasErrors('name')} ? 'cyber-input-error' : ''"
+                   class="cyber-input" placeholder="Identified Name">
+            <p class="text-error text-[10px] font-medium ml-1" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></p>
         </div>
 
-        <div class="field">
-            <label for="phone">전화번호</label>
-            <input type="text" id="phone" name="phone">
+        <div class="space-y-1.5">
+            <label class="flex items-center gap-2 text-[10px] font-label font-bold text-slate-500 uppercase tracking-widest ml-1">
+                <span class="material-symbols-outlined text-xs">call</span> Mobile Signal
+            </label>
+            <input type="text" th:field="*{phone}"
+                   th:classappend="${#fields.hasErrors('phone')} ? 'cyber-input-error' : ''"
+                   class="cyber-input" placeholder="010-0000-0000">
+            <p class="text-error text-[10px] font-medium ml-1" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></p>
         </div>
 
-        <button type="submit" class="btn">회원가입</button>
+        <button type="submit"
+                class="w-full mt-4 py-4 rounded-2xl bg-primary text-slate-950 font-label font-black text-xs uppercase tracking-[0.2em] shadow-[0_0_30px_rgba(153,247,255,0.1)] hover:bg-white hover:scale-[1.02] active:scale-[0.98] transition-all duration-300">
+            Register Agent
+        </button>
     </form>
 
-    <div class="sub-links">
-        <a th:href="@{/login}">로그인으로</a>
-        <a th:href="@{/}">메인으로</a>
+    <div class="mt-8 pt-6 border-t border-white/5 flex justify-center gap-8 relative">
+        <a th:href="@{/login}" class="text-[10px] font-label text-slate-500 uppercase tracking-widest hover:text-primary transition-colors">Already Registered?</a>
+        <a th:href="@{/}" class="text-[10px] font-label text-slate-500 uppercase tracking-widest hover:text-primary transition-colors">Main Base</a>
     </div>
+
 </div>
+
 </body>
 </html>

@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>환불 요청 관리 | ADMIN</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #4f46e5;
+      --primary-dark: #4338ca;
+      --secondary: #64748b;
+      --bg-body: #f8fafc;
+      --bg-sidebar: #1e293b;
+      --white: #ffffff;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --success: #10b981;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+    }
+
+    body {
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+      background: var(--bg-body);
+      margin: 0;
+      display: flex;
+      min-height: 100vh;
+      color: var(--text-main);
+    }
+
+    /* --- Sidebar --- */
+    aside {
+      width: 260px;
+      background: var(--bg-sidebar);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      height: 100vh;
+      transition: all 0.3s ease;
+      z-index: 100;
+    }
+
+    .sidebar-header {
+      padding: 30px 24px;
+      font-size: 1.25rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .sidebar-menu {
+      flex: 1;
+      padding: 20px 12px;
+      overflow-y: auto;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      padding: 12px 16px;
+      color: #cbd5e1;
+      text-decoration: none;
+      border-radius: 8px;
+      margin-bottom: 4px;
+      transition: all 0.2s;
+      font-size: 0.95rem;
+    }
+
+    .nav-item i {
+      width: 24px;
+      font-size: 1.1rem;
+    }
+
+    .nav-item:hover,
+    .nav-item.active {
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+    }
+
+    .nav-item.logout {
+      margin-top: 20px;
+      color: #fca5a5;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      padding-top: 20px;
+    }
+
+    /* --- Main Content --- */
+    main {
+      flex: 1;
+      margin-left: 260px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background: var(--white);
+      padding: 16px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .breadcrumb {
+      color: var(--text-muted);
+      font-size: 0.875rem;
+    }
+
+    .top-links a {
+      text-decoration: none;
+      color: var(--primary);
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .container {
+      padding: 40px;
+      max-width: 1400px;
+      margin: 0 auto;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    /* --- Page Header --- */
+    .page-header {
+      margin-bottom: 32px;
+    }
+
+    .page-header h2 {
+      margin: 0;
+      font-size: 1.75rem;
+      font-weight: 700;
+    }
+
+    .page-description {
+      background: #eff6ff;
+      border-left: 4px solid var(--primary);
+      padding: 16px 20px;
+      border-radius: 0 8px 8px 0;
+      margin-top: 16px;
+      color: #1e40af;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    /* --- Alert --- */
+    .alert {
+      padding: 16px;
+      border-radius: 12px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 500;
+      border: 1px solid transparent;
+    }
+
+    .alert-success {
+      background: #ecfdf5;
+      color: #065f46;
+      border-color: #a7f3d0;
+    }
+
+    .alert-error {
+      background: #fef2f2;
+      color: #991b1b;
+      border-color: #fecaca;
+    }
+
+    /* --- Filter Card --- */
+    .search-card {
+      background: var(--white);
+      border-radius: 16px;
+      padding: 24px;
+      border: 1px solid var(--border);
+      margin-bottom: 24px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+    }
+
+    .filter-form {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .filter-form label {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--bg-sidebar);
+    }
+
+    .filter-form select {
+      height: 44px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0 14px;
+      font-size: 0.95rem;
+      outline: none;
+      cursor: pointer;
+      background: #fcfcfd;
+      min-width: 160px;
+      box-sizing: border-box;
+    }
+
+    .filter-form select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+    }
+
+    /* --- Table --- */
+    .table-card {
+      background: var(--white);
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      min-width: 1100px;
+    }
+
+    th {
+      background: #f8fafc;
+      padding: 16px 20px;
+      font-size: 0.85rem;
+      color: var(--secondary);
+      font-weight: 600;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.95rem;
+      vertical-align: middle;
+    }
+
+    tr:hover {
+      background: #f8fafc;
+    }
+
+    .price-text {
+      font-weight: 700;
+      color: var(--primary);
+      white-space: nowrap;
+    }
+
+    .reason-text {
+      font-size: 0.9rem;
+      color: #475569;
+      max-width: 250px;
+      line-height: 1.4;
+      word-break: break-word;
+    }
+
+    /* --- Badges --- */
+    .status-badge {
+      display: inline-flex;
+      padding: 4px 12px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+
+    .requested {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .approved {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .rejected {
+      background: #fef2f2;
+      color: #991b1b;
+    }
+
+    /* --- Buttons --- */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: 0.2s;
+      text-decoration: none;
+      border: none;
+      box-sizing: border-box;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+    }
+
+    .btn-secondary {
+      background: #f1f5f9;
+      color: var(--secondary);
+    }
+
+    .btn-secondary:hover {
+      background: #e2e8f0;
+    }
+
+    .btn-success {
+      background: var(--success);
+      color: white;
+    }
+
+    .btn-success:hover {
+      opacity: 0.9;
+    }
+
+    .btn-danger {
+      background: var(--danger);
+      color: white;
+    }
+
+    .btn-danger:hover {
+      opacity: 0.9;
+    }
+
+    .action-group {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .action-group form {
+      margin: 0;
+    }
+
+    .empty-box {
+      padding: 80px 0;
+      text-align: center;
+      color: var(--secondary);
+    }
+
+    .empty-box i {
+      font-size: 3rem;
+      margin-bottom: 16px;
+      opacity: 0.3;
+    }
+
+    /* --- Responsive --- */
+    @media (max-width: 1024px) {
+      aside {
+        width: 80px;
+      }
+
+      aside .sidebar-header span,
+      aside .nav-item span {
+        display: none;
+      }
+
+      main {
+        margin-left: 80px;
+      }
+
+      .sidebar-header {
+        justify-content: center;
+        padding: 20px 0;
+      }
+
+      .nav-item {
+        justify-content: center;
+      }
+    }
+
+    @media (max-width: 640px) {
+      main {
+        margin-left: 0;
+      }
+
+      aside {
+        transform: translateX(-100%);
+      }
+
+      .container {
+        padding: 20px;
+      }
+
+      header {
+        padding: 16px 20px;
+      }
+
+      .filter-form {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .filter-form select,
+      .filter-form .btn {
+        width: 100%;
+      }
+
+      .action-group {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .action-group form,
+      .action-group button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<aside>
+  <div class="sidebar-header">
+    <i class="fa-solid fa-shield-halved"></i>
+    <span>ADMIN PANEL</span>
+  </div>
+  <nav class="sidebar-menu">
+    <a th:href="@{/admin}" class="nav-item">
+      <i class="fa-solid fa-house"></i>
+      <span>대시보드 홈</span>
+    </a>
+    <a th:href="@{/admin/members}" class="nav-item">
+      <i class="fa-solid fa-users"></i>
+      <span>회원/계정 관리</span>
+    </a>
+    <a th:href="@{/admin/instructors/new}" class="nav-item">
+      <i class="fa-solid fa-user-plus"></i>
+      <span>강사 계정 생성</span>
+    </a>
+    <a th:href="@{/admin/reports}" class="nav-item">
+      <i class="fa-solid fa-circle-exclamation"></i>
+      <span>게시판/신고 관리</span>
+    </a>
+    <a th:href="@{/admin/statics}" class="nav-item">
+      <i class="fa-solid fa-chart-line"></i>
+      <span>통계/모니터링</span>
+    </a>
+    <a th:href="@{/admin/refunds}" class="nav-item active">
+      <i class="fa-solid fa-receipt"></i>
+      <span>환불 요청 관리</span>
+    </a>
+    <a th:href="@{/admin/courses}" class="nav-item">
+      <i class="fa-solid fa-book-open"></i>
+      <span>강좌 신청 관리</span>
+    </a>
+    <a th:href="@{/admin/continent-notices}" class="nav-item">
+      <i class="fa-solid fa-bullhorn"></i>
+      <span>대륙 공지 작성</span>
+    </a>
+    <a th:href="@{/logout}" class="nav-item logout">
+      <i class="fa-solid fa-arrow-right-from-bracket"></i>
+      <span>로그아웃</span>
+    </a>
+  </nav>
+</aside>
+
+<main>
+  <header>
+    <div class="breadcrumb">
+      Admin &gt; <span style="color: var(--text-main); font-weight: 600;">환불 요청 관리</span>
+    </div>
+    <div class="top-links">
+      <a th:href="@{/}">
+        <i class="fa-solid fa-globe"></i> 사이트 바로가기
+      </a>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="page-header">
+      <h2>환불 요청 내역</h2>
+      <div class="page-description">
+        <i class="fa-solid fa-circle-info"></i>
+        결제건에 대한 환불 요청을 검토하고 승인 또는 거절 처리를 진행합니다.
+      </div>
+    </div>
+
+    <div th:if="${successMsg}" class="alert alert-success">
+      <i class="fa-solid fa-check-circle"></i>
+      <span th:text="${successMsg}">성공 메시지</span>
+    </div>
+
+    <div th:if="${errorMsg}" class="alert alert-error">
+      <i class="fa-solid fa-triangle-exclamation"></i>
+      <span th:text="${errorMsg}">에러 메시지</span>
+    </div>
+
+    <div class="search-card">
+      <form th:action="@{/admin/refunds}" method="get" class="filter-form">
+        <label for="status">처리 상태</label>
+        <select id="status" name="status">
+          <option value="">전체 보기</option>
+          <option th:each="refundStatus : ${refundStatuses}"
+                  th:value="${refundStatus}"
+                  th:text="${refundStatus}"
+                  th:selected="${selectedStatus == refundStatus}">상태</option>
+        </select>
+
+        <button type="submit" class="btn btn-primary">
+          <i class="fa-solid fa-magnifying-glass"></i> 조회
+        </button>
+        <a th:href="@{/admin/refunds}" class="btn btn-secondary">
+          <i class="fa-solid fa-rotate-left"></i> 초기화
+        </a>
+      </form>
+    </div>
+
+    <div class="table-card">
+      <div class="table-wrap">
+        <table th:if="${!#lists.isEmpty(refunds)}">
+          <thead>
+          <tr>
+            <th>ID</th>
+            <th>주문번호</th>
+            <th>요청 회원</th>
+            <th>결제금액</th>
+            <th>환불 사유</th>
+            <th>상태</th>
+            <th>요청일 / 처리일</th>
+            <th style="text-align: center;">관리 액션</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr th:each="refund : ${refunds}">
+            <td th:text="${refund.refundId}">1</td>
+            <td style="font-family: monospace; font-size: 0.85rem;" th:text="${refund.paymentOrderNo}">ORD-000</td>
+            <td>
+              <div style="font-weight: 700;" th:text="${refund.memberName}">이름</div>
+              <div style="font-size: 0.8rem; color: var(--secondary);" th:text="${refund.memberLoginId}">ID</div>
+            </td>
+            <td>
+              <span class="price-text" th:text="${#numbers.formatInteger(refund.paymentTotalPrice, 3, 'COMMA')} + '원'">0원</span>
+            </td>
+            <td>
+              <div class="reason-text" th:text="${refund.refundReason}">사유</div>
+            </td>
+            <td>
+              <span class="status-badge"
+                    th:classappend="${refund.refundStatus.name() == 'REQUESTED'} ? ' requested' :
+                                   (${refund.refundStatus.name() == 'APPROVED'} ? ' approved' : ' rejected')"
+                    th:text="${refund.displayStatus}">대기</span>
+            </td>
+            <td>
+              <div style="font-size: 0.85rem;">
+                요청:
+                <span th:text="${refund.refundRequestedAt != null ? #temporals.format(refund.refundRequestedAt, 'yyyy-MM-dd HH:mm') : '-'}"></span>
+              </div>
+              <div style="font-size: 0.85rem; color: var(--secondary);">
+                처리:
+                <span th:text="${refund.refundProcessedAt != null ? #temporals.format(refund.refundProcessedAt, 'yyyy-MM-dd HH:mm') : '-'}"></span>
+              </div>
+            </td>
+            <td style="text-align: center;">
+              <div th:if="${refund.requested}" class="action-group">
+                <form th:action="@{/admin/refunds/{refundId}/approve(refundId=${refund.refundId})}" method="post">
+                  <input type="hidden" name="status" th:value="${selectedStatus}">
+                  <button type="submit" class="btn btn-success" style="padding: 6px 12px;">
+                    <i class="fa-solid fa-check"></i> 승인
+                  </button>
+                </form>
+                <form th:action="@{/admin/refunds/{refundId}/reject(refundId=${refund.refundId})}" method="post">
+                  <input type="hidden" name="status" th:value="${selectedStatus}">
+                  <button type="submit" class="btn btn-danger" style="padding: 6px 12px;">
+                    <i class="fa-solid fa-xmark"></i> 거절
+                  </button>
+                </form>
+              </div>
+              <div th:unless="${refund.requested}" style="color: var(--secondary); font-size: 0.85rem; font-weight: 600;">
+                <i class="fa-solid fa-lock"></i> 처리 완료
+              </div>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div th:if="${#lists.isEmpty(refunds)}" class="empty-box">
+        <i class="fa-solid fa-receipt"></i>
+        <p>조회된 환불 요청 내역이 없습니다.</p>
+      </div>
+    </div>
+  </div>
+</main>
+</body>
+</html>

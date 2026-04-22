@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html class="dark" lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UNIT RECALIBRATION | MODULE02 LMS</title>
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#99f7ff",
+                        "secondary": "#c97cff",
+                        "surface-container": "#161a21",
+                        "on-surface": "#ecedf6",
+                    },
+                    fontFamily: {
+                        "headline": ["Space Grotesk"],
+                        "body": ["Inter"],
+                        "label": ["Space Grotesk"]
+                    }
+                },
+            },
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0b0e14;
+            color: #ecedf6;
+            background-image: radial-gradient(circle at 50% 50%, rgba(153, 247, 255, 0.05) 0%, transparent 50%);
+        }
+
+        .recal-input {
+            background: rgba(15, 23, 42, 0.6) !important;
+            border: 1px solid rgba(255, 255, 255, 0.05) !important;
+            border-radius: 16px !important;
+            color: #ecedf6 !important;
+            padding: 14px 18px !important;
+            transition: all 0.3s ease;
+        }
+        .recal-input:focus {
+            border-color: #c97cff !important; /* 수정 모드는 퍼플 계열 강조 */
+            background: rgba(15, 23, 42, 0.9) !important;
+            box-shadow: 0 0 20px rgba(201, 124, 255, 0.1) !important;
+            outline: none !important;
+        }
+
+        .edit-indicator::after {
+            content: ' [MODIFIABLE]';
+            color: #c97cff;
+            font-size: 8px;
+            letter-spacing: 1px;
+            vertical-align: top;
+        }
+
+        /* 기존 데이터 카드 특수 효과 */
+        .legacy-data-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0) 100%);
+            border: 1px solid rgba(153, 247, 255, 0.1);
+        }
+    </style>
+</head>
+
+<body class="min-h-screen">
+
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-6 h-16 bg-slate-950/40 backdrop-blur-xl shadow-[0_0_20px_rgba(153,247,255,0.1)]">
+    <div class="flex items-center gap-8">
+        <span class="text-2xl font-bold tracking-tighter text-cyan-400 drop-shadow-[0_0_8px_rgba(153,247,255,0.6)] font-headline">MODULE02 LMS</span>
+        <span class="hidden md:inline text-xs font-label text-slate-400 tracking-widest uppercase">우주/외계인 세계관 학습 플랫폼</span>
+    </div>
+
+    <div class="flex items-center gap-4">
+        <div class="flex items-center gap-4" th:if="${loginMember == null}">
+            <a th:href="@{/login}" class="text-slate-300 hover:text-cyan-300 font-label text-xs tracking-widest transition-colors">로그인</a>
+            <a th:href="@{/signup}" class="bg-primary/10 border border-primary/30 text-primary px-4 py-1.5 rounded text-xs font-label tracking-widest hover:bg-primary/20 transition-all shadow-[0_0_10px_rgba(153,247,255,0.1)]">회원가입</a>
+        </div>
+
+        <div class="flex items-center gap-4" th:if="${loginMember != null}">
+            <div class="text-right hidden sm:block mr-2">
+                <span class="text-xs font-label tracking-widest text-cyan-400" th:text="|${loginMember.name} 님|"></span>
+                <span class="text-[10px] text-slate-500 font-label tracking-tight ml-1" th:text="|(${loginMember.role})|"></span>
+            </div>
+            <a th:href="@{/logout}" class="flex items-center gap-1 text-slate-400 hover:text-error transition-colors text-xs font-label">
+                <span class="material-symbols-outlined text-sm">power_settings_new</span> 로그아웃
+            </a>
+        </div>
+    </div>
+</header>
+
+<aside class="fixed left-0 top-16 bottom-0 flex flex-col z-40 bg-slate-950/80 backdrop-blur-lg w-64 border-r border-white/5">
+    <nav class="flex-1 py-6">
+        <a th:href="@{/instructor}" class="flex items-center gap-4 text-slate-400 hover:text-cyan-400 hover:bg-cyan-400/5 py-3.5 px-6 transition-all font-label">
+            <span class="material-symbols-outlined">satellite_alt</span>
+            <span class="text-sm tracking-wide uppercase">Command Center</span>
+        </a>
+        <a th:href="@{/instructor/courses/PUBLISHED}" class="flex items-center gap-4 text-primary bg-primary/10 border-r-4 border-primary py-3.5 px-6 font-label">
+            <span class="material-symbols-outlined">library_books</span>
+            <span class="text-sm tracking-wide tracking-widest uppercase font-bold">Course Assets</span>
+        </a>
+    </nav>
+
+    <div class="p-6 mt-auto">
+        <div class="relative group cursor-help">
+            <div class="absolute -inset-1 bg-gradient-to-r from-cyan-500/20 to-purple-500/20 rounded-xl blur opacity-25 group-hover:opacity-50 transition duration-1000"></div>
+
+            <div class="relative w-full bg-slate-900/50 border border-white/10 p-4 rounded-xl">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-[9px] font-label font-black text-slate-500 uppercase tracking-widest">Network Status</span>
+                    <span class="flex h-2 w-2">
+                        <span class="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-cyan-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
+                    </span>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <span class="material-symbols-outlined text-primary text-sm animate-pulse">radar</span>
+                    <div class="flex-1">
+                        <div class="h-1 w-full bg-white/5 rounded-full overflow-hidden">
+                            <div class="h-full bg-primary w-[85%] shadow-[0_0_8px_#99f7ff]"></div>
+                        </div>
+                    </div>
+                </div>
+                <p class="mt-2 text-[9px] font-label text-primary/60 text-center uppercase tracking-[0.2em]">System Online</p>
+            </div>
+        </div>
+    </div>
+</aside>
+
+<main class="ml-64 pt-28 px-10 pb-16">
+    <div class="max-w-5xl mx-auto">
+
+        <div class="mb-12">
+            <div class="flex items-center gap-2 mb-4">
+                <a th:href="@{/instructor/courses/{courseId}/lectures(courseId=${courseId})}"
+                   class="flex items-center gap-1 text-[10px] font-label text-slate-500 uppercase tracking-widest hover:text-secondary transition-colors">
+                    <span class="material-symbols-outlined text-xs">arrow_back</span> Return to Fleet
+                </a>
+            </div>
+            <div class="flex items-center gap-3 mb-2">
+                <span class="h-[1px] w-8 bg-secondary/40"></span>
+                <span class="text-[10px] font-label tracking-[0.4em] text-secondary uppercase font-black">Recalibrating Unit [[${lecture.lectureOrderIndex}]]</span>
+            </div>
+            <h1 class="text-4xl font-headline font-black text-on-surface tracking-tighter uppercase italic leading-none">
+                Adjust <span class="text-secondary/50">Module Data</span>
+            </h1>
+        </div>
+
+        <form th:action="@{/instructor/courses/{courseId}/lectures/{lectureId}/edit(courseId=${courseId}, lectureId=${lecture.lectureId})}"
+              method="post" enctype="multipart/form-data">
+
+            <div class="bg-surface-container/60 backdrop-blur-xl border border-white/5 p-10 rounded-[3rem] shadow-2xl relative overflow-hidden">
+                <div class="absolute -bottom-24 -right-24 w-64 h-64 bg-secondary/5 rounded-full blur-[80px]"></div>
+
+                <div class="flex flex-col lg:flex-row gap-12 relative z-10">
+
+                    <div class="w-full lg:w-1/2 space-y-6">
+                        <label class="text-[9px] font-label font-black text-slate-600 uppercase tracking-[0.2em] block px-1">Visual Stream Override</label>
+
+                        <div th:if="${lecture.videoUrl != null}" class="legacy-data-card p-6 rounded-3xl flex items-center gap-4 group">
+                            <div class="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center text-primary/40 group-hover:text-primary transition-colors">
+                                <span class="material-symbols-outlined text-2xl">cloud_done</span>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-[8px] font-label text-slate-500 uppercase tracking-widest mb-1">Current Active Stream</p>
+                                <p class="text-[11px] font-body text-slate-400 truncate italic" th:text="${lecture.videoUrl}">URL</p>
+                            </div>
+                        </div>
+
+                        <div id="videoUploadArea" onclick="document.getElementById('lectureVideo').click()"
+                             class="group relative min-h-[280px] rounded-[2.5rem] bg-slate-950 border-2 border-dashed border-white/5 hover:border-secondary/40 flex flex-col items-center justify-center gap-5 cursor-pointer transition-all duration-500">
+
+                            <div class="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center text-slate-700 group-hover:text-secondary transition-colors duration-500">
+                                <span class="material-symbols-outlined text-4xl">sync_alt</span>
+                            </div>
+
+                            <div class="text-center space-y-2">
+                                <p class="text-[10px] font-label tracking-[0.2em] uppercase font-black text-slate-500 group-hover:text-secondary transition-colors">Select New Stream</p>
+                                <p class="text-[9px] font-label text-slate-700 tracking-widest uppercase">Leave empty to keep current</p>
+                            </div>
+                        </div>
+
+                        <div id="videoFileInfo" class="hidden flex-col gap-4 p-8 rounded-[2.5rem] bg-secondary/5 border border-secondary/20 backdrop-blur-md">
+                            <div class="flex items-center gap-5">
+                                <div class="w-14 h-14 rounded-2xl bg-secondary/10 flex items-center justify-center text-secondary">
+                                    <span class="material-symbols-outlined text-3xl">upload_file</span>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <p id="videoFileName" class="text-sm font-headline font-bold text-on-surface truncate tracking-tight uppercase">New_File.mp4</p>
+                                    <p id="videoFileSize" class="text-[10px] font-label text-secondary/60 tracking-widest uppercase">0.00 MB</p>
+                                </div>
+                            </div>
+                            <button type="button" onclick="document.getElementById('lectureVideo').click()"
+                                    class="w-full py-3 rounded-xl bg-white/5 border border-white/10 text-[9px] font-label text-slate-400 uppercase tracking-widest hover:text-white transition-all">
+                                Change New Selection
+                            </button>
+                        </div>
+
+                        <input type="file" id="lectureVideo" name="lectureVideo" accept="video/*" class="hidden" onchange="previewVideo(event)"/>
+                    </div>
+
+                    <div class="flex-1 space-y-10">
+
+                        <div class="space-y-3">
+                            <label class="text-[9px] font-label font-black text-slate-600 uppercase tracking-widest block px-1 edit-indicator">Unit Designation</label>
+                            <input type="text" name="lectureTitle" th:value="${lecture.lectureTitle}" placeholder="수정할 명칭을 입력하십시오"
+                                   class="recal-input w-full font-headline font-bold text-lg" required/>
+                        </div>
+
+                        <div class="space-y-3 flex-1 flex flex-col">
+                            <label class="text-[9px] font-label font-black text-slate-600 uppercase tracking-widest block px-1">Unit Description</label>
+                            <textarea name="lectureDescription" rows="12" placeholder="수정된 학습 목표와 상세 내용을 기록하십시오."
+                                      class="recal-input w-full font-body text-sm leading-relaxed flex-1 resize-none"
+                                      th:text="${lecture.lectureDescription}"></textarea>
+                        </div>
+
+                        <div class="p-6 rounded-2xl bg-red-400/[0.02] border border-red-400/10 flex items-center gap-4">
+                            <div class="w-10 h-10 rounded-full bg-slate-900 border border-red-400/20 flex items-center justify-center text-red-400/50">
+                                <span class="material-symbols-outlined text-xl">history</span>
+                            </div>
+                            <div>
+                                <p class="text-[9px] font-label text-slate-600 tracking-widest uppercase italic">Warning</p>
+                                <p class="text-[10px] font-label font-black text-red-400/70 tracking-widest uppercase">New upload will overwrite previous data</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-12 pt-8 border-t border-white/5 flex justify-end gap-5">
+                    <a th:href="@{/instructor/courses/{courseId}/lectures(courseId=${courseId})}"
+                       class="px-8 py-3.5 rounded-2xl text-slate-600 font-label text-[10px] font-black uppercase tracking-widest hover:text-white transition-all">
+                        Cancel Adjustment
+                    </a>
+                    <button type="submit" class="px-12 py-3.5 bg-secondary text-slate-950 font-label text-[10px] font-black rounded-2xl hover:scale-105 active:scale-95 transition-all shadow-[0_10px_30px_rgba(201,124,255,0.2)] uppercase tracking-widest">
+                        Apply Recalibration
+                        </a>
+                </div>
+            </div>
+        </form>
+    </div>
+</main>
+
+<script>
+    function previewVideo(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const uploadArea = document.getElementById('videoUploadArea');
+        const fileInfo   = document.getElementById('videoFileInfo');
+        const fileName   = document.getElementById('videoFileName');
+        const fileSize   = document.getElementById('videoFileSize');
+
+        fileName.textContent = file.name;
+        const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
+        fileSize.textContent = sizeMB + ' MB';
+
+        uploadArea.classList.add('hidden');
+        fileInfo.classList.remove('hidden');
+        fileInfo.classList.add('flex');
+    }
+</script>
+
+</body>
+</html>

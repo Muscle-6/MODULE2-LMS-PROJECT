@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html class="dark" lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Module02 LMS - 공지 상세</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=Inter:wght@400;500&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            primary: "#99f7ff",
+            surface: "#0b0e14",
+            container: "#161a21",
+            outline: "#45484f"
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #0b0e14;
+      color: #ecedf6;
+    }
+    .font-headline { font-family: 'Space Grotesk', sans-serif; }
+  </style>
+</head>
+
+<body>
+
+<!-- 헤더 -->
+<header class="fixed top-0 left-0 right-0 h-16 px-6 flex justify-between items-center bg-black/40 backdrop-blur-xl z-50 border-b border-white/10">
+  <div class="text-xl font-bold text-primary">
+    MODULE02 LMS
+  </div>
+</header>
+
+<aside class="fixed left-0 top-16 bottom-0 flex flex-col z-40 bg-slate-950/80 backdrop-blur-lg w-64 shadow-[4px_0_24px_rgba(0,0,0,0.5)] border-r border-white/5 transition-all duration-300">
+
+  <div class="p-6 border-b border-white/5" th:if="${loginMember != null}">
+    <div class="flex items-center gap-4 group">
+      <div class="h-11 w-11 rounded-xl bg-cyan-400/10 flex items-center justify-center border border-cyan-400/20 shadow-[0_0_15px_rgba(153,247,255,0.1)] group-hover:border-cyan-400/40 transition-all">
+        <span class="material-symbols-outlined text-cyan-400 text-2xl" style="font-variation-settings: 'FILL' 1;">military_tech</span>
+      </div>
+      <div class="flex flex-col">
+        <p class="text-xs font-headline font-black text-cyan-400 tracking-tight leading-none mb-1 uppercase" th:text="${loginMember.name}">OPERATIVE</p>
+        <div class="flex items-center gap-1">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+          <p class="text-[10px] font-label text-slate-500 font-bold tracking-tighter uppercase" th:text="|RANK: ${loginMember.role}|">RANK</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <nav class="flex-1 py-6 space-y-1">
+    <div class="px-6 mb-4">
+      <span class="text-[9px] font-label font-black text-slate-600 uppercase tracking-[0.3em]">Main Protocol</span>
+    </div>
+
+    <a th:href="@{/}" data-menu="continent"
+       class="menu-item flex items-center gap-4 py-3.5 px-6 transition-all duration-200 group text-slate-500 hover:bg-white/5 hover:text-slate-300">
+      <span class="material-symbols-outlined text-xl group-hover:scale-110 transition-transform">public</span>
+      <span class="text-sm font-label font-bold tracking-wide">대륙 탐색</span>
+    </a>
+
+    <a th:href="@{/student}" data-menu="student"
+       class="menu-item flex items-center gap-4 py-3.5 px-6 transition-all duration-200 group text-slate-500 hover:bg-white/5 hover:text-slate-300">
+      <span class="material-symbols-outlined text-xl group-hover:scale-110 transition-transform">rocket_launch</span>
+      <span class="text-sm font-label font-bold tracking-wide">학생 홈</span>
+    </a>
+  </nav>
+
+  <div class="p-6 mt-auto">
+    <div class="relative group cursor-help">
+      <div class="absolute -inset-1 bg-gradient-to-r from-cyan-500/20 to-purple-500/20 rounded-xl blur opacity-25 group-hover:opacity-50 transition duration-1000"></div>
+
+      <div class="relative w-full bg-slate-900/50 border border-white/10 p-4 rounded-xl">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-[9px] font-label font-black text-slate-500 uppercase tracking-widest">Network Status</span>
+          <span class="flex h-2 w-2">
+                        <span class="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-cyan-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
+                    </span>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <span class="material-symbols-outlined text-primary text-sm animate-pulse">radar</span>
+          <div class="flex-1">
+            <div class="h-1 w-full bg-white/5 rounded-full overflow-hidden">
+              <div class="h-full bg-primary w-[85%] shadow-[0_0_8px_#99f7ff]"></div>
+            </div>
+          </div>
+        </div>
+        <p class="mt-2 text-[9px] font-label text-primary/60 text-center uppercase tracking-[0.2em]">System Online</p>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- 메인 -->
+<main class="ml-64 pt-24 px-8 pb-12 max-w-5xl">
+
+  <!-- 상단 -->
+  <div class="mb-10">
+    <a th:href="@{/student/courses/{id}/notices(id=${courseId})}"
+       class="flex items-center gap-1 text-gray-500 hover:text-primary transition text-xs font-headline mb-4">
+      <span class="material-symbols-outlined text-sm">arrow_back</span>
+      목록으로
+    </a>
+
+    <h1 class="text-4xl font-headline font-bold mb-2">
+      공지 상세
+    </h1>
+  </div>
+
+  <!-- 카드 -->
+  <div class="bg-container/60 backdrop-blur-xl rounded-xl border border-white/10 p-10">
+
+    <!-- 헤더 -->
+    <div class="flex items-start gap-4 mb-8 pb-6 border-b border-white/10">
+
+      <div class="w-12 h-12 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center">
+        <span class="material-symbols-outlined text-primary text-2xl">campaign</span>
+      </div>
+
+      <div>
+        <h3 class="text-2xl font-headline font-bold"
+            th:text="${notice.noticeTitle}">
+          제목
+        </h3>
+
+        <p class="text-xs text-gray-500 mt-1"
+           th:text="|${notice.authorName} · ${#temporals.format(notice.createdAt, 'yyyy.MM.dd HH:mm')}|">
+        </p>
+      </div>
+
+    </div>
+
+    <!-- 본문 -->
+    <div class="text-gray-200 leading-relaxed text-base whitespace-pre-wrap min-h-[300px]"
+         th:text="${notice.noticeContent}">
+    </div>
+
+    <!-- 수정일 -->
+    <div th:if="${notice.updatedAt != null and notice.updatedAt != notice.createdAt}"
+         class="mt-10 pt-4 border-t border-white/10 text-xs text-gray-500 text-right">
+      수정일:
+      <span th:text="${#temporals.format(notice.updatedAt, 'yyyy-MM-dd HH:mm')}"></span>
+    </div>
+
+  </div>
+
+</main>
+<script th:inline="javascript">
+  document.addEventListener("DOMContentLoaded", function() {
+    const path = window.location.pathname;
+    const activeClass = "text-cyan-400 bg-cyan-400/10 border-r-4 border-cyan-400";
+    const inactiveClass = "text-slate-500 hover:bg-white/5 hover:text-slate-300";
+
+    const continentMenu = document.querySelector('[data-menu="continent"]');
+    const studentMenu = document.querySelector('[data-menu="student"]');
+
+    // 모든 메뉴 초기화
+    document.querySelectorAll('.menu-item').forEach(el => {
+      el.className = el.className.replace(activeClass, "").trim() + " " + inactiveClass;
+    });
+
+    // 경로에 따라 불 켜기
+    if (path.startsWith('/student')) {
+      studentMenu.className = studentMenu.className.replace(inactiveClass, "").trim() + " " + activeClass;
+    } else {
+      // 루트(/), /continents, /posts 등은 모두 대륙 탐색 활성화
+      continentMenu.className = continentMenu.className.replace(inactiveClass, "").trim() + " " + activeClass;
+    }
+  });
+</script>
+</body>
+</html>

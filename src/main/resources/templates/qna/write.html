@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html class="dark" lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NEW TRANSMISSION | MODULE02 LMS</title>
+
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#99f7ff",
+            "secondary": "#c97cff",
+            "surface-container": "#161a21",
+            "surface-container-high": "#1c2028",
+            "on-surface": "#ecedf6",
+            "on-surface-variant": "#a9abb3",
+            "outline-variant": "#2a2f3a",
+          },
+          fontFamily: {
+            "headline": ["Space Grotesk"],
+            "body": ["Inter"],
+            "label": ["Space Grotesk"]
+          }
+        },
+      },
+    }
+  </script>
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #0b0e14;
+      color: #ecedf6;
+      background-image: radial-gradient(circle at 50% 50%, rgba(153, 247, 255, 0.05) 0%, transparent 50%);
+      overflow-x: hidden;
+    }
+    .material-symbols-outlined { vertical-align: middle; }
+
+    /* 10년차 사수의 눈 보호용 입력창 스타일 */
+    .cyber-input {
+      width: 100%;
+      background: rgba(15, 23, 42, 0.6) !important;
+      border: 1px solid rgba(153, 247, 255, 0.1) !important;
+      border-radius: 12px;
+      padding: 16px;
+      color: #99f7ff !important; /* 민트색 텍스트로 가독성 UP */
+      transition: all 0.3s ease;
+      font-family: 'Inter', sans-serif;
+    }
+    .cyber-input:focus {
+      outline: none;
+      background: rgba(15, 23, 42, 0.9) !important;
+      border-color: #99f7ff !important;
+      box-shadow: 0 0 20px rgba(153, 247, 255, 0.15);
+      color: #ffffff !important;
+    }
+    .cyber-input::placeholder {
+      color: rgba(153, 247, 255, 0.2);
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+
+<body class="min-h-screen">
+
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-6 h-16 bg-slate-950/40 backdrop-blur-xl border-b border-white/5">
+  <div class="flex items-center gap-8">
+    <a href="/" class="text-2xl font-bold tracking-tighter text-cyan-400 font-headline uppercase">Module02 LMS</a>
+  </div>
+  <div class="flex items-center gap-4" th:if="${loginMember != null}">
+    <div class="text-right hidden sm:block mr-2">
+      <span class="text-xs font-label tracking-widest text-cyan-400" th:text="|${loginMember.name} 님|"></span>
+    </div>
+    <a th:href="@{/logout}" class="flex items-center gap-1 text-slate-400 hover:text-red-400 transition-colors text-xs font-label uppercase tracking-widest">
+      <span class="material-symbols-outlined text-sm">power_settings_new</span> 로그아웃
+    </a>
+  </div>
+</header>
+
+<aside class="fixed left-0 top-16 bottom-0 flex flex-col z-40 bg-slate-950/80 backdrop-blur-lg w-64 shadow-[4px_0_24px_rgba(0,0,0,0.5)] border-r border-white/5 transition-all duration-300">
+
+  <div class="p-6 border-b border-white/5" th:if="${loginMember != null}">
+    <div class="flex items-center gap-4 group">
+      <div class="h-11 w-11 rounded-xl bg-cyan-400/10 flex items-center justify-center border border-cyan-400/20 shadow-[0_0_15px_rgba(153,247,255,0.1)] group-hover:border-cyan-400/40 transition-all">
+        <span class="material-symbols-outlined text-cyan-400 text-2xl" style="font-variation-settings: 'FILL' 1;">military_tech</span>
+      </div>
+      <div class="flex flex-col">
+        <p class="text-xs font-headline font-black text-cyan-400 tracking-tight leading-none mb-1 uppercase" th:text="${loginMember.name}">OPERATIVE</p>
+        <div class="flex items-center gap-1">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+          <p class="text-[10px] font-label text-slate-500 font-bold tracking-tighter uppercase" th:text="|RANK: ${loginMember.role}|">RANK</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <nav class="flex-1 py-6 space-y-1">
+    <div class="px-6 mb-4">
+      <span class="text-[9px] font-label font-black text-slate-600 uppercase tracking-[0.3em]">Main Protocol</span>
+    </div>
+
+    <a href="/"
+       class="flex items-center gap-4 py-3.5 px-6 transition-all duration-200 group text-slate-500 hover:bg-white/5 hover:text-slate-300">
+      <span class="material-symbols-outlined text-xl group-hover:scale-110 transition-transform">public</span>
+      <span class="text-sm font-label font-bold tracking-wide">대륙 탐색</span>
+    </a>
+
+    <a th:href="@{/student}"
+       class="flex items-center gap-4 py-3.5 px-6 transition-all duration-200 group text-cyan-400 bg-cyan-400/10 border-r-4 border-cyan-400">
+      <span class="material-symbols-outlined text-xl group-hover:scale-110 transition-transform">rocket_launch</span>
+      <span class="text-sm font-label font-bold tracking-wide">학생 홈</span>
+    </a>
+  </nav>
+
+  <div class="p-6 mt-auto">
+    <div class="relative group cursor-help">
+      <div class="absolute -inset-1 bg-gradient-to-r from-cyan-500/20 to-purple-500/20 rounded-xl blur opacity-25 group-hover:opacity-50 transition duration-1000"></div>
+
+      <div class="relative w-full bg-slate-900/50 border border-white/10 p-4 rounded-xl">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-[9px] font-label font-black text-slate-500 uppercase tracking-widest">Network Status</span>
+          <span class="flex h-2 w-2">
+                        <span class="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-cyan-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
+                    </span>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <span class="material-symbols-outlined text-primary text-sm animate-pulse">radar</span>
+          <div class="flex-1">
+            <div class="h-1 w-full bg-white/5 rounded-full overflow-hidden">
+              <div class="h-full bg-primary w-[85%] shadow-[0_0_8px_#99f7ff]"></div>
+            </div>
+          </div>
+        </div>
+        <p class="mt-2 text-[9px] font-label text-primary/60 text-center uppercase tracking-[0.2em]">System Online</p>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<main class="ml-64 pt-28 px-10 pb-16">
+  <div class="max-w-3xl mx-auto">
+
+    <div class="mb-10">
+      <a th:href="@{/student/course/{id}/qna(id=${courseId})}"
+         class="flex items-center gap-2 text-[10px] font-label tracking-widest text-slate-500 hover:text-primary transition-all uppercase group mb-6">
+        <span class="material-symbols-outlined text-sm transition-transform group-hover:-translate-x-1">arrow_back</span>
+        Return to Q&A Log
+      </a>
+      <div class="flex items-center gap-3 mb-2">
+        <span class="h-[1px] w-8 bg-primary/40"></span>
+        <span class="text-[10px] font-label tracking-[0.3em] text-primary uppercase">Uplink Established</span>
+      </div>
+      <h1 class="text-4xl font-headline font-black text-on-surface tracking-tight uppercase leading-none">
+        New <span class="text-primary/50">Transmission</span>
+      </h1>
+    </div>
+
+    <form th:action="@{/student/course/{id}/qna/write(id=${courseId})}"
+          method="post"
+          class="bg-surface-container/60 backdrop-blur-xl border border-white/5 p-10 rounded-3xl shadow-2xl space-y-8 relative overflow-hidden">
+
+      <div class="absolute top-0 right-0 p-4 opacity-5">
+        <span class="material-symbols-outlined text-9xl">post_add</span>
+      </div>
+
+      <div class="space-y-3">
+        <label class="flex items-center gap-2 text-[10px] font-label font-black text-slate-500 uppercase tracking-widest">
+          <span class="material-symbols-outlined text-sm text-primary">terminal</span> Subject / Intel Title
+        </label>
+        <input type="text" name="qnaTitle"
+               class="cyber-input text-lg font-bold"
+               placeholder="데이터 전송 제목을 입력하십시오..."
+               required>
+      </div>
+
+      <div class="space-y-3">
+        <label class="flex items-center gap-2 text-[10px] font-label font-black text-slate-500 uppercase tracking-widest">
+          <span class="material-symbols-outlined text-sm text-primary">description</span> Detailed Content
+        </label>
+        <textarea name="qnaContent"
+                  class="cyber-input min-h-[300px] text-sm leading-relaxed"
+                  placeholder="상세 첩보 내용을 입력하십시오..."
+                  required></textarea>
+      </div>
+
+      <div class="flex items-center justify-end gap-6 pt-6 border-t border-white/5">
+        <a th:href="@{/student/course/{id}/qna(id=${courseId})}"
+           class="text-[10px] font-label font-black text-slate-500 uppercase tracking-[0.2em] hover:text-white transition-all">
+          Discard
+        </a>
+        <button type="submit"
+                class="px-12 py-4 bg-primary text-slate-950 font-label text-[10px] font-black rounded-xl hover:bg-white hover:scale-105 active:scale-95 transition-all shadow-[0_0_25px_rgba(153,247,255,0.2)] uppercase tracking-[0.2em] flex items-center gap-2">
+          <span class="material-symbols-outlined text-sm">send</span> Initializing Uplink
+        </button>
+      </div>
+    </form>
+
+  </div>
+</main>
+
+</body>
+</html>

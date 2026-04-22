@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html class="dark" lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>INTEL VIEW | MODULE02 LMS</title>
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#99f7ff",
+                        "secondary": "#c97cff",
+                        "surface-container": "#161a21",
+                        "surface-container-high": "#1c2028",
+                        "on-surface": "#ecedf6",
+                    },
+                    fontFamily: {
+                        "headline": ["Space Grotesk"],
+                        "body": ["Inter"],
+                        "label": ["Space Grotesk"]
+                    }
+                },
+            },
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0b0e14;
+            color: #ecedf6;
+            background-image: radial-gradient(circle at 50% 50%, rgba(153, 247, 255, 0.05) 0%, transparent 50%);
+        }
+
+        /* 데이터 필드 장식 */
+        .intel-field {
+            position: relative;
+            background: rgba(15, 23, 42, 0.4);
+            border: 1px solid rgba(153, 247, 255, 0.05);
+            border-radius: 16px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+        .intel-field:hover {
+            background: rgba(15, 23, 42, 0.6);
+            border-color: rgba(153, 247, 255, 0.2);
+        }
+        .intel-field::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 2px;
+            height: 0;
+            background: #99f7ff;
+            transition: height 0.3s ease;
+        }
+        .intel-field:hover::before {
+            height: 100%;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen">
+
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-6 h-16 bg-slate-950/40 backdrop-blur-xl shadow-[0_0_20px_rgba(153,247,255,0.1)]">
+    <div class="flex items-center gap-8">
+        <span class="text-2xl font-bold tracking-tighter text-cyan-400 drop-shadow-[0_0_8px_rgba(153,247,255,0.6)] font-headline">MODULE02 LMS</span>
+        <span class="hidden md:inline text-xs font-label text-slate-400 tracking-widest uppercase">우주/외계인 세계관 학습 플랫폼</span>
+    </div>
+
+    <div class="flex items-center gap-4">
+        <div class="flex items-center gap-4" th:if="${loginMember == null}">
+            <a th:href="@{/login}" class="text-slate-300 hover:text-cyan-300 font-label text-xs tracking-widest transition-colors">로그인</a>
+            <a th:href="@{/signup}" class="bg-primary/10 border border-primary/30 text-primary px-4 py-1.5 rounded text-xs font-label tracking-widest hover:bg-primary/20 transition-all shadow-[0_0_10px_rgba(153,247,255,0.1)]">회원가입</a>
+        </div>
+
+        <div class="flex items-center gap-4" th:if="${loginMember != null}">
+            <div class="text-right hidden sm:block mr-2">
+                <span class="text-xs font-label tracking-widest text-cyan-400" th:text="|${loginMember.name} 님|"></span>
+                <span class="text-[10px] text-slate-500 font-label tracking-tight ml-1" th:text="|(${loginMember.role})|"></span>
+            </div>
+            <a th:href="@{/logout}" class="flex items-center gap-1 text-slate-400 hover:text-error transition-colors text-xs font-label">
+                <span class="material-symbols-outlined text-sm">power_settings_new</span> 로그아웃
+            </a>
+        </div>
+    </div>
+</header>
+
+<aside class="fixed left-0 top-16 bottom-0 flex flex-col z-40 bg-slate-950/80 backdrop-blur-lg w-64 border-r border-white/5">
+    <nav class="flex-1 py-6">
+        <a th:href="@{/instructor}" class="flex items-center gap-4 text-slate-400 hover:text-cyan-400 hover:bg-cyan-400/5 py-3.5 px-6 transition-all font-label">
+            <span class="material-symbols-outlined">arrow_back</span>
+            <span class="text-sm tracking-wide">Back to Command</span>
+        </a>
+        <div class="flex items-center gap-4 text-cyan-400 bg-cyan-400/10 border-r-4 border-cyan-400 py-3.5 px-6 font-label">
+            <span class="material-symbols-outlined">person</span>
+            <span class="text-sm tracking-wide tracking-widest uppercase">Intel Overview</span>
+        </div>
+    </nav>
+    <div class="p-6 mt-auto">
+        <div class="relative group cursor-help">
+            <div class="absolute -inset-1 bg-gradient-to-r from-cyan-500/20 to-purple-500/20 rounded-xl blur opacity-25 group-hover:opacity-50 transition duration-1000"></div>
+
+            <div class="relative w-full bg-slate-900/50 border border-white/10 p-4 rounded-xl">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-[9px] font-label font-black text-slate-500 uppercase tracking-widest">Network Status</span>
+                    <span class="flex h-2 w-2">
+                        <span class="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-cyan-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
+                    </span>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <span class="material-symbols-outlined text-primary text-sm animate-pulse">radar</span>
+                    <div class="flex-1">
+                        <div class="h-1 w-full bg-white/5 rounded-full overflow-hidden">
+                            <div class="h-full bg-primary w-[85%] shadow-[0_0_8px_#99f7ff]"></div>
+                        </div>
+                    </div>
+                </div>
+                <p class="mt-2 text-[9px] font-label text-primary/60 text-center uppercase tracking-[0.2em]">System Online</p>
+            </div>
+        </div>
+    </div>
+</aside>
+
+<main class="ml-64 pt-32 px-10 pb-16">
+    <div class="max-w-4xl mx-auto">
+
+        <div class="mb-10">
+            <div class="flex items-center gap-3 mb-2">
+                <span class="h-[1px] w-8 bg-primary/40"></span>
+                <span class="text-[10px] font-label tracking-[0.3em] text-primary uppercase">Personnel File</span>
+            </div>
+            <h1 class="text-4xl font-headline font-black text-on-surface tracking-tighter uppercase italic leading-none">
+                Operative <span class="text-primary/50">Profile</span>
+            </h1>
+        </div>
+
+        <div class="bg-surface-container/60 backdrop-blur-xl border border-white/5 p-10 rounded-[2.5rem] shadow-2xl relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary/30 to-transparent"></div>
+
+            <div class="flex flex-col md:flex-row gap-12 items-start">
+
+                <div class="flex flex-col items-center gap-6">
+                    <div class="relative group">
+                        <div class="w-32 h-32 rounded-3xl bg-slate-950 border border-primary/20 p-1 shadow-[0_0_30px_rgba(153,247,255,0.1)] overflow-hidden">
+                            <img th:if="${user.profileImageUrl != null}" th:src="${user.profileImageUrl}"
+                                 class="w-full h-full object-cover rounded-2xl transition-transform group-hover:scale-110 duration-500"/>
+                            <div th:if="${user.profileImageUrl == null}"
+                                 class="w-full h-full flex items-center justify-center text-primary/20">
+                                <span class="material-symbols-outlined text-6xl">account_circle</span>
+                            </div>
+                        </div>
+                        <div class="absolute -bottom-2 -right-2 w-8 h-8 rounded-lg bg-slate-950 border border-primary/40 flex items-center justify-center shadow-lg">
+                            <span class="material-symbols-outlined text-primary text-sm">shield_person</span>
+                        </div>
+                    </div>
+
+                    <div class="text-center space-y-2">
+                        <span class="px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-[10px] font-label font-bold text-primary tracking-widest uppercase shadow-[0_0_15px_rgba(153,247,255,0.1)]"
+                              th:text="${user.role != null ? user.role.displayName : 'UNKNOWN'}">ROLE</span>
+                        <p class="text-[9px] text-slate-500 font-label tracking-[0.2em] uppercase pt-2">Authorized Personnel</p>
+                    </div>
+                </div>
+
+                <div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
+
+                    <div class="intel-field">
+                        <label class="text-[9px] font-label font-black text-slate-600 uppercase tracking-widest block mb-1">Access Identity</label>
+                        <p class="text-primary font-headline font-bold tracking-tight" th:text="${user.loginId}">ID_NULL</p>
+                    </div>
+
+                    <div class="intel-field">
+                        <label class="text-[9px] font-label font-black text-slate-600 uppercase tracking-widest block mb-1">Full Name</label>
+                        <p class="text-on-surface font-body font-semibold" th:text="${user.name}">NAME_NULL</p>
+                    </div>
+
+                    <div class="intel-field">
+                        <label class="text-[9px] font-label font-black text-slate-600 uppercase tracking-widest block mb-1">Communication Channel</label>
+                        <p class="text-on-surface font-body text-sm" th:text="${user.email}">EMAIL_NULL</p>
+                    </div>
+
+                    <div class="intel-field">
+                        <label class="text-[9px] font-label font-black text-slate-600 uppercase tracking-widest block mb-1">Telephone</label>
+                        <p class="text-on-surface font-body text-sm" th:text="${user.phone != null ? user.phone : 'NO SIGNAL'}">PHONE_NULL</p>
+                    </div>
+
+                    <div class="intel-field md:col-span-2">
+                        <label class="text-[9px] font-label font-black text-slate-600 uppercase tracking-widest block mb-1">Operative Biography</label>
+                        <p class="text-slate-400 font-body text-xs leading-relaxed"
+                           th:text="${user.introduction != null ? user.introduction : '사령부에 등록된 요원 정보가 없습니다.'}">BIO_NULL</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-end gap-4 mt-12 pt-8 border-t border-white/5">
+                <a th:href="@{/instructor/profile/edit}"
+                   class="px-10 py-3 bg-primary text-slate-950 font-label text-[10px] font-black rounded-xl hover:bg-white hover:scale-105 active:scale-95 transition-all shadow-[0_0_25px_rgba(153,247,255,0.2)] uppercase tracking-widest flex items-center gap-2">
+                    <span class="material-symbols-outlined text-sm font-bold">edit</span> Re-Configure Intel
+                </a>
+            </div>
+        </div>
+
+        <div class="mt-8 px-6 flex items-center justify-between text-[9px] font-label text-slate-700 tracking-[0.2em] uppercase">
+            <div class="flex gap-4">
+                <span>Access: Restricted</span>
+                <span>Encryption: Active</span>
+            </div>
+            <span>Module02 Admin Protocol</span>
+        </div>
+    </div>
+</main>
+
+</body>
+</html>

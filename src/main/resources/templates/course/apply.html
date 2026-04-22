@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html class="dark" lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DEPLOY MISSION | MODULE02 LMS</title>
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#99f7ff",
+                        "secondary": "#c97cff",
+                        "surface-container": "#161a21",
+                        "on-surface": "#ecedf6",
+                    },
+                    fontFamily: {
+                        "headline": ["Space Grotesk"],
+                        "body": ["Inter"],
+                        "label": ["Space Grotesk"]
+                    }
+                },
+            },
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0b0e14;
+            color: #ecedf6;
+            background-image: radial-gradient(circle at 50% 50%, rgba(153, 247, 255, 0.05) 0%, transparent 50%);
+        }
+
+        /* 입력 필드 공통 스타일 */
+        .deploy-input {
+            background: rgba(15, 23, 42, 0.6) !important;
+            border: 1px solid rgba(153, 247, 255, 0.1) !important;
+            border-radius: 12px !important;
+            color: #ecedf6 !important;
+            padding: 12px 16px !important;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .deploy-input:focus {
+            border-color: #99f7ff !important;
+            background: rgba(15, 23, 42, 0.9) !important;
+            box-shadow: 0 0 20px rgba(153, 247, 255, 0.1) !important;
+            outline: none !important;
+        }
+
+        .required-indicator::after {
+            content: ' [MANDATORY]';
+            color: #99f7ff;
+            font-size: 7px;
+            letter-spacing: 1px;
+            vertical-align: top;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen">
+
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-6 h-16 bg-slate-950/40 backdrop-blur-xl shadow-[0_0_20px_rgba(153,247,255,0.1)]">
+    <div class="flex items-center gap-8">
+        <span class="text-2xl font-bold tracking-tighter text-cyan-400 drop-shadow-[0_0_8px_rgba(153,247,255,0.6)] font-headline">MODULE02 LMS</span>
+        <span class="hidden md:inline text-xs font-label text-slate-400 tracking-widest uppercase">우주/외계인 세계관 학습 플랫폼</span>
+    </div>
+
+    <div class="flex items-center gap-4">
+        <div class="flex items-center gap-4" th:if="${loginMember == null}">
+            <a th:href="@{/login}" class="text-slate-300 hover:text-cyan-300 font-label text-xs tracking-widest transition-colors">로그인</a>
+            <a th:href="@{/signup}" class="bg-primary/10 border border-primary/30 text-primary px-4 py-1.5 rounded text-xs font-label tracking-widest hover:bg-primary/20 transition-all shadow-[0_0_10px_rgba(153,247,255,0.1)]">회원가입</a>
+        </div>
+
+        <div class="flex items-center gap-4" th:if="${loginMember != null}">
+            <div class="text-right hidden sm:block mr-2">
+                <span class="text-xs font-label tracking-widest text-cyan-400" th:text="|${loginMember.name} 님|"></span>
+                <span class="text-[10px] text-slate-500 font-label tracking-tight ml-1" th:text="|(${loginMember.role})|"></span>
+            </div>
+            <a th:href="@{/logout}" class="flex items-center gap-1 text-slate-400 hover:text-error transition-colors text-xs font-label">
+                <span class="material-symbols-outlined text-sm">power_settings_new</span> 로그아웃
+            </a>
+        </div>
+    </div>
+</header>
+
+<aside class="fixed left-0 top-16 bottom-0 flex flex-col z-40 bg-slate-950/80 backdrop-blur-lg w-64 border-r border-white/5">
+    <nav class="flex-1 py-6">
+        <a th:href="@{/instructor}" class="flex items-center gap-4 text-slate-400 hover:text-cyan-400 hover:bg-cyan-400/5 py-3.5 px-6 transition-all font-label">
+            <span class="material-symbols-outlined">arrow_back</span>
+            <span class="text-sm tracking-wide uppercase">Command Center</span>
+        </a>
+        <div class="flex items-center gap-4 text-primary bg-primary/10 border-r-4 border-primary py-3.5 px-6 font-label">
+            <span class="material-symbols-outlined">add_box</span>
+            <span class="text-sm tracking-wide tracking-widest uppercase font-bold">New Mission</span>
+        </div>
+        <a th:href="@{/instructor/courses/PUBLISHED}" class="flex items-center gap-4 text-slate-400 hover:text-cyan-400 hover:bg-cyan-400/5 py-3.5 px-6 transition-all font-label">
+            <span class="material-symbols-outlined">library_books</span>
+            <span class="text-sm tracking-wide uppercase">My Archive</span>
+        </a>
+    </nav>
+
+    <div class="p-6 mt-auto">
+        <div class="relative group cursor-help">
+            <div class="absolute -inset-1 bg-gradient-to-r from-cyan-500/20 to-purple-500/20 rounded-xl blur opacity-25 group-hover:opacity-50 transition duration-1000"></div>
+
+            <div class="relative w-full bg-slate-900/50 border border-white/10 p-4 rounded-xl">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-[9px] font-label font-black text-slate-500 uppercase tracking-widest">Network Status</span>
+                    <span class="flex h-2 w-2">
+                        <span class="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-cyan-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
+                    </span>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <span class="material-symbols-outlined text-primary text-sm animate-pulse">radar</span>
+                    <div class="flex-1">
+                        <div class="h-1 w-full bg-white/5 rounded-full overflow-hidden">
+                            <div class="h-full bg-primary w-[85%] shadow-[0_0_8px_#99f7ff]"></div>
+                        </div>
+                    </div>
+                </div>
+                <p class="mt-2 text-[9px] font-label text-primary/60 text-center uppercase tracking-[0.2em]">System Online</p>
+            </div>
+        </div>
+    </div>
+</aside>
+
+<main class="ml-64 pt-32 px-10 pb-16">
+    <div class="max-w-5xl mx-auto">
+
+        <div class="mb-12">
+            <div class="flex items-center gap-3 mb-2">
+                <span class="h-[1px] w-8 bg-primary/40"></span>
+                <span class="text-[10px] font-label tracking-[0.4em] text-primary uppercase">New Asset Registration</span>
+            </div>
+            <h1 class="text-4xl font-headline font-black text-on-surface tracking-tighter uppercase italic leading-none">
+                Deploy <span class="text-primary/50">New Course</span>
+            </h1>
+        </div>
+
+        <div class="bg-primary/5 border border-primary/10 p-5 rounded-2xl mb-10 flex items-center gap-5 backdrop-blur-sm">
+            <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                <span class="material-symbols-outlined text-primary text-xl">info</span>
+            </div>
+            <p class="text-[11px] font-label text-slate-400 tracking-wider uppercase leading-relaxed">
+                Mission status will be set to <span class="text-primary font-bold">DRAFT</span> initially.
+                Full activation requires <span class="text-white">Command HQ Approval</span>.
+            </p>
+        </div>
+
+        <form th:action="@{/instructor/courses/apply}" method="post" enctype="multipart/form-data">
+
+            <div class="bg-surface-container/60 backdrop-blur-xl border border-white/5 p-10 rounded-[3rem] shadow-2xl relative overflow-hidden">
+                <div class="absolute -top-24 -right-24 w-64 h-64 bg-primary/5 rounded-full blur-[80px]"></div>
+
+                <div class="flex flex-col lg:flex-row gap-12 relative z-10">
+
+                    <div class="w-full lg:w-72 space-y-4">
+                        <label class="text-[9px] font-label font-black text-slate-600 uppercase tracking-[0.2em] block px-1">Visual Identity</label>
+
+                        <div id="thumbnailWrap" onclick="document.getElementById('thumbnailFile').click()"
+                             class="group relative aspect-[3/4] rounded-[2.5rem] bg-slate-950 border-2 border-dashed border-white/5 hover:border-primary/40 overflow-hidden cursor-pointer transition-all duration-500">
+
+                            <img id="thumbnailPreview" class="hidden w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"/>
+
+                            <div id="thumbnailPlaceholder" class="absolute inset-0 flex flex-col items-center justify-center gap-3 text-slate-700">
+                                <div class="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center group-hover:text-primary transition-colors">
+                                    <span class="material-symbols-outlined text-4xl">cloud_upload</span>
+                                </div>
+                                <span class="text-[9px] font-label tracking-[0.2em] uppercase font-black">Link Media File</span>
+                            </div>
+
+                            <div id="thumbnailOverlay" class="absolute inset-0 bg-primary/90 opacity-0 transition-opacity duration-300 flex flex-col items-center justify-center gap-2 backdrop-blur-sm">
+                                <span class="material-symbols-outlined text-slate-950 text-3xl font-bold">refresh</span>
+                                <span class="text-slate-950 font-label text-[10px] font-black uppercase">Change Asset</span>
+                            </div>
+                        </div>
+                        <input type="file" id="thumbnailFile" name="thumbnailFile" accept="image/*" class="hidden" onchange="previewThumbnail(event)"/>
+                        <div class="text-center space-y-1">
+                            <p class="text-[9px] font-label text-slate-700 tracking-widest uppercase">Format: JPG, PNG, WEBP</p>
+                            <p class="text-[8px] font-label text-primary/40 tracking-widest uppercase italic">Recommended Ratio 3:4</p>
+                        </div>
+                    </div>
+
+                    <div class="flex-1 space-y-8">
+
+                        <div class="space-y-2">
+                            <label class="text-[9px] font-label font-black text-slate-600 uppercase tracking-widest block px-1 required-indicator">Mission Title</label>
+                            <input type="text" name="courseTitle" placeholder="강좌 식별 명칭을 입력하세요" class="deploy-input w-full font-headline font-bold text-lg" required/>
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="text-[9px] font-label font-black text-slate-600 uppercase tracking-widest block px-1 required-indicator">Mission Objective</label>
+                            <textarea name="courseDescription" rows="5" placeholder="수강생들에게 전달할 미션 요지를 상세히 기록하세요." class="deploy-input w-full font-body text-sm leading-relaxed" required></textarea>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div class="space-y-2">
+                                <label class="text-[9px] font-label font-black text-slate-600 uppercase tracking-widest block px-1 required-indicator">Deployment Sector</label>
+                                <div class="relative">
+                                    <select name="continentId" class="deploy-input w-full text-xs font-label appearance-none" required>
+                                        <option value="" disabled selected>지구를 포함한 대륙 선택</option>
+                                        <option th:each="continent : ${continents}"
+                                                th:value="${continent.continentId}"
+                                                th:text="${continent.continentName}"></option>
+                                    </select>
+                                    <span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-primary pointer-events-none text-sm">expand_more</span>
+                                </div>
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-[9px] font-label font-black text-slate-600 uppercase tracking-widest block px-1 required-indicator">Access Credit (KRW)</label>
+                                <div class="relative">
+                                    <input type="number" name="coursePrice" placeholder="0" class="deploy-input w-full font-headline font-bold pl-10" min="0" required/>
+                                    <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-600 text-sm">payments</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-6 rounded-2xl bg-white/[0.02] border border-white/5 flex items-center gap-4">
+                            <div class="w-10 h-10 rounded-full bg-slate-900 border border-primary/20 flex items-center justify-center text-primary/50">
+                                <span class="material-symbols-outlined">lock_clock</span>
+                            </div>
+                            <div>
+                                <p class="text-[9px] font-label text-slate-600 tracking-widest uppercase italic">Initial State</p>
+                                <p class="text-xs font-label font-black text-primary tracking-widest uppercase">Encryption Mode (DRAFT)</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-12 pt-8 border-t border-white/5 flex justify-end gap-5">
+                    <a th:href="@{/instructor}" class="px-8 py-3.5 rounded-2xl text-slate-600 font-label text-[10px] font-black uppercase tracking-widest hover:text-white transition-all">
+                        Cancel Operation
+                    </a>
+                    <button type="submit" class="px-12 py-3.5 bg-primary text-slate-950 font-label text-[10px] font-black rounded-2xl hover:scale-105 active:scale-95 transition-all shadow-[0_10px_30px_rgba(153,247,255,0.2)] uppercase tracking-widest">
+                        Deploy Asset
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</main>
+
+<script>
+    function previewThumbnail(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            const preview = document.getElementById('thumbnailPreview');
+            const placeholder = document.getElementById('thumbnailPlaceholder');
+            const overlay = document.getElementById('thumbnailOverlay');
+
+            preview.src = e.target.result;
+            preview.classList.remove('hidden');
+            placeholder.classList.add('hidden');
+
+            // 호버 인터랙션 활성화
+            const wrap = document.getElementById('thumbnailWrap');
+            wrap.addEventListener('mouseenter', () => overlay.classList.replace('opacity-0', 'opacity-100'));
+            wrap.addEventListener('mouseleave', () => overlay.classList.replace('opacity-100', 'opacity-0'));
+        };
+        reader.readAsDataURL(file);
+    }
+</script>
+
+</body>
+</html>

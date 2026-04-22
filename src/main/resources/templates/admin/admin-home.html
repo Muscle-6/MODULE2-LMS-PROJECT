@@ -2,94 +2,348 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>관리자 홈</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>관리자 컨트롤 타워 | ADMIN</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-dark: #4338ca;
+            --secondary: #64748b;
+            --bg-body: #f8fafc;
+            --bg-sidebar: #1e293b;
+            --white: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            background: #f6f8fb;
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+            background: var(--bg-body);
             margin: 0;
+            display: flex;
+            min-height: 100vh;
+            color: var(--text-main);
+        }
+
+        /* --- Sidebar --- */
+        aside {
+            width: 260px;
+            background: var(--bg-sidebar);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+
+        .sidebar-header {
+            padding: 30px 24px;
+            font-size: 1.25rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .sidebar-menu {
+            flex: 1;
+            padding: 20px 12px;
+            overflow-y: auto;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            color: #cbd5e1;
+            text-decoration: none;
+            border-radius: 8px;
+            margin-bottom: 4px;
+            transition: all 0.2s;
+            font-size: 0.95rem;
+        }
+
+        .nav-item i {
+            width: 24px;
+            font-size: 1.1rem;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .nav-item.logout {
+            margin-top: 20px;
+            color: #fca5a5;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            padding-top: 20px;
+        }
+
+        /* --- Main Content --- */
+        main {
+            flex: 1;
+            margin-left: 260px;
+            display: flex;
+            flex-direction: column;
         }
 
         header {
-            background: #3a1f44;
-            color: white;
-            padding: 20px 40px;
+            background: var(--white);
+            padding: 16px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .breadcrumb {
+            color: var(--text-muted);
+            font-size: 0.875rem;
         }
 
         .container {
-            width: 1000px;
-            margin: 30px auto;
+            padding: 40px;
+            max-width: 1200px;
         }
 
+        /* --- Page Info --- */
+        .page-header {
+            margin-bottom: 32px;
+        }
+
+        .page-header h2 {
+            margin: 0;
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+
+        .page-description {
+            background: #eff6ff;
+            border-left: 4px solid var(--primary);
+            padding: 16px 20px;
+            border-radius: 0 8px 8px 0;
+            margin-top: 16px;
+            color: #1e40af;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        /* --- Grid Layout --- */
         .menu-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 18px;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 24px;
         }
 
         .menu-card {
-            background: white;
+            background: var(--white);
+            border-radius: 16px;
             padding: 24px;
-            border-radius: 14px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            border: 1px solid var(--border);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .menu-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            border-color: var(--primary);
+        }
+
+        .icon-box {
+            width: 48px;
+            height: 48px;
+            background: #f1f5f9;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            color: var(--primary);
+            font-size: 1.25rem;
+            transition: 0.3s;
+        }
+
+        .menu-card:hover .icon-box {
+            background: var(--primary);
+            color: white;
         }
 
         .menu-card h3 {
-            margin-top: 0;
+            margin: 0 0 12px 0;
+            font-size: 1.15rem;
+            color: var(--text-main);
         }
 
-        a.btn {
-            display: inline-block;
-            margin-top: 12px;
-            text-decoration: none;
-            color: white;
-            background: #7a2fb2;
-            padding: 10px 14px;
-            border-radius: 8px;
+        .menu-card p {
+            margin: 0 0 24px 0;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+            flex-grow: 1;
         }
 
-        .top-links a {
-            color: white;
+        .btn-go {
             text-decoration: none;
-            margin-right: 12px;
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: gap 0.2s;
+        }
+
+        .btn-go:hover {
+            gap: 10px;
+        }
+
+        /* 반응형 */
+        @media (max-width: 1024px) {
+            aside { width: 80px; }
+            aside .sidebar-header span, aside .nav-item span { display: none; }
+            main { margin-left: 80px; }
+            .sidebar-header { justify-content: center; padding: 20px 0; }
+            .nav-item { justify-content: center; }
+        }
+
+        @media (max-width: 640px) {
+            main { margin-left: 0; }
+            aside { transform: translateX(-100%); }
+            .container { padding: 20px; }
         }
     </style>
 </head>
 <body>
-<header>
-    <h1>관리자 홈</h1>
-    <div class="top-links">
-        <a th:href="@{/static}">메인</a>
-        <a th:href="@{/logout}">로그아웃</a>
+
+<aside>
+    <div class="sidebar-header">
+        <i class="fa-solid fa-shield-halved"></i>
+        <span>ADMIN PANEL</span>
     </div>
-</header>
+    <nav class="sidebar-menu">
+        <a th:href="@{/admin}" class="nav-item active">
+            <i class="fa-solid fa-house"></i>
+            <span>대시보드 홈</span>
+        </a>
+        <a th:href="@{/admin/members}" class="nav-item">
+            <i class="fa-solid fa-users"></i>
+            <span>회원/계정 관리</span>
+        </a>
+        <a th:href="@{/admin/instructors/new}" class="nav-item">
+            <i class="fa-solid fa-user-plus"></i>
+            <span>강사 계정 생성</span>
+        </a>
+        <a th:href="@{/admin/reports}" class="nav-item">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            <span>게시판/신고 관리</span>
+        </a>
+        <a th:href="@{/admin/statics}" class="nav-item">
+            <i class="fa-solid fa-chart-line"></i>
+            <span>통계/모니터링</span>
+        </a>
+        <a th:href="@{/admin/refunds}" class="nav-item">
+            <i class="fa-solid fa-receipt"></i>
+            <span>환불 요청 관리</span>
+        </a>
+        <a th:href="@{/admin/courses}" class="nav-item">
+            <i class="fa-solid fa-book-open"></i>
+            <span>강좌 신청 관리</span>
+        </a>
+        <a th:href="@{/admin/continent-notices}" class="nav-item">
+            <i class="fa-solid fa-bullhorn"></i>
+            <span>대륙 공지 작성</span>
+        </a>
+        <a th:href="@{/logout}" class="nav-item logout">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+            <span>로그아웃</span>
+        </a>
+    </nav>
+</aside>
 
-<div class="container">
-    <div class="menu-grid">
-        <div class="menu-card">
-            <h3>회원 관리</h3>
-            <p>학생/강사/관리자 계정 조회 및 상태 변경</p>
-            <a href="#" class="btn">이동</a>
+<main>
+    <header>
+        <div class="breadcrumb">Admin &gt; <span style="color: var(--text-main); font-weight: 600;">Dashboard</span></div>
+        <div class="top-links">
+            <a th:href="@{/}" style="text-decoration: none; color: var(--primary); font-weight: 600; font-size: 0.9rem;">
+                <i class="fa-solid fa-globe"></i> 사이트 바로가기
+            </a>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="page-header">
+            <h2>관리 시스템 현황</h2>
+            <div class="page-description">
+                <i class="fa-solid fa-circle-info"></i>
+                관리자 기능 대분류 진입 페이지입니다. 각 카드의 <strong>'관리하기'</strong> 버튼을 클릭하여 세부 설정 페이지로 이동할 수 있습니다.
+            </div>
         </div>
 
-        <div class="menu-card">
-            <h3>신고 관리</h3>
-            <p>게시글, 댓글, Q&A 신고 처리</p>
-            <a href="#" class="btn">이동</a>
-        </div>
+        <div class="menu-grid">
+            <div class="menu-card">
+                <div class="icon-box"><i class="fa-solid fa-user-gear"></i></div>
+                <h3>회원/계정 관리</h3>
+                <p>학생/강사 계정 조회, 상태 변경 및 비정상 활동 사용자 제재를 관리합니다.</p>
+                <a th:href="@{/admin/members}" class="btn-go">관리하기 <i class="fa-solid fa-chevron-right"></i></a>
+            </div>
 
-        <div class="menu-card">
-            <h3>환불 관리</h3>
-            <p>환불 승인 및 거절 처리</p>
-            <a href="#" class="btn">이동</a>
-        </div>
+            <div class="menu-card">
+                <div class="icon-box"><i class="fa-solid fa-user-plus"></i></div>
+                <h3>강사 계정 생성</h3>
+                <p>시스템에 신규 강사 계정을 수동으로 생성하고 권한을 부여합니다.</p>
+                <a th:href="@{/admin/instructors/new}" class="btn-go">관리하기 <i class="fa-solid fa-chevron-right"></i></a>
+            </div>
 
-        <div class="menu-card">
-            <h3>통계 조회</h3>
-            <p>회원 수, 강좌 수, 인기 강좌, 결제 현황 확인</p>
-            <a href="#" class="btn">이동</a>
+            <div class="menu-card">
+                <div class="icon-box"><i class="fa-solid fa-comment-slash"></i></div>
+                <h3>게시판/신고 관리</h3>
+                <p>커뮤니티 및 Q&A 신고 목록을 검토하고 게시글 삭제/비공개를 처리합니다.</p>
+                <a th:href="@{/admin/reports}" class="btn-go">관리하기 <i class="fa-solid fa-chevron-right"></i></a>
+            </div>
+
+            <div class="menu-card">
+                <div class="icon-box"><i class="fa-solid fa-chart-pie"></i></div>
+                <h3>통계/모니터링</h3>
+                <p>수강률, 참여율, 결제 및 환불 통계 등 전반적인 지표를 시각화하여 확인합니다.</p>
+                <a th:href="@{/admin/statics}" class="btn-go">관리하기 <i class="fa-solid fa-chevron-right"></i></a>
+            </div>
+
+            <div class="menu-card">
+                <div class="icon-box"><i class="fa-solid fa-receipt"></i></div>
+                <h3>환불 요청 목록</h3>
+                <p>학생들의 환불 요청 내역을 검토하고 승인 또는 반려 처리를 진행합니다.</p>
+                <a th:href="@{/admin/refunds}" class="btn-go">관리하기 <i class="fa-solid fa-chevron-right"></i></a>
+            </div>
+
+            <div class="menu-card">
+                <div class="icon-box"><i class="fa-solid fa-chalkboard-user"></i></div>
+                <h3>강좌 신청 목록</h3>
+                <p>신규 개설 강좌 신청 내역을 조회하고 적합성 여부를 판단하여 승인합니다.</p>
+                <a th:href="@{/admin/courses}" class="btn-go">관리하기 <i class="fa-solid fa-chevron-right"></i></a>
+            </div>
+
+            <div class="menu-card">
+                <div class="icon-box"><i class="fa-solid fa-bullhorn"></i></div>
+                <h3>대륙 공지 작성</h3>
+                <p>대륙 게시판 공지글을 작성하고, 기존 공지글을 수정/삭제합니다.</p>
+                <a th:href="@{/admin/continent-notices}" class="btn-go">관리하기 <i class="fa-solid fa-chevron-right"></i></a>
+            </div>
         </div>
     </div>
-</div>
+</main>
 </body>
 </html>

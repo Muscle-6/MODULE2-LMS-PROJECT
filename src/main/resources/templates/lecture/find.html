@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html class="dark" lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LECTURE CONTROL | MODULE02 LMS</title>
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#99f7ff",
+                        "secondary": "#c97cff",
+                        "error": "#ff716c",
+                        "surface-container": "#161a21",
+                        "on-surface": "#ecedf6",
+                    },
+                    fontFamily: {
+                        "headline": ["Space Grotesk"],
+                        "body": ["Inter"],
+                        "label": ["Space Grotesk"]
+                    }
+                },
+            },
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0b0e14;
+            color: #ecedf6;
+            background-image: radial-gradient(circle at 50% 50%, rgba(153, 247, 255, 0.05) 0%, transparent 50%);
+        }
+
+        /* 강의 카드 특수 효과 */
+        .lecture-card {
+            background: rgba(22, 26, 33, 0.4);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .lecture-card:hover {
+            background: rgba(153, 247, 255, 0.03);
+            border-color: rgba(153, 247, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        /* 커스텀 스크롤바 */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(153, 247, 255, 0.1); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(153, 247, 255, 0.3); }
+    </style>
+</head>
+
+<body class="min-h-screen">
+
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-6 h-16 bg-slate-950/40 backdrop-blur-xl shadow-[0_0_20px_rgba(153,247,255,0.1)]">
+    <div class="flex items-center gap-8">
+        <span class="text-2xl font-bold tracking-tighter text-cyan-400 drop-shadow-[0_0_8px_rgba(153,247,255,0.6)] font-headline">MODULE02 LMS</span>
+        <span class="hidden md:inline text-xs font-label text-slate-400 tracking-widest uppercase">우주/외계인 세계관 학습 플랫폼</span>
+    </div>
+
+    <div class="flex items-center gap-4">
+        <div class="flex items-center gap-4" th:if="${loginMember == null}">
+            <a th:href="@{/login}" class="text-slate-300 hover:text-cyan-300 font-label text-xs tracking-widest transition-colors">로그인</a>
+            <a th:href="@{/signup}" class="bg-primary/10 border border-primary/30 text-primary px-4 py-1.5 rounded text-xs font-label tracking-widest hover:bg-primary/20 transition-all shadow-[0_0_10px_rgba(153,247,255,0.1)]">회원가입</a>
+        </div>
+
+        <div class="flex items-center gap-4" th:if="${loginMember != null}">
+            <div class="text-right hidden sm:block mr-2">
+                <span class="text-xs font-label tracking-widest text-cyan-400" th:text="|${loginMember.name} 님|"></span>
+                <span class="text-[10px] text-slate-500 font-label tracking-tight ml-1" th:text="|(${loginMember.role})|"></span>
+            </div>
+            <a th:href="@{/logout}" class="flex items-center gap-1 text-slate-400 hover:text-error transition-colors text-xs font-label">
+                <span class="material-symbols-outlined text-sm">power_settings_new</span> 로그아웃
+            </a>
+        </div>
+    </div>
+</header>
+
+<aside class="fixed left-0 top-16 bottom-0 flex flex-col z-40 bg-slate-950/80 backdrop-blur-lg w-64 border-r border-white/5">
+    <nav class="flex-1 py-6">
+        <a th:href="@{/instructor}" class="flex items-center gap-4 text-slate-400 hover:text-cyan-400 hover:bg-cyan-400/5 py-3.5 px-6 transition-all font-label">
+            <span class="material-symbols-outlined">satellite_alt</span>
+            <span class="text-sm tracking-wide uppercase">Command Center</span>
+        </a>
+        <a th:href="@{/instructor/courses/PUBLISHED}" class="flex items-center gap-4 text-primary bg-primary/10 border-r-4 border-primary py-3.5 px-6 font-label">
+            <span class="material-symbols-outlined">library_books</span>
+            <span class="text-sm tracking-wide tracking-widest uppercase font-bold">Course Assets</span>
+        </a>
+        <a th:href="@{/instructor/profile}" class="flex items-center gap-4 text-slate-400 hover:text-cyan-400 hover:bg-cyan-400/5 py-3.5 px-6 transition-all font-label">
+            <span class="material-symbols-outlined">person</span>
+            <span class="text-sm tracking-wide uppercase">Profile Intel</span>
+        </a>
+    </nav>
+
+    <div class="p-6 mt-auto">
+        <div class="relative group cursor-help">
+            <div class="absolute -inset-1 bg-gradient-to-r from-cyan-500/20 to-purple-500/20 rounded-xl blur opacity-25 group-hover:opacity-50 transition duration-1000"></div>
+
+            <div class="relative w-full bg-slate-900/50 border border-white/10 p-4 rounded-xl">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-[9px] font-label font-black text-slate-500 uppercase tracking-widest">Network Status</span>
+                    <span class="flex h-2 w-2">
+                        <span class="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-cyan-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
+                    </span>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <span class="material-symbols-outlined text-primary text-sm animate-pulse">radar</span>
+                    <div class="flex-1">
+                        <div class="h-1 w-full bg-white/5 rounded-full overflow-hidden">
+                            <div class="h-full bg-primary w-[85%] shadow-[0_0_8px_#99f7ff]"></div>
+                        </div>
+                    </div>
+                </div>
+                <p class="mt-2 text-[9px] font-label text-primary/60 text-center uppercase tracking-[0.2em]">System Online</p>
+            </div>
+        </div>
+    </div>
+
+</aside>
+
+<main class="ml-64 pt-28 px-10 pb-16">
+    <div class="max-w-6xl mx-auto">
+
+        <div class="flex items-center gap-2 mb-6">
+            <a th:href="@{/instructor/courses/PUBLISHED}" class="text-[10px] font-label text-slate-500 uppercase tracking-widest hover:text-primary transition-colors">My Courses</a>
+            <span class="material-symbols-outlined text-slate-700 text-xs">chevron_right</span>
+            <span class="text-[10px] font-label text-primary uppercase tracking-widest">Lecture Management</span>
+        </div>
+
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+            <div>
+                <h1 class="text-4xl font-headline font-black text-on-surface tracking-tighter uppercase italic leading-none mb-3">
+                    Lecture <span class="text-primary/50">Units</span>
+                </h1>
+                <p class="text-sm font-body text-slate-400 max-w-xl" th:text="${course.courseTitle}">Course Title</p>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <a th:href="@{/instructor/courses/{courseId}/notices(courseId=${course.courseId})}"
+                   class="p-3 rounded-xl border border-white/5 bg-white/5 text-slate-400 hover:text-secondary hover:border-secondary/20 transition-all">
+                    <span class="material-symbols-outlined">campaign</span>
+                </a>
+                <a th:href="@{/instructor/courses/{courseId}/qna(courseId=${course.courseId})}"
+                   class="p-3 rounded-xl border border-white/5 bg-white/5 text-slate-400 hover:text-primary hover:border-primary/20 transition-all">
+                    <span class="material-symbols-outlined">forum</span>
+                </a>
+                <div class="h-8 w-[1px] bg-white/5 mx-2"></div>
+                <a th:href="@{/instructor/courses/{courseId}/lectures/add(courseId=${course.courseId})}"
+                   class="flex items-center gap-2 px-6 py-3 bg-primary text-slate-950 font-label text-[10px] font-black rounded-xl hover:scale-105 transition-all shadow-[0_10px_20px_rgba(153,247,255,0.1)] uppercase tracking-widest">
+                    <span class="material-symbols-outlined text-sm font-black">add</span>
+                    New Lecture
+                </a>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 gap-4">
+
+            <div th:if="${lectures != null and !#lists.isEmpty(lectures)}"
+                 th:each="lecture : ${lectures}"
+                 class="lecture-card group rounded-3xl p-6 flex items-center gap-8">
+
+                <div class="w-12 h-12 flex-shrink-0 flex items-center justify-center rounded-2xl bg-slate-950 border border-white/5 group-hover:border-primary/30 transition-colors">
+                    <span class="text-xl font-headline font-black text-slate-700 group-hover:text-primary transition-colors"
+                          th:text="${#numbers.formatInteger(lecture.lectureOrderIndex, 2)}">01</span>
+                </div>
+
+                <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-3 mb-1">
+                        <h3 class="text-lg font-headline font-bold text-on-surface truncate tracking-tight uppercase" th:text="${lecture.lectureTitle}">Lecture Title</h3>
+                        <div class="flex items-center">
+                            <span th:if="${lecture.videoStatus.name() == 'UPLOADING'}" class="w-1.5 h-1.5 rounded-full bg-yellow-400 animate-pulse mr-2 shadow-[0_0_8px_#facc15]"></span>
+                            <span th:if="${lecture.videoStatus.name() == 'READY'}" class="w-1.5 h-1.5 rounded-full bg-primary mr-2 shadow-[0_0_8px_#99f7ff]"></span>
+                            <span th:if="${lecture.videoStatus.name() == 'NONE'}" class="w-1.5 h-1.5 rounded-full bg-slate-700 mr-2"></span>
+                            <span class="text-[9px] font-label tracking-widest text-slate-500 uppercase font-black" th:text="${lecture.videoStatus.name()}">STATUS</span>
+                        </div>
+                    </div>
+                    <p class="text-xs font-body text-slate-500 line-clamp-1 italic"
+                       th:text="${lecture.lectureDescription != null ? lecture.lectureDescription : 'Deployment details pending...'}">Description</p>
+                </div>
+
+                <div class="hidden lg:flex items-center gap-10">
+                    <div class="flex flex-col items-end">
+                        <span class="text-[8px] font-label text-slate-700 uppercase tracking-widest mb-1">Created At</span>
+                        <span class="text-[11px] font-label text-slate-400" th:text="${#temporals.format(lecture.createdAt, 'yyyy.MM.dd')}">DATE</span>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <a th:href="@{/instructor/courses/{courseId}/lectures/{lectureId}/watch(courseId=${course.courseId}, lectureId=${lecture.lectureId})}"
+                       class="p-2.5 rounded-xl bg-slate-950 text-slate-600 hover:text-primary transition-colors border border-transparent hover:border-primary/20">
+                        <span class="material-symbols-outlined text-xl">play_circle</span>
+                    </a>
+                    <a th:href="@{/instructor/courses/{courseId}/lectures/{lectureId}/edit(courseId=${course.courseId}, lectureId=${lecture.lectureId})}"
+                       class="p-2.5 rounded-xl bg-slate-950 text-slate-600 hover:text-secondary transition-colors border border-transparent hover:border-secondary/20">
+                        <span class="material-symbols-outlined text-xl">settings</span>
+                    </a>
+                    <button type="button" th:onclick="|openDeleteModal([[${lecture.lectureId}]], [[${course.courseId}]])|"
+                            class="p-2.5 rounded-xl bg-slate-950 text-slate-600 hover:text-error transition-colors border border-transparent hover:border-error/20">
+                        <span class="material-symbols-outlined text-xl">delete_sweep</span>
+                    </button>
+                </div>
+            </div>
+
+            <div th:if="${lectures == null or #lists.isEmpty(lectures)}"
+                 class="py-32 flex flex-col items-center justify-center border-2 border-dashed border-white/5 rounded-[3rem] bg-white/[0.01]">
+                <span class="material-symbols-outlined text-6xl text-slate-800 mb-6 font-thin">video_stable</span>
+                <p class="text-[10px] font-label tracking-[0.4em] text-slate-600 uppercase font-black">No Lecture Modules Detected</p>
+                <p class="text-xs font-body text-slate-700 mt-2 mb-8">This course asset is currently awaiting deployment.</p>
+                <a th:href="@{/instructor/courses/{courseId}/lectures/add(courseId=${course.courseId})}"
+                   class="px-8 py-3 rounded-2xl bg-white/5 border border-white/10 text-primary font-label text-[10px] font-black uppercase tracking-widest hover:bg-primary/10 transition-all">
+                    Initialize First Unit
+                </a>
+            </div>
+        </div>
+    </div>
+</main>
+
+<div id="deleteModal" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-6 bg-slate-950/80 backdrop-blur-md">
+    <div class="bg-surface-container border border-white/5 p-10 rounded-[2.5rem] w-full max-w-sm shadow-2xl relative overflow-hidden">
+        <div class="absolute -top-10 -right-10 w-32 h-32 bg-error/10 rounded-full blur-2xl"></div>
+
+        <div class="relative z-10 text-center">
+            <div class="w-16 h-16 rounded-3xl bg-error/10 border border-error/20 flex items-center justify-center mx-auto mb-6">
+                <span class="material-symbols-outlined text-error text-4xl">warning</span>
+            </div>
+            <h3 class="text-xl font-headline font-black text-on-surface uppercase tracking-tight mb-3">Terminate Unit?</h3>
+            <p class="text-sm font-body text-slate-500 mb-8 leading-relaxed">
+                This action will permanently delete the lecture module and all associated data.
+            </p>
+            <div class="flex gap-3">
+                <button onclick="closeDeleteModal()" class="flex-1 py-3.5 rounded-2xl bg-white/5 text-slate-500 font-label text-[10px] font-black uppercase tracking-widest hover:text-white transition-all">
+                    Cancel
+                </button>
+                <a id="deleteConfirmBtn" href="#" class="flex-1 py-3.5 rounded-2xl bg-error text-slate-950 font-label text-[10px] font-black uppercase tracking-widest shadow-lg shadow-error/20">
+                    Confirm
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openDeleteModal(lectureId, courseId) {
+        document.getElementById('deleteConfirmBtn').href = `/instructor/courses/${courseId}/lectures/${lectureId}/delete`;
+        document.getElementById('deleteModal').classList.remove('hidden');
+    }
+    function closeDeleteModal() {
+        document.getElementById('deleteModal').classList.add('hidden');
+    }
+</script>
+
+</body>
+</html>
