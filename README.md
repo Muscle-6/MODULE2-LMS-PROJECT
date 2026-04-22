@@ -163,11 +163,9 @@
 
 ## 9. ERD
 
-> ERD는 README 중반부에 배치하는 것이 좋습니다.  
-> 초반에 두면 가독성이 떨어지고, 너무 뒤에 두면 구조 설명과 연결이 끊깁니다.
 
 <p align="center">
-  <img width="1179" height="717" alt="Image" src="https://github.com/user-attachments/assets/ccf797d7-0d87-4720-9454-5263039b05c5" />
+ <img width="2044" height="1258" alt="image" src="https://github.com/user-attachments/assets/345fbc65-54be-4c68-b22b-671d4bf73714" />
 </p>
 
 ### 핵심 도메인
