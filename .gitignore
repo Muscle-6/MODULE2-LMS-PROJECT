@@ -40,7 +40,7 @@ out/
 src/main/resources/application.yml
 
 ### GCS 키 파일 (절대 Git에 올리면 안 됨) ###
-src/main/resources/gcs/
+src/main/resources/gcs/gcs-key.json
 
 ### 업로드된 이미지 파일 제외 (폴더는 유지) ###
 src/main/resources/static/images/profile/*
