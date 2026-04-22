@@ -94,9 +94,6 @@ public class CourseCommandService {
             course.setInstructorName(foundCourse.getInstructor().getName());
         }
 
-        // 테스트 로직입니다
-        course.setCourseDescription("지구를 정복하기 위한 최고의 자바 강의! 일루미나티도 수강 중입니다.");
-
         return course;
     }
 

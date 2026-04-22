@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html class="dark" lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html class="dark" lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -88,7 +88,7 @@
                 <p class="text-xs font-headline font-black text-cyan-400 tracking-tight leading-none mb-1 uppercase" th:text="${loginMember.name}">OPERATIVE</p>
                 <div class="flex items-center gap-1">
                     <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                    <p class="text-[10px] font-label text-slate-500 font-bold tracking-tighter uppercase" th:text="|RANK: ${loginMember.role}|">RANK</p>
+                    <p class="text-[10px] font-label text-slate-500 font-bold tracking-tighter uppercase" th:text="|RANK: ${loginMember.rank}|">RANK</p>
                 </div>
             </div>
         </div>
@@ -105,7 +105,20 @@
             <span class="text-sm font-label font-bold tracking-wide">대륙 탐색</span>
         </a>
 
-        <a th:href="@{/student}"
+        <!-- 강사: 강사 홈 -->
+        <a sec:authorize="hasRole('INSTRUCTOR')" th:href="@{/instructor}"
+           class="flex items-center gap-4 py-3.5 px-6 transition-all duration-200 group text-cyan-400 bg-cyan-400/10 border-r-4 border-cyan-400">
+            <span class="material-symbols-outlined text-xl group-hover:scale-110 transition-transform">satellite_alt</span>
+            <span class="text-sm font-label font-bold tracking-wide">강사 홈</span>
+        </a>
+
+        <!-- 관리자: 관리자 홈 / 일반 사용자: 학생 홈 -->
+        <a sec:authorize="hasRole('ADMIN')" th:href="@{/admin}"
+           class="flex items-center gap-4 py-3.5 px-6 transition-all duration-200 group text-cyan-400 bg-cyan-400/10 border-r-4 border-cyan-400">
+            <span class="material-symbols-outlined text-xl group-hover:scale-110 transition-transform">admin_panel_settings</span>
+            <span class="text-sm font-label font-bold tracking-wide">관리자 홈</span>
+        </a>
+        <a sec:authorize="hasRole('STUDENT')" th:href="@{/student}"
            class="flex items-center gap-4 py-3.5 px-6 transition-all duration-200 group text-cyan-400 bg-cyan-400/10 border-r-4 border-cyan-400">
             <span class="material-symbols-outlined text-xl group-hover:scale-110 transition-transform">rocket_launch</span>
             <span class="text-sm font-label font-bold tracking-wide">학생 홈</span>
