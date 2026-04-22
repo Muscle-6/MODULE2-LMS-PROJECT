@@ -329,13 +329,16 @@
     }
     let formToSubmit = null;
 
-    function showDeleteModal(type) {
+    function showDeleteModal(type, commentId) {
         const modal = document.getElementById('deleteModal');
         modal.style.display = 'flex';
 
-        // 삭제할 폼을 특정함 (게시글용)
         if(type === 'post') {
+            // 게시글 삭제 폼 할당
             formToSubmit = document.getElementById('deleteForm');
+        } else if(type === 'comment') {
+            // 전달받은 commentId를 사용하여 해당 댓글의 폼을 할당
+            formToSubmit = document.getElementById('deleteCommentForm-' + commentId);
         }
     }
 
