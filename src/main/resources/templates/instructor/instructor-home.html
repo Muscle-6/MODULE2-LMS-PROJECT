@@ -91,7 +91,7 @@
                 <p class="text-xs font-headline font-black text-cyan-400 tracking-tight leading-none mb-1 uppercase" th:text="${loginMember.name}">OPERATIVE</p>
                 <div class="flex items-center gap-1">
                     <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                    <p class="text-[10px] font-label text-slate-500 font-bold tracking-tighter uppercase" th:text="|RANK: ${loginMember.role}|">RANK</p>
+                    <p class="text-[10px] font-label text-slate-500 font-bold tracking-tighter uppercase" th:text="|RANK: ${loginMember.rank}|">RANK</p>
                 </div>
             </div>
         </div>
@@ -101,6 +101,10 @@
         <a href="#" class="flex items-center gap-4 text-cyan-400 bg-cyan-400/10 border-r-4 border-cyan-400 py-3.5 px-6 font-label">
             <span class="material-symbols-outlined">satellite_alt</span>
             <span class="text-sm tracking-wide">사령부 대시보드</span>
+        </a>
+        <a th:href="@{/}" class="flex items-center gap-4 py-3.5 px-6 transition-all duration-200 group text-slate-500 hover:bg-white/5 hover:text-slate-300 font-label">
+            <span class="material-symbols-outlined text-xl group-hover:scale-110 transition-transform">public</span>
+            <span class="text-sm tracking-wide">대륙 탐색</span>
         </a>
     </nav>
 
